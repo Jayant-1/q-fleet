@@ -1,0 +1,127 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "https://excalidraw.com",
+  "elements": [
+    {
+      "id": "node_ui",
+      "type": "rectangle",
+      "x": 100,
+      "y": 100,
+      "width": 380,
+      "height": 180,
+      "strokeColor": "#00e5ff",
+      "backgroundColor": "#070d18",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 1
+    },
+    {
+      "id": "text_ui",
+      "type": "text",
+      "x": 120,
+      "y": 120,
+      "width": 340,
+      "height": 120,
+      "text": "DECISION SUPPORT PLATFORM\n(React 19 + TypeScript + Tailwind)\n- Global Route Map & Telemetry\n- Pareto Front 3D/2D Explorer\n- Fuel Lifecycle (WTT/TTW) Sankey\n- Quantum Benchmark Lab",
+      "fontSize": 14,
+      "fontFamily": 1,
+      "textAlign": "left",
+      "verticalAlign": "top"
+    },
+    {
+      "id": "node_backend",
+      "type": "rectangle",
+      "x": 580,
+      "y": 100,
+      "width": 380,
+      "height": 180,
+      "strokeColor": "#10b981",
+      "backgroundColor": "#070d18",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 1
+    },
+    {
+      "id": "text_backend",
+      "type": "text",
+      "x": 600,
+      "y": 120,
+      "width": 340,
+      "height": 120,
+      "text": "FASTAPI BACKEND SERVICE\n- REST API & Orchestration\n- SQLite Scenario Store\n- Audit Report Generator\n- Fuel Registry (IMO MEPC.376)",
+      "fontSize": 14,
+      "fontFamily": 1,
+      "textAlign": "left",
+      "verticalAlign": "top"
+    },
+    {
+      "id": "node_pred",
+      "type": "rectangle",
+      "x": 100,
+      "y": 360,
+      "width": 380,
+      "height": 200,
+      "strokeColor": "#d946ef",
+      "backgroundColor": "#070d18",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 1
+    },
+    {
+      "id": "text_pred",
+      "type": "text",
+      "x": 120,
+      "y": 380,
+      "width": 340,
+      "height": 140,
+      "text": "PREDICTION ENGINE\n- Hydrodynamic Resistance Model\n- QIEA Feature Selection (Q-bits)\n- Gradient Boosted Fuel Regressor\n- Baselines: Ridge, RF, Classical GA\n- Metrics: MAE, RMSE, MAPE, R2",
+      "fontSize": 14,
+      "fontFamily": 1,
+      "textAlign": "left",
+      "verticalAlign": "top"
+    },
+    {
+      "id": "node_opt",
+      "type": "rectangle",
+      "x": 580,
+      "y": 360,
+      "width": 380,
+      "height": 200,
+      "strokeColor": "#f59e0b",
+      "backgroundColor": "#070d18",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 1
+    },
+    {
+      "id": "text_opt",
+      "type": "text",
+      "x": 600,
+      "y": 380,
+      "width": 340,
+      "height": 140,
+      "text": "MULTI-OBJECTIVE OPTIMIZATION\n- MO-QIEA (Multi-State Q-bits)\n- Quantum Rotation Gates & Catastrophe\n- Objectives: Min Fuel, Cost, WTW GHG\n- Constraints: Demand, Speed, Berth\n- Baselines: NSGA-II, MO-PSO",
+      "fontSize": 14,
+      "fontFamily": 1,
+      "textAlign": "left",
+      "verticalAlign": "top"
+    }
+  ],
+  "appState": {
+    "viewBackgroundColor": "#070d18",
+    "gridSize": 20
+  }
+}

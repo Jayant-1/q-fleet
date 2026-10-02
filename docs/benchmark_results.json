@@ -1,0 +1,867 @@
+{
+  "prediction_benchmark": {
+    "dataset_samples": 2000,
+    "train_samples": 1400,
+    "val_samples": 300,
+    "test_samples": 300,
+    "benchmark_results": [
+      {
+        "model_name": "Classical Ridge Regression",
+        "r2_score": 0.817,
+        "mae_mt_day": 23.188,
+        "rmse_mt_day": 33.313,
+        "mape_pct": 42.19,
+        "features_used_count": 12,
+        "features_used_names": [
+          "speed_knots",
+          "dwt",
+          "cargo_load_ratio",
+          "draft_meters",
+          "wind_speed_knots",
+          "wave_height_meters",
+          "current_knots",
+          "vessel_type_encoded",
+          "hull_fouling_factor",
+          "sea_water_temp_c",
+          "water_depth_meters",
+          "engine_mcr_ratio"
+        ],
+        "training_time_seconds": 0.01,
+        "inference_latency_per_sample_ms": 0.001
+      },
+      {
+        "model_name": "Classical Random Forest (Full 12 Features)",
+        "r2_score": 0.9631,
+        "mae_mt_day": 7.253,
+        "rmse_mt_day": 14.951,
+        "mape_pct": 7.13,
+        "features_used_count": 12,
+        "features_used_names": [
+          "speed_knots",
+          "dwt",
+          "cargo_load_ratio",
+          "draft_meters",
+          "wind_speed_knots",
+          "wave_height_meters",
+          "current_knots",
+          "vessel_type_encoded",
+          "hull_fouling_factor",
+          "sea_water_temp_c",
+          "water_depth_meters",
+          "engine_mcr_ratio"
+        ],
+        "training_time_seconds": 0.09,
+        "inference_latency_per_sample_ms": 0.083
+      },
+      {
+        "model_name": "Classical GA-GBM (Binary GA Feature Selection)",
+        "r2_score": 0.9761,
+        "mae_mt_day": 6.275,
+        "rmse_mt_day": 12.038,
+        "mape_pct": 6.96,
+        "features_used_count": 7,
+        "features_used_names": [
+          "speed_knots",
+          "dwt",
+          "cargo_load_ratio",
+          "wind_speed_knots",
+          "wave_height_meters",
+          "current_knots",
+          "sea_water_temp_c"
+        ],
+        "training_time_seconds": 0.48,
+        "inference_latency_per_sample_ms": 0.003
+      },
+      {
+        "model_name": "Quantum-Inspired QIEA-GBM (Proposed)",
+        "r2_score": 0.9752,
+        "mae_mt_day": 6.506,
+        "rmse_mt_day": 12.271,
+        "mape_pct": 7.2,
+        "features_used_count": 5,
+        "features_used_names": [
+          "speed_knots",
+          "dwt",
+          "cargo_load_ratio",
+          "wind_speed_knots",
+          "current_knots"
+        ],
+        "training_time_seconds": 0.45,
+        "inference_latency_per_sample_ms": 0.003
+      }
+    ],
+    "provenance": "[SYNTHETIC-SIMULATED: Hydrodynamic Holtrop-Mennen Dataset]"
+  },
+  "optimization_benchmark": {
+    "benchmark_id": "bench_1790982153",
+    "budget_evaluations_per_algorithm": 1050,
+    "algorithms_compared": [
+      {
+        "algorithm": "MO-QIEA (Proposed)",
+        "total_evaluations": 1050,
+        "execution_time_seconds": 0.55,
+        "pareto_front_size": 4,
+        "hypervolume": 0.184,
+        "spacing_spread": 0.0243,
+        "min_fuel_mt": 10643.5,
+        "min_cost_usd": 16972275.6,
+        "min_lifecycle_ghg_tco2e": 37034.4,
+        "feasibility_rate_pct": 100.0,
+        "convergence_curve": [
+          {
+            "generation": 1,
+            "best_fuel_mt": 13062.2,
+            "best_cost_usd": 16766422.3,
+            "best_ghg_tco2e": 40623.9,
+            "hypervolume": 0.1572,
+            "population_diversity": 0.0012
+          },
+          {
+            "generation": 2,
+            "best_fuel_mt": 10430.4,
+            "best_cost_usd": 13139681.6,
+            "best_ghg_tco2e": 28827.9,
+            "hypervolume": 0.2761,
+            "population_diversity": 0.002
+          },
+          {
+            "generation": 3,
+            "best_fuel_mt": 12752.8,
+            "best_cost_usd": 17286504.6,
+            "best_ghg_tco2e": 29052.2,
+            "hypervolume": 0.1511,
+            "population_diversity": 0.0028
+          },
+          {
+            "generation": 4,
+            "best_fuel_mt": 11028.3,
+            "best_cost_usd": 15910823.2,
+            "best_ghg_tco2e": 36533.8,
+            "hypervolume": 0.2032,
+            "population_diversity": 0.003
+          },
+          {
+            "generation": 5,
+            "best_fuel_mt": 9656.7,
+            "best_cost_usd": 13346848.5,
+            "best_ghg_tco2e": 31344.1,
+            "hypervolume": 0.2861,
+            "population_diversity": 0.0035
+          },
+          {
+            "generation": 6,
+            "best_fuel_mt": 9963.2,
+            "best_cost_usd": 13502253.3,
+            "best_ghg_tco2e": 31565.0,
+            "hypervolume": 0.2766,
+            "population_diversity": 0.0037
+          },
+          {
+            "generation": 7,
+            "best_fuel_mt": 11008.7,
+            "best_cost_usd": 16667367.2,
+            "best_ghg_tco2e": 37346.6,
+            "hypervolume": 0.1865,
+            "population_diversity": 0.0037
+          },
+          {
+            "generation": 8,
+            "best_fuel_mt": 10657.5,
+            "best_cost_usd": 16066985.8,
+            "best_ghg_tco2e": 33451.7,
+            "hypervolume": 0.2046,
+            "population_diversity": 0.0037
+          },
+          {
+            "generation": 9,
+            "best_fuel_mt": 9431.1,
+            "best_cost_usd": 12581737.4,
+            "best_ghg_tco2e": 29101.3,
+            "hypervolume": 0.3093,
+            "population_diversity": 0.0041
+          },
+          {
+            "generation": 10,
+            "best_fuel_mt": 10643.5,
+            "best_cost_usd": 16208607.4,
+            "best_ghg_tco2e": 38682.6,
+            "hypervolume": 0.1979,
+            "population_diversity": 0.0035
+          },
+          {
+            "generation": 11,
+            "best_fuel_mt": 9730.4,
+            "best_cost_usd": 13930462.2,
+            "best_ghg_tco2e": 32191.5,
+            "hypervolume": 0.2704,
+            "population_diversity": 0.0037
+          },
+          {
+            "generation": 12,
+            "best_fuel_mt": 11158.6,
+            "best_cost_usd": 15660675.7,
+            "best_ghg_tco2e": 36160.4,
+            "hypervolume": 0.2068,
+            "population_diversity": 0.0045
+          },
+          {
+            "generation": 13,
+            "best_fuel_mt": 10189.2,
+            "best_cost_usd": 14260713.7,
+            "best_ghg_tco2e": 35199.4,
+            "hypervolume": 0.2545,
+            "population_diversity": 0.0045
+          },
+          {
+            "generation": 14,
+            "best_fuel_mt": 10039.9,
+            "best_cost_usd": 14316333.4,
+            "best_ghg_tco2e": 33793.5,
+            "hypervolume": 0.2547,
+            "population_diversity": 0.0042
+          },
+          {
+            "generation": 15,
+            "best_fuel_mt": 9768.5,
+            "best_cost_usd": 13817629.8,
+            "best_ghg_tco2e": 33234.3,
+            "hypervolume": 0.2725,
+            "population_diversity": 0.0038
+          },
+          {
+            "generation": 16,
+            "best_fuel_mt": 9233.2,
+            "best_cost_usd": 12913682.1,
+            "best_ghg_tco2e": 29316.2,
+            "hypervolume": 0.3049,
+            "population_diversity": 0.0047
+          },
+          {
+            "generation": 17,
+            "best_fuel_mt": 10706.8,
+            "best_cost_usd": 14103831.0,
+            "best_ghg_tco2e": 32111.8,
+            "hypervolume": 0.2492,
+            "population_diversity": 0.0049
+          },
+          {
+            "generation": 18,
+            "best_fuel_mt": 9869.8,
+            "best_cost_usd": 13601337.8,
+            "best_ghg_tco2e": 32506.3,
+            "hypervolume": 0.2737,
+            "population_diversity": 0.005
+          },
+          {
+            "generation": 19,
+            "best_fuel_mt": 10963.4,
+            "best_cost_usd": 14932918.5,
+            "best_ghg_tco2e": 34474.5,
+            "hypervolume": 0.2229,
+            "population_diversity": 0.0036
+          },
+          {
+            "generation": 20,
+            "best_fuel_mt": 10242.7,
+            "best_cost_usd": 13661192.3,
+            "best_ghg_tco2e": 34088.7,
+            "hypervolume": 0.2677,
+            "population_diversity": 0.0041
+          },
+          {
+            "generation": 21,
+            "best_fuel_mt": 11043.4,
+            "best_cost_usd": 14025285.4,
+            "best_ghg_tco2e": 33443.6,
+            "hypervolume": 0.2425,
+            "population_diversity": 0.0045
+          },
+          {
+            "generation": 22,
+            "best_fuel_mt": 8283.9,
+            "best_cost_usd": 12232957.5,
+            "best_ghg_tco2e": 28105.5,
+            "hypervolume": 0.336,
+            "population_diversity": 0.0048
+          },
+          {
+            "generation": 23,
+            "best_fuel_mt": 10788.5,
+            "best_cost_usd": 12985136.4,
+            "best_ghg_tco2e": 35162.9,
+            "hypervolume": 0.2732,
+            "population_diversity": 0.0055
+          },
+          {
+            "generation": 24,
+            "best_fuel_mt": 9585.5,
+            "best_cost_usd": 14368186.6,
+            "best_ghg_tco2e": 30676.8,
+            "hypervolume": 0.2622,
+            "population_diversity": 0.0041
+          },
+          {
+            "generation": 25,
+            "best_fuel_mt": 9678.0,
+            "best_cost_usd": 14774833.2,
+            "best_ghg_tco2e": 31788.5,
+            "hypervolume": 0.2504,
+            "population_diversity": 0.004
+          },
+          {
+            "generation": 26,
+            "best_fuel_mt": 9466.4,
+            "best_cost_usd": 15063442.6,
+            "best_ghg_tco2e": 33476.1,
+            "hypervolume": 0.2428,
+            "population_diversity": 0.0043
+          },
+          {
+            "generation": 27,
+            "best_fuel_mt": 10865.6,
+            "best_cost_usd": 14458006.5,
+            "best_ghg_tco2e": 33559.1,
+            "hypervolume": 0.2384,
+            "population_diversity": 0.0033
+          },
+          {
+            "generation": 28,
+            "best_fuel_mt": 10997.8,
+            "best_cost_usd": 13844139.7,
+            "best_ghg_tco2e": 31834.4,
+            "hypervolume": 0.2495,
+            "population_diversity": 0.0038
+          },
+          {
+            "generation": 29,
+            "best_fuel_mt": 9702.4,
+            "best_cost_usd": 13519587.6,
+            "best_ghg_tco2e": 32940.1,
+            "hypervolume": 0.281,
+            "population_diversity": 0.004
+          },
+          {
+            "generation": 30,
+            "best_fuel_mt": 11339.5,
+            "best_cost_usd": 16307013.5,
+            "best_ghg_tco2e": 36008.9,
+            "hypervolume": 0.19,
+            "population_diversity": 0.0041
+          }
+        ]
+      },
+      {
+        "algorithm": "NSGA-II (Baseline)",
+        "total_evaluations": 1050,
+        "execution_time_seconds": 0.86,
+        "pareto_front_size": 2,
+        "hypervolume": 0.1215,
+        "spacing_spread": 0.0,
+        "min_fuel_mt": 12399.3,
+        "min_cost_usd": 18969476.3,
+        "min_lifecycle_ghg_tco2e": 45920.7,
+        "feasibility_rate_pct": 100.0,
+        "convergence_curve": [
+          {
+            "generation": 1,
+            "best_fuel_mt": 10899.0,
+            "best_cost_usd": 12507655.0,
+            "best_ghg_tco2e": 34892.4,
+            "hypervolume": 0.2814,
+            "population_diversity": 0.5
+          },
+          {
+            "generation": 2,
+            "best_fuel_mt": 9811.4,
+            "best_cost_usd": 12507655.0,
+            "best_ghg_tco2e": 33631.8,
+            "hypervolume": 0.3027,
+            "population_diversity": 0.5
+          },
+          {
+            "generation": 3,
+            "best_fuel_mt": 9811.4,
+            "best_cost_usd": 12507655.0,
+            "best_ghg_tco2e": 33631.8,
+            "hypervolume": 0.3028,
+            "population_diversity": 0.5
+          },
+          {
+            "generation": 4,
+            "best_fuel_mt": 9811.4,
+            "best_cost_usd": 12462021.5,
+            "best_ghg_tco2e": 33125.7,
+            "hypervolume": 0.3047,
+            "population_diversity": 0.5
+          },
+          {
+            "generation": 5,
+            "best_fuel_mt": 9811.4,
+            "best_cost_usd": 11138655.1,
+            "best_ghg_tco2e": 30877.0,
+            "hypervolume": 0.3365,
+            "population_diversity": 0.5
+          },
+          {
+            "generation": 6,
+            "best_fuel_mt": 9649.7,
+            "best_cost_usd": 11138655.1,
+            "best_ghg_tco2e": 30666.2,
+            "hypervolume": 0.3403,
+            "population_diversity": 0.5
+          },
+          {
+            "generation": 7,
+            "best_fuel_mt": 8722.7,
+            "best_cost_usd": 10491717.6,
+            "best_ghg_tco2e": 28292.5,
+            "hypervolume": 0.3773,
+            "population_diversity": 0.5
+          },
+          {
+            "generation": 8,
+            "best_fuel_mt": 8081.8,
+            "best_cost_usd": 10234808.2,
+            "best_ghg_tco2e": 26463.5,
+            "hypervolume": 0.3997,
+            "population_diversity": 0.5
+          },
+          {
+            "generation": 9,
+            "best_fuel_mt": 7941.4,
+            "best_cost_usd": 10128805.7,
+            "best_ghg_tco2e": 25841.8,
+            "hypervolume": 0.4059,
+            "population_diversity": 0.5
+          },
+          {
+            "generation": 10,
+            "best_fuel_mt": 7941.4,
+            "best_cost_usd": 10128805.7,
+            "best_ghg_tco2e": 25841.8,
+            "hypervolume": 0.4059,
+            "population_diversity": 0.5
+          },
+          {
+            "generation": 11,
+            "best_fuel_mt": 7763.5,
+            "best_cost_usd": 9811937.0,
+            "best_ghg_tco2e": 25331.9,
+            "hypervolume": 0.4187,
+            "population_diversity": 0.5
+          },
+          {
+            "generation": 12,
+            "best_fuel_mt": 7763.5,
+            "best_cost_usd": 9536294.2,
+            "best_ghg_tco2e": 25331.9,
+            "hypervolume": 0.4259,
+            "population_diversity": 0.5
+          },
+          {
+            "generation": 13,
+            "best_fuel_mt": 7763.5,
+            "best_cost_usd": 8959952.5,
+            "best_ghg_tco2e": 24411.9,
+            "hypervolume": 0.4417,
+            "population_diversity": 0.5
+          },
+          {
+            "generation": 14,
+            "best_fuel_mt": 7511.6,
+            "best_cost_usd": 8739584.9,
+            "best_ghg_tco2e": 24171.6,
+            "hypervolume": 0.4543,
+            "population_diversity": 0.5
+          },
+          {
+            "generation": 15,
+            "best_fuel_mt": 7140.2,
+            "best_cost_usd": 8729393.8,
+            "best_ghg_tco2e": 22808.2,
+            "hypervolume": 0.4649,
+            "population_diversity": 0.5
+          },
+          {
+            "generation": 16,
+            "best_fuel_mt": 7140.2,
+            "best_cost_usd": 8729393.8,
+            "best_ghg_tco2e": 22808.2,
+            "hypervolume": 0.4649,
+            "population_diversity": 0.5
+          },
+          {
+            "generation": 17,
+            "best_fuel_mt": 7140.2,
+            "best_cost_usd": 8729393.8,
+            "best_ghg_tco2e": 22808.2,
+            "hypervolume": 0.4649,
+            "population_diversity": 0.5
+          },
+          {
+            "generation": 18,
+            "best_fuel_mt": 7140.2,
+            "best_cost_usd": 8729393.8,
+            "best_ghg_tco2e": 22808.2,
+            "hypervolume": 0.4649,
+            "population_diversity": 0.5
+          },
+          {
+            "generation": 19,
+            "best_fuel_mt": 7107.9,
+            "best_cost_usd": 8697244.5,
+            "best_ghg_tco2e": 22690.6,
+            "hypervolume": 0.4667,
+            "population_diversity": 0.5
+          },
+          {
+            "generation": 20,
+            "best_fuel_mt": 7107.9,
+            "best_cost_usd": 8697244.5,
+            "best_ghg_tco2e": 22690.6,
+            "hypervolume": 0.4667,
+            "population_diversity": 0.5
+          },
+          {
+            "generation": 21,
+            "best_fuel_mt": 7107.9,
+            "best_cost_usd": 8625901.6,
+            "best_ghg_tco2e": 22690.6,
+            "hypervolume": 0.4686,
+            "population_diversity": 0.5
+          },
+          {
+            "generation": 22,
+            "best_fuel_mt": 7091.8,
+            "best_cost_usd": 8625901.6,
+            "best_ghg_tco2e": 22690.6,
+            "hypervolume": 0.4691,
+            "population_diversity": 0.5
+          },
+          {
+            "generation": 23,
+            "best_fuel_mt": 7091.8,
+            "best_cost_usd": 8625901.6,
+            "best_ghg_tco2e": 22690.6,
+            "hypervolume": 0.4691,
+            "population_diversity": 0.5
+          },
+          {
+            "generation": 24,
+            "best_fuel_mt": 7058.1,
+            "best_cost_usd": 8580631.8,
+            "best_ghg_tco2e": 22533.7,
+            "hypervolume": 0.4714,
+            "population_diversity": 0.5
+          },
+          {
+            "generation": 25,
+            "best_fuel_mt": 7058.1,
+            "best_cost_usd": 8580631.8,
+            "best_ghg_tco2e": 22533.7,
+            "hypervolume": 0.4714,
+            "population_diversity": 0.5
+          },
+          {
+            "generation": 26,
+            "best_fuel_mt": 7058.1,
+            "best_cost_usd": 8580631.8,
+            "best_ghg_tco2e": 22533.7,
+            "hypervolume": 0.4714,
+            "population_diversity": 0.5
+          },
+          {
+            "generation": 27,
+            "best_fuel_mt": 7058.1,
+            "best_cost_usd": 8580631.8,
+            "best_ghg_tco2e": 22533.7,
+            "hypervolume": 0.4714,
+            "population_diversity": 0.5
+          },
+          {
+            "generation": 28,
+            "best_fuel_mt": 7058.1,
+            "best_cost_usd": 8580631.8,
+            "best_ghg_tco2e": 22533.7,
+            "hypervolume": 0.4714,
+            "population_diversity": 0.5
+          },
+          {
+            "generation": 29,
+            "best_fuel_mt": 7058.1,
+            "best_cost_usd": 8580631.8,
+            "best_ghg_tco2e": 22533.7,
+            "hypervolume": 0.4714,
+            "population_diversity": 0.5
+          },
+          {
+            "generation": 30,
+            "best_fuel_mt": 7058.1,
+            "best_cost_usd": 8580631.8,
+            "best_ghg_tco2e": 22533.7,
+            "hypervolume": 0.4714,
+            "population_diversity": 0.5
+          }
+        ]
+      },
+      {
+        "algorithm": "MO-PSO (Baseline)",
+        "total_evaluations": 1050,
+        "execution_time_seconds": 0.31,
+        "pareto_front_size": 2,
+        "hypervolume": 0.2788,
+        "spacing_spread": 0.0,
+        "min_fuel_mt": 9166.8,
+        "min_cost_usd": 13993409.7,
+        "min_lifecycle_ghg_tco2e": 30106.3,
+        "feasibility_rate_pct": 100.0,
+        "convergence_curve": [
+          {
+            "generation": 1,
+            "best_fuel_mt": 9009.7,
+            "best_cost_usd": 12504867.5,
+            "best_ghg_tco2e": 30429.3,
+            "hypervolume": 0.3197,
+            "population_diversity": 0.45
+          },
+          {
+            "generation": 2,
+            "best_fuel_mt": 12292.8,
+            "best_cost_usd": 17568939.4,
+            "best_ghg_tco2e": 38781.4,
+            "hypervolume": 0.1504,
+            "population_diversity": 0.45
+          },
+          {
+            "generation": 3,
+            "best_fuel_mt": 12270.3,
+            "best_cost_usd": 16740863.5,
+            "best_ghg_tco2e": 41196.9,
+            "hypervolume": 0.1682,
+            "population_diversity": 0.45
+          },
+          {
+            "generation": 4,
+            "best_fuel_mt": 12014.2,
+            "best_cost_usd": 15602636.2,
+            "best_ghg_tco2e": 27620.3,
+            "hypervolume": 0.1953,
+            "population_diversity": 0.45
+          },
+          {
+            "generation": 5,
+            "best_fuel_mt": 11045.9,
+            "best_cost_usd": 15150416.7,
+            "best_ghg_tco2e": 35122.7,
+            "hypervolume": 0.2199,
+            "population_diversity": 0.45
+          },
+          {
+            "generation": 6,
+            "best_fuel_mt": 11149.4,
+            "best_cost_usd": 15354786.4,
+            "best_ghg_tco2e": 37610.2,
+            "hypervolume": 0.2137,
+            "population_diversity": 0.45
+          },
+          {
+            "generation": 7,
+            "best_fuel_mt": 9905.0,
+            "best_cost_usd": 15502364.7,
+            "best_ghg_tco2e": 33270.1,
+            "hypervolume": 0.2294,
+            "population_diversity": 0.45
+          },
+          {
+            "generation": 8,
+            "best_fuel_mt": 11200.0,
+            "best_cost_usd": 16438550.8,
+            "best_ghg_tco2e": 38309.7,
+            "hypervolume": 0.189,
+            "population_diversity": 0.45
+          },
+          {
+            "generation": 9,
+            "best_fuel_mt": 11501.8,
+            "best_cost_usd": 16097723.7,
+            "best_ghg_tco2e": 38288.1,
+            "hypervolume": 0.1912,
+            "population_diversity": 0.45
+          },
+          {
+            "generation": 10,
+            "best_fuel_mt": 13052.0,
+            "best_cost_usd": 17447475.5,
+            "best_ghg_tco2e": 36545.8,
+            "hypervolume": 0.1437,
+            "population_diversity": 0.45
+          },
+          {
+            "generation": 11,
+            "best_fuel_mt": 11603.9,
+            "best_cost_usd": 16837793.2,
+            "best_ghg_tco2e": 42906.4,
+            "hypervolume": 0.1749,
+            "population_diversity": 0.45
+          },
+          {
+            "generation": 12,
+            "best_fuel_mt": 10413.9,
+            "best_cost_usd": 16020655.3,
+            "best_ghg_tco2e": 38991.3,
+            "hypervolume": 0.2096,
+            "population_diversity": 0.45
+          },
+          {
+            "generation": 13,
+            "best_fuel_mt": 11649.1,
+            "best_cost_usd": 17096741.0,
+            "best_ghg_tco2e": 37292.0,
+            "hypervolume": 0.1688,
+            "population_diversity": 0.45
+          },
+          {
+            "generation": 14,
+            "best_fuel_mt": 10993.1,
+            "best_cost_usd": 16027910.6,
+            "best_ghg_tco2e": 38382.7,
+            "hypervolume": 0.2011,
+            "population_diversity": 0.45
+          },
+          {
+            "generation": 15,
+            "best_fuel_mt": 10567.3,
+            "best_cost_usd": 16040388.9,
+            "best_ghg_tco2e": 39579.7,
+            "hypervolume": 0.2069,
+            "population_diversity": 0.45
+          },
+          {
+            "generation": 16,
+            "best_fuel_mt": 10754.4,
+            "best_cost_usd": 16078468.5,
+            "best_ghg_tco2e": 35747.8,
+            "hypervolume": 0.2033,
+            "population_diversity": 0.45
+          },
+          {
+            "generation": 17,
+            "best_fuel_mt": 10740.5,
+            "best_cost_usd": 15775319.8,
+            "best_ghg_tco2e": 38787.0,
+            "hypervolume": 0.2103,
+            "population_diversity": 0.45
+          },
+          {
+            "generation": 18,
+            "best_fuel_mt": 9933.0,
+            "best_cost_usd": 15356987.0,
+            "best_ghg_tco2e": 36552.9,
+            "hypervolume": 0.2325,
+            "population_diversity": 0.45
+          },
+          {
+            "generation": 19,
+            "best_fuel_mt": 11278.7,
+            "best_cost_usd": 16785674.4,
+            "best_ghg_tco2e": 40473.4,
+            "hypervolume": 0.1803,
+            "population_diversity": 0.45
+          },
+          {
+            "generation": 20,
+            "best_fuel_mt": 10172.5,
+            "best_cost_usd": 15207044.9,
+            "best_ghg_tco2e": 36624.8,
+            "hypervolume": 0.2323,
+            "population_diversity": 0.45
+          },
+          {
+            "generation": 21,
+            "best_fuel_mt": 9534.3,
+            "best_cost_usd": 14697222.5,
+            "best_ghg_tco2e": 35204.0,
+            "hypervolume": 0.2549,
+            "population_diversity": 0.45
+          },
+          {
+            "generation": 22,
+            "best_fuel_mt": 10855.0,
+            "best_cost_usd": 16159274.7,
+            "best_ghg_tco2e": 30106.3,
+            "hypervolume": 0.2001,
+            "population_diversity": 0.45
+          },
+          {
+            "generation": 23,
+            "best_fuel_mt": 10180.4,
+            "best_cost_usd": 14906379.0,
+            "best_ghg_tco2e": 37338.4,
+            "hypervolume": 0.2393,
+            "population_diversity": 0.45
+          },
+          {
+            "generation": 24,
+            "best_fuel_mt": 9928.8,
+            "best_cost_usd": 14918110.7,
+            "best_ghg_tco2e": 34270.3,
+            "hypervolume": 0.2431,
+            "population_diversity": 0.45
+          },
+          {
+            "generation": 25,
+            "best_fuel_mt": 9414.5,
+            "best_cost_usd": 14479867.4,
+            "best_ghg_tco2e": 34735.3,
+            "hypervolume": 0.2623,
+            "population_diversity": 0.45
+          },
+          {
+            "generation": 26,
+            "best_fuel_mt": 9472.0,
+            "best_cost_usd": 14378454.7,
+            "best_ghg_tco2e": 34131.9,
+            "hypervolume": 0.2639,
+            "population_diversity": 0.45
+          },
+          {
+            "generation": 27,
+            "best_fuel_mt": 9166.8,
+            "best_cost_usd": 13993409.7,
+            "best_ghg_tco2e": 30914.2,
+            "hypervolume": 0.2788,
+            "population_diversity": 0.45
+          },
+          {
+            "generation": 28,
+            "best_fuel_mt": 9196.8,
+            "best_cost_usd": 14105425.6,
+            "best_ghg_tco2e": 33928.0,
+            "hypervolume": 0.2755,
+            "population_diversity": 0.45
+          },
+          {
+            "generation": 29,
+            "best_fuel_mt": 9846.6,
+            "best_cost_usd": 14466539.8,
+            "best_ghg_tco2e": 35656.8,
+            "hypervolume": 0.2554,
+            "population_diversity": 0.45
+          },
+          {
+            "generation": 30,
+            "best_fuel_mt": 9448.6,
+            "best_cost_usd": 14482571.1,
+            "best_ghg_tco2e": 34307.7,
+            "hypervolume": 0.2617,
+            "population_diversity": 0.45
+          }
+        ]
+      }
+    ],
+    "winner_hypervolume": "MO-PSO (Baseline)",
+    "winner_solution_quality": "MO-PSO (Baseline)",
+    "methodology_notes": "All algorithms executed under identical computational evaluation budgets, identical constraint repair mechanisms, and identical cost/emissions accounting. MO-QIEA leverages multi-state Q-bit superposition and quantum rotation gates to explore the non-linear combinatorial vessel/fuel mix space without early collapse.",
+    "data_provenance": "[SYNTHETIC-SIMULATED: Strict Budget Parity Benchmark]"
+  }
+}
