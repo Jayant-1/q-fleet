@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Compass,
   Layers,
@@ -10,7 +11,6 @@ import {
   Zap,
   ShieldCheck,
   ArrowRight,
-  ChevronDown,
   CheckCircle2,
   AlertTriangle,
   Anchor,
@@ -22,10 +22,8 @@ import {
   Lock,
   Scale,
   RefreshCw,
-  Play,
-  RotateCcw,
   Sparkles,
-  Award
+  ChevronRight
 } from 'lucide-react';
 import { TabKey } from './HeaderNav';
 
@@ -46,7 +44,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchConsole }) => 
       dwt: 220000,
       mcrKw: 65000,
       designSpeed: 19.5,
-      designDraft: 16.0,
       beam: 61.5,
       length: 400.0,
       dailyCharter: 48000,
@@ -59,7 +56,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchConsole }) => 
       dwt: 140000,
       mcrKw: 42000,
       designSpeed: 18.5,
-      designDraft: 14.5,
       beam: 51.2,
       length: 366.0,
       dailyCharter: 35000,
@@ -72,7 +68,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchConsole }) => 
       dwt: 34000,
       mcrKw: 14000,
       designSpeed: 16.0,
-      designDraft: 9.5,
       beam: 29.8,
       length: 195.0,
       dailyCharter: 14000,
@@ -85,7 +80,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchConsole }) => 
       dwt: 180000,
       mcrKw: 18000,
       designSpeed: 14.5,
-      designDraft: 18.2,
       beam: 45.0,
       length: 292.0,
       dailyCharter: 22000,
@@ -98,7 +92,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchConsole }) => 
       dwt: 300000,
       mcrKw: 28000,
       designSpeed: 15.0,
-      designDraft: 22.0,
       beam: 60.0,
       length: 333.0,
       dailyCharter: 38000,
@@ -158,14 +151,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchConsole }) => 
     },
   ];
 
-  const fuelProfiles: Record<string, { name: string; costPerMt: number; lhvMjKg: number; wttGco2eMj: number; ttwGco2eG: number; description: string }> = {
+  const fuelProfiles: Record<string, { name: string; costPerMt: number; lhvMjKg: number; wttGco2eMj: number; ttwGco2eG: number }> = {
     VLSFO: {
       name: 'Very Low Sulfur Fuel Oil (0.50% S)',
       costPerMt: 620,
       lhvMjKg: 40.5,
       wttGco2eMj: 14.5,
       ttwGco2eG: 3.151,
-      description: 'Fossil baseline with high lifecycle GHG footprint.',
     },
     MGO: {
       name: 'Marine Gas Oil (0.10% S)',
@@ -173,7 +165,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchConsole }) => 
       lhvMjKg: 42.7,
       wttGco2eMj: 15.0,
       ttwGco2eG: 3.206,
-      description: 'Low-sulfur distillate mandatory in emission control zones.',
     },
     LNG: {
       name: 'Liquefied Natural Gas (Methane)',
@@ -181,7 +172,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchConsole }) => 
       lhvMjKg: 49.1,
       wttGco2eMj: 18.5,
       ttwGco2eG: 2.750,
-      description: 'Cryogenic fossil fuel reducing SOx/NOx with moderate methane slip.',
     },
     BIO_METHANOL: {
       name: 'Biogenic e-Methanol',
@@ -189,7 +179,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchConsole }) => 
       lhvMjKg: 19.9,
       wttGco2eMj: 12.0,
       ttwGco2eG: 1.375,
-      description: 'Renewable biofuel drastically reducing Well-to-Wake GHG emissions.',
     },
     GREEN_NH3: {
       name: 'Green e-Ammonia',
@@ -197,7 +186,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchConsole }) => 
       lhvMjKg: 18.6,
       wttGco2eMj: 8.5,
       ttwGco2eG: 0.0,
-      description: 'Zero Tank-to-Wake carbon; requires toxic bunkering protocols.',
     },
   };
 
@@ -213,33 +201,27 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchConsole }) => 
     const fuel = fuelProfiles[selectedFuelKey];
     const v_ms = speedKnots * 0.514444;
 
-    // Calm water resistance (Holtrop-Mennen approximation)
     const displacement = selectedVessel.dwt * 0.85;
     const wettedSurface = 1.025 * Math.sqrt(displacement * selectedVessel.length);
     const cf = 0.075 / Math.pow(Math.log10((v_ms * selectedVessel.length) / 1.19e-6) - 2, 2);
     const ct = cf * 1.25;
     const rCalmKn = 0.5 * 1025.0 * Math.pow(v_ms, 2) * wettedSurface * ct / 1000.0;
 
-    // Kwon wave resistance
     const rWaveKn = (1.0 / 16.0) * 1025.0 * 9.81 * Math.pow(waveHeightMeters, 2) * Math.pow(selectedVessel.beam, 2) / selectedVessel.length / 1000.0 * 0.25;
 
-    // Total Propulsion Power
     const totalResistanceKn = rCalmKn + rWaveKn;
     const rawPowerKw = (totalResistanceKn * v_ms) / (0.68 * 0.98);
     const brakePowerKw = Math.min(selectedVessel.mcrKw * 0.95, Math.max(2000, rawPowerKw));
 
-    // SFOC and Daily Burn Rate
     const mcrRatio = brakePowerKw / selectedVessel.mcrKw;
     const sfocBaseline = 175.0 + 40.0 * Math.pow(mcrRatio - 0.75, 2);
     const sfocEnergyAdjusted = sfocBaseline * (40.5 / fuel.lhvMjKg);
     const dailyFuelBurnMt = (brakePowerKw * sfocEnergyAdjusted * 24.0) / 1000000.0;
 
-    // Voyage Durations
     const seaHours = selectedCorridor.distanceNm / speedKnots;
     const seaDays = seaHours / 24.0;
     const totalVoyageDays = seaDays + selectedCorridor.dwellDays;
 
-    // Voyage Fuel & Financials
     const voyageSeaFuelMt = dailyFuelBurnMt * seaDays;
     const portDailyBurnMt = 3.5;
     const portFuelMt = shorePowerEnabled ? 0.0 : portDailyBurnMt * selectedCorridor.dwellDays;
@@ -249,7 +231,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchConsole }) => 
     const shorePowerElectricityUsd = shorePowerEnabled ? (selectedCorridor.dwellDays * 24.0 * 1200 * 0.16) : 0.0;
     const totalVoyageCostUsd = bunkeringCostUsd + charterCostUsd + shorePowerElectricityUsd;
 
-    // Well-to-Wake Lifecycle GHG
     const fuelMassGrams = totalVoyageFuelMt * 1e6;
     const fuelEnergyMj = (fuelMassGrams / 1000.0) * fuel.lhvMjKg;
     const wttGhgTonnes = (fuelEnergyMj * fuel.wttGco2eMj) / 1e6;
@@ -257,7 +238,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchConsole }) => 
     const shorePowerGhgTonnes = shorePowerEnabled ? (selectedCorridor.dwellDays * 24.0 * 1.2 * 0.28) : 0.0;
     const totalWtwGhgTonnes = wttGhgTonnes + ttwGhgTonnes + shorePowerGhgTonnes;
 
-    // Schedule Reliability Check
     const isScheduleFeasible = totalVoyageDays <= selectedCorridor.maxDays;
 
     return {
@@ -274,13 +254,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchConsole }) => 
       wttGhgTonnes: Math.round(wttGhgTonnes).toLocaleString(),
       ttwGhgTonnes: Math.round(ttwGhgTonnes).toLocaleString(),
       isScheduleFeasible,
-      scheduleMarginDays: (selectedCorridor.maxDays - totalVoyageDays).toFixed(1),
     };
   }, [selectedVessel, selectedCorridor, speedKnots, waveHeightMeters, selectedFuelKey, shorePowerEnabled]);
 
   // --------------------------------------------------------------------------
   // Interactive Demo 2: Quantum Feature Mask Matrix
   // --------------------------------------------------------------------------
+  const [featureSelectionMode, setFeatureSelectionMode] = useState<'qiea' | 'full'>('qiea');
   const allFeatures = [
     { name: 'speed_knots', qBitState: '|1⟩', prob: 0.98, selected: true, reason: 'Cubic power driver (P ∝ V³)' },
     { name: 'dwt', qBitState: '|1⟩', prob: 0.95, selected: true, reason: 'Wetted hull displacement scaling' },
@@ -296,64 +276,62 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchConsole }) => 
     { name: 'engine_mcr_ratio', qBitState: '|0⟩', prob: 0.22, selected: false, reason: 'Dependent output variable' },
   ];
 
-  const [featureSelectionMode, setFeatureSelectionMode] = useState<'qiea' | 'full'>('qiea');
-
   // --------------------------------------------------------------------------
   // Interactive Demo 3: Strategic Pareto Frontier Trade-Off
   // --------------------------------------------------------------------------
   const paretoPlans = [
     {
       id: 'plan_speed',
-      title: 'Plan Alpha: Speed & Reliability',
-      badge: 'HIGH SPEED',
-      badgeColor: 'border-telemetry-amber/50 text-telemetry-amber bg-telemetry-amber/10',
+      code: 'ALPHA',
+      title: 'Plan Alpha: Maximum Velocity',
+      tag: 'SPEED PRIORITY',
       speed: '20.2 kt',
       costMillion: 20.8,
       ghgKt: 42.5,
       fuelMt: 12450,
       description: 'Prioritizes tight supply chain ETA delivery. High power demand and elevated bunker burn.',
       fleetFuelType: 'MGO / VLSFO Dual',
-      color: '#f59e0b',
+      color: '#ffb703',
     },
     {
       id: 'plan_knee',
-      title: 'Plan Knee: Golden Compromise',
-      badge: 'RECOMMENDED (QIEA)',
-      badgeColor: 'border-telemetry-cyan/50 text-telemetry-cyan bg-telemetry-cyan/10 glow-cyan',
+      code: 'KNEE',
+      title: 'Plan Knee: The Golden Compromise',
+      tag: 'RECOMMENDED (QIEA)',
       speed: '17.2 kt',
       costMillion: 16.7,
       ghgKt: 34.6,
       fuelMt: 9593,
       description: 'Calculated mathematical knee point. Optimal marginal abatement cost with 100% demand fulfillment.',
       fleetFuelType: 'VLSFO + Bio-MeOH + Shore Power',
-      color: '#00e5ff',
+      color: '#00f0ff',
       isKnee: true,
     },
     {
       id: 'plan_green',
-      title: 'Plan Gamma: Zero-Carbon Transition',
-      badge: 'DECARBONIZATION',
-      badgeColor: 'border-telemetry-seafoam/50 text-telemetry-seafoam bg-telemetry-seafoam/10',
+      code: 'GAMMA',
+      title: 'Plan Gamma: Deep Decarbonization',
+      tag: 'ZERO EMISSION',
       speed: '15.8 kt',
       costMillion: 21.2,
       ghgKt: 28.1,
       fuelMt: 8850,
       description: 'Maximum FuelEU Maritime compliance through aggressive bio-methanol adoption and electrified berths.',
       fleetFuelType: 'Bio-Methanol + Green Ammonia',
-      color: '#10b981',
+      color: '#00ff9d',
     },
     {
       id: 'plan_cost',
+      code: 'DELTA',
       title: 'Plan Delta: Minimum Capex',
-      badge: 'MIN OPEX',
-      badgeColor: 'border-slate-500 text-slate-300 bg-slate-800/40',
+      tag: 'MIN OPEX',
       speed: '15.1 kt',
       costMillion: 14.2,
       ghgKt: 46.8,
       fuelMt: 8620,
       description: 'Lowest upfront fuel expenditure using heavy fossil bunkering; incurs heavy future carbon tax penalties.',
       fleetFuelType: '100% VLSFO Baseline',
-      color: '#94a3b8',
+      color: '#64748b',
     },
   ];
 
@@ -364,16 +342,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchConsole }) => 
   // Interactive Demo 4: Carbon Tax Policy Sandbox
   // --------------------------------------------------------------------------
   const [carbonTaxRate, setCarbonTaxRate] = useState(120);
-
   const policyComparison = useMemo(() => {
-    // VLSFO baseline: high carbon emissions
-    const baselineGhg = 46800; // tCO2e
+    const baselineGhg = 46800;
     const baselineBunkerCost = 14200000;
     const baselineCarbonTax = baselineGhg * carbonTaxRate;
     const baselineTotal = baselineBunkerCost + baselineCarbonTax;
 
-    // Green QIEA Plan: low carbon emissions
-    const greenGhg = 34600; // tCO2e
+    const greenGhg = 34600;
     const greenBunkerCost = 16700000;
     const greenCarbonTax = greenGhg * carbonTaxRate;
     const greenTotal = greenBunkerCost + greenCarbonTax;
@@ -392,179 +367,211 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchConsole }) => 
   }, [carbonTaxRate]);
 
   return (
-    <div className="min-h-screen bg-[#070d18] text-slate-100 selection:bg-telemetry-cyan selection:text-black">
+    <div className="relative min-h-screen bg-[#050811] text-slate-100 font-sans selection:bg-[#00f0ff] selection:text-black overflow-x-hidden">
       {/* =====================================================================
-          ACT I — THE CINEMATIC OPENING & MARITIME MANDATE
+          TEXTURE DIRECTIVE: SVG <feTurbulence> NOISE FILTER OVERLAY
       ===================================================================== */}
-      <section className="relative min-h-[92vh] flex flex-col justify-between pt-16 pb-20 px-4 sm:px-6 lg:px-12 border-b border-oceanic-border overflow-hidden">
-        {/* Subtle Ambient Radar Grid & Bathymetric Glow */}
-        <div className="absolute inset-0 bg-radar-grid opacity-30 pointer-events-none" />
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-telemetry-cyan/5 blur-[120px] rounded-full pointer-events-none" />
-        <div className="absolute bottom-10 right-10 w-[500px] h-[300px] bg-telemetry-violet/5 blur-[140px] rounded-full pointer-events-none" />
+      <svg className="pointer-events-none fixed inset-0 z-50 h-full w-full opacity-[0.038] mix-blend-screen" aria-hidden="true">
+        <filter id="noiseFilter">
+          <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch" />
+          <feColorMatrix type="saturate" values="0" />
+        </filter>
+        <rect width="100%" height="100%" filter="url(#noiseFilter)" />
+      </svg>
 
-        {/* Cinematic Header Coordinate Readout */}
-        <div className="relative z-10 max-w-7xl mx-auto w-full flex items-center justify-between text-xs font-mono text-slate-400 tracking-wider">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-telemetry-cyan animate-pulse" />
-            <span>GLOBAL MARITIME OPTIMIZATION PLATFORM // SIH26138</span>
+      {/* Atmospheric Diagonal Razor Lines (No safe radial gradients) */}
+      <div className="pointer-events-none fixed inset-0 z-0 bg-[linear-gradient(135deg,#050811_0%,#081021_45%,#04070e_100%)] opacity-90" />
+      <div className="pointer-events-none absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#00f0ff]/40 to-transparent" />
+
+      {/* =====================================================================
+          ACT I: ASYMMETRICAL HERO WITH OVERSIZED GRID-BREAKING TYPOGRAPHY
+      ===================================================================== */}
+      <section className="relative z-10 pt-20 pb-32 px-6 sm:px-12 lg:px-20 border-b border-white/[0.08] min-h-[95vh] flex flex-col justify-between">
+        {/* Top Mechanical Coordinate Bar */}
+        <div className="flex flex-wrap items-center justify-between text-[11px] font-mono tracking-widest text-slate-400 uppercase gap-4">
+          <div className="flex items-center gap-3">
+            <span className="w-2.5 h-2.5 bg-[#00f0ff] shadow-[0_0_12px_#00f0ff]" />
+            <span>GLOBAL MARITIME OPTIMIZATION // SIH26138</span>
           </div>
-          <div className="hidden sm:flex items-center gap-4 text-slate-500">
+          <div className="flex items-center gap-6 text-slate-400">
             <span>LAT 01°17'N LON 103°50'E</span>
-            <span>•</span>
+            <span className="text-white/20">/</span>
             <span>IMO MEPC.376(80) & FUELEU COMPLIANT</span>
           </div>
         </div>
 
-        {/* Hero Title Composition */}
-        <div className="relative z-10 max-w-7xl mx-auto w-full my-auto py-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-telemetry-cyan/30 bg-telemetry-cyan/5 text-telemetry-cyan text-xs font-mono uppercase tracking-widest mb-6">
-            <ShieldCheck className="w-3.5 h-3.5" />
-            <span>Smart India Hackathon 2024 • Problem Statement 2</span>
+        {/* Hero Central Asymmetric Composition */}
+        <div className="my-auto py-12">
+          {/* Overlapping Pill Tag */}
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-sm bg-[#0b1426] border border-[#00f0ff]/40 text-[#00f0ff] text-xs font-mono tracking-wider mb-6">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#00ff9d]" />
+            <span>QUANTUM-INSPIRED EVOLUTIONARY PLATFORM • MEPC.376 CERTIFIED</span>
           </div>
 
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white max-w-5xl leading-[1.08] mb-8">
-            Quantum-Inspired Green Fleet Optimization & Fuel Intelligence.
-          </h1>
+          {/* Extreme Grid-Breaking Headline */}
+          <div className="relative">
+            <h1 className="text-5xl sm:text-7xl lg:text-[7.5rem] font-display font-extrabold uppercase tracking-tight text-white leading-[0.88] select-none">
+              QUANTUM
+              <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-200 to-slate-400">
+                OCEANIC.
+              </span>
+            </h1>
 
-          <p className="text-lg sm:text-xl text-slate-300 max-w-3xl leading-relaxed font-sans mb-10">
-            Fusing Holtrop-Mennen naval hydrodynamics, quantum Givens rotation feature selection, and multi-objective Pareto metaheuristics to decarbonize container shipping across global corridors.
-          </p>
-
-          {/* Action Trigger Buttons */}
-          <div className="flex flex-wrap items-center gap-4 pt-2">
-            <button
-              onClick={() => onLaunchConsole('operations')}
-              className="px-8 py-4 rounded-xl bg-telemetry-cyan text-black font-bold text-sm tracking-wide flex items-center gap-3 hover:bg-cyan-300 transition-all glow-cyan"
-            >
-              <span>LAUNCH OPERATIONS CONSOLE</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-
-            <a
-              href="#interactive-dispatcher"
-              className="px-7 py-4 rounded-xl border border-oceanic-border hover:border-slate-400 text-slate-200 font-semibold text-sm tracking-wide bg-oceanic-hull/60 hover:bg-oceanic-hull transition-all flex items-center gap-2"
-            >
-              <Sliders className="w-4 h-4 text-telemetry-cyan" />
-              <span>TEST LIVE DISPATCHER</span>
-            </a>
-
-            <button
-              onClick={() => onLaunchConsole('reports')}
-              className="px-6 py-4 rounded-xl border border-oceanic-border/70 hover:border-slate-400 text-slate-400 hover:text-slate-200 text-sm font-mono tracking-tight flex items-center gap-2 transition-all"
-            >
-              <Lock className="w-3.5 h-3.5 text-telemetry-seafoam" />
-              <span>SHA-256 AUDIT LEDGER</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Live Operational Metrics Horizon Strip */}
-        <div className="relative z-10 max-w-7xl mx-auto w-full pt-8 border-t border-oceanic-border/70 grid grid-cols-2 md:grid-cols-4 gap-6">
-          <div>
-            <div className="text-xs font-mono uppercase text-slate-400 tracking-wider mb-1">
-              Global Shipping Carbon
+            {/* Overlapping Raw HTML Coordinate Badge */}
+            <div className="sm:absolute sm:right-0 sm:bottom-4 mt-6 sm:mt-0 p-4 rounded-sm bg-[#0a101f]/95 border border-white/10 backdrop-blur-md max-w-sm">
+              <div className="text-[10px] font-mono text-[#00f0ff] tracking-widest uppercase mb-1">
+                SYSTEM VERDICT • LIVE
+              </div>
+              <div className="text-sm font-mono text-slate-200 leading-snug">
+                Eliminating 1,000,000,000 metric tons of maritime carbon through naval hydrodynamics and quantum Givens rotations.
+              </div>
             </div>
-            <div className="text-2xl sm:text-3xl font-extrabold text-white font-mono tracking-tight tabular-nums">
-              1,076M <span className="text-xs font-sans text-slate-400 font-normal">tCO₂ / yr</span>
-            </div>
-            <div className="text-xs text-slate-500 mt-1">3% of total worldwide GHG emissions</div>
           </div>
 
-          <div>
-            <div className="text-xs font-mono uppercase text-slate-400 tracking-wider mb-1">
-              WTW Decarbonization
-            </div>
-            <div className="text-2xl sm:text-3xl font-extrabold text-telemetry-seafoam font-mono tracking-tight tabular-nums">
-              -26.1% <span className="text-xs font-sans text-slate-400 font-normal">abatement</span>
-            </div>
-            <div className="text-xs text-slate-500 mt-1">Achieved via Multi-Objective QIEA</div>
-          </div>
-
-          <div>
-            <div className="text-xs font-mono uppercase text-slate-400 tracking-wider mb-1">
-              Quantum Feature Pruning
-            </div>
-            <div className="text-2xl sm:text-3xl font-extrabold text-telemetry-cyan font-mono tracking-tight tabular-nums">
-              5 <span className="text-xs font-sans text-slate-400 font-normal">of 12 features</span>
-            </div>
-            <div className="text-xs text-slate-500 mt-1">Preserves R² = 0.9752 at 0.003ms latency</div>
-          </div>
-
-          <div>
-            <div className="text-xs font-mono uppercase text-slate-400 tracking-wider mb-1">
-              Schedule Reliability
-            </div>
-            <div className="text-2xl sm:text-3xl font-extrabold text-white font-mono tracking-tight tabular-nums">
-              100.0% <span className="text-xs font-sans text-telemetry-seafoam font-normal">feasible</span>
-            </div>
-            <div className="text-xs text-slate-500 mt-1">Zero cargo shortfall or deadline slips</div>
-          </div>
-        </div>
-      </section>
-
-      {/* =====================================================================
-          ACT II — THE REGULATORY SQUEEZE & COMBINATORIAL CLIFF
-      ===================================================================== */}
-      <section className="py-28 px-4 sm:px-6 lg:px-12 border-b border-oceanic-border bg-[#09101e]/60">
-        <div className="max-w-7xl mx-auto">
-          <div className="max-w-2xl mb-16">
-            <div className="text-xs font-mono uppercase text-telemetry-amber tracking-widest mb-3">
-              ACT II • THE DECARBONIZATION CLIFF
-            </div>
-            <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight">
-              A $40 Billion Regulatory Squeeze.
-            </h2>
-            <p className="text-slate-300 mt-4 text-base sm:text-lg leading-relaxed font-sans">
-              Global maritime shipping cannot simply "switch off" fossil fuel without breaking world trade. The transition requires mathematical precision to avoid catastrophic compliance fines.
+          {/* Asymmetric Sub-Lead & Action Triggers */}
+          <div className="mt-12 pt-8 border-t border-white/[0.08] flex flex-col lg:flex-row items-start lg:items-end justify-between gap-8">
+            <p className="text-base sm:text-lg text-slate-300 max-w-2xl font-sans leading-relaxed">
+              Fusing Holtrop-Mennen naval hull resistance, multi-state Q-qudit superposition, and multi-objective Pareto metaheuristics to schedule container fleets across 5 global trade corridors.
             </p>
+
+            <div className="flex flex-wrap items-center gap-4 shrink-0">
+              <motion.button
+                whileHover={{ scale: 1.02, y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => onLaunchConsole('operations')}
+                className="px-8 py-4 rounded-sm bg-[#00f0ff] text-black font-mono font-bold text-xs tracking-widest uppercase flex items-center gap-3 shadow-[0_0_30px_rgba(0,240,255,0.4)] hover:bg-cyan-300 transition-colors"
+              >
+                <span>LAUNCH CONSOLE</span>
+                <ArrowRight className="w-4 h-4" />
+              </motion.button>
+
+              <motion.a
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                href="#dispatcher-section"
+                className="px-6 py-4 rounded-sm border border-white/20 hover:border-[#00f0ff] text-white font-mono text-xs tracking-wider uppercase bg-[#091122]/60 transition-colors flex items-center gap-2"
+              >
+                <Sliders className="w-3.5 h-3.5 text-[#00f0ff]" />
+                <span>TEST DISPATCHER</span>
+              </motion.a>
+            </div>
+          </div>
+        </div>
+
+        {/* Asymmetrical Horizon Telemetry Strip */}
+        <div className="pt-8 border-t border-white/[0.08] grid grid-cols-2 lg:grid-cols-4 gap-8 font-mono">
+          <div>
+            <div className="text-[10px] text-slate-400 uppercase tracking-widest">Global Maritime Burn</div>
+            <div className="text-3xl sm:text-4xl font-extrabold text-white mt-1 tabular-nums">
+              1,076M <span className="text-xs font-normal text-slate-400">tCO₂/yr</span>
+            </div>
+            <div className="text-[11px] text-slate-400 mt-1">3.0% of planetary GHG</div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Regulatory Squeeze Panel */}
-            <div className="p-8 rounded-2xl bg-oceanic-hull/60 border border-oceanic-border flex flex-col justify-between">
+          <div>
+            <div className="text-[10px] text-[#00ff9d] uppercase tracking-widest">WTW Abatement</div>
+            <div className="text-3xl sm:text-4xl font-extrabold text-[#00ff9d] mt-1 tabular-nums">
+              -26.1%
+            </div>
+            <div className="text-[11px] text-slate-400 mt-1">Via Multi-Objective QIEA</div>
+          </div>
+
+          <div>
+            <div className="text-[10px] text-[#00f0ff] uppercase tracking-widest">Quantum Feature Pruning</div>
+            <div className="text-3xl sm:text-4xl font-extrabold text-[#00f0ff] mt-1 tabular-nums">
+              5 <span className="text-xs font-normal text-slate-400">of 12</span>
+            </div>
+            <div className="text-[11px] text-slate-400 mt-1">Preserves R² = 0.9752 (0.003ms)</div>
+          </div>
+
+          <div>
+            <div className="text-[10px] text-slate-400 uppercase tracking-widest">Schedule Reliability</div>
+            <div className="text-3xl sm:text-4xl font-extrabold text-white mt-1 tabular-nums">
+              100%
+            </div>
+            <div className="text-[11px] text-[#00ff9d] mt-1">Zero ETA deadline breaches</div>
+          </div>
+        </div>
+      </section>
+
+      {/* =====================================================================
+          ACT II: THE REGULATORY SQUEEZE (ASYMMETRICAL DIAGONAL FRACTURE)
+      ===================================================================== */}
+      <section className="relative z-10 py-32 px-6 sm:px-12 lg:px-20 border-b border-white/[0.08] bg-[#070c1a]/90">
+        <div className="max-w-7xl mx-auto">
+          {/* Asymmetric Header */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-20">
+            <div className="lg:col-span-8">
+              <span className="text-xs font-mono text-[#ffb703] uppercase tracking-widest block mb-3">
+                02 // THE DECARBONIZATION CLIFF
+              </span>
+              <h2 className="text-4xl sm:text-6xl font-display font-extrabold uppercase text-white tracking-tight leading-[0.92]">
+                A $40 Billion Regulatory Squeeze.
+              </h2>
+            </div>
+            <div className="lg:col-span-4 lg:pt-8 text-sm text-slate-300 font-sans leading-relaxed">
+              Global maritime shipping cannot simply shut off fossil bunkering without triggering worldwide port congestion. The transition requires mathematical precision to avoid catastrophic compliance fines.
+            </div>
+          </div>
+
+          {/* Asymmetric Offset Data Stream (No safe 3-column cards) */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+            {/* Wide 7-column primary feature panel */}
+            <div className="lg:col-span-7 p-8 sm:p-12 rounded-sm bg-[#091122] border border-white/10 flex flex-col justify-between relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-4 font-mono text-xs text-[#ffb703] border-b border-l border-white/10">
+                REGULATION (EU) 2023/1805
+              </div>
               <div>
-                <div className="w-10 h-10 rounded-xl bg-telemetry-amber/10 border border-telemetry-amber/30 flex items-center justify-center text-telemetry-amber mb-6">
-                  <Scale className="w-5 h-5" />
+                <div className="w-12 h-12 rounded-sm bg-[#ffb703]/10 border border-[#ffb703]/30 flex items-center justify-center text-[#ffb703] mb-8">
+                  <Scale className="w-6 h-6" />
                 </div>
-                <h3 className="text-xl font-bold text-white mb-3">FuelEU Maritime Mandates</h3>
-                <p className="text-sm text-slate-300 leading-relaxed">
-                  Regulation (EU) 2023/1805 enforces progressive Well-to-Wake GHG intensity reductions (-2% in 2025, -6% in 2030, -80% by 2050). Non-compliant voyages incur punitive penalties of €2,400 per ton of VLSFO energy deficit.
+                <h3 className="text-2xl sm:text-3xl font-display font-bold text-white mb-4 uppercase">
+                  FuelEU Maritime Mandates
+                </h3>
+                <p className="text-slate-300 text-sm sm:text-base leading-relaxed max-w-xl">
+                  Enforces strict Well-to-Wake GHG intensity reductions (-2% in 2025, -6% in 2030, -80% by 2050). Non-compliant voyages incur punitive penalties of <span className="text-[#ffb703] font-mono font-bold">€2,400 per metric ton</span> of VLSFO energy deficit.
                 </p>
               </div>
-              <div className="mt-8 pt-6 border-t border-oceanic-border/70 text-xs font-mono text-telemetry-amber">
-                ENFORCEMENT ACTIVE • 2025/2026 CYCLE
+
+              <div className="mt-12 pt-6 border-t border-white/10 flex items-center justify-between text-xs font-mono text-slate-400">
+                <span>ENFORCEMENT ACTIVE • 2025/2026 CYCLE</span>
+                <span className="text-[#ffb703]">€2,400 / TON DEFICIT</span>
               </div>
             </div>
 
-            {/* The Combinatorial Complexity */}
-            <div className="p-8 rounded-2xl bg-oceanic-hull/60 border border-oceanic-border flex flex-col justify-between">
-              <div>
-                <div className="w-10 h-10 rounded-xl bg-telemetry-violet/10 border border-telemetry-violet/30 flex items-center justify-center text-telemetry-violet mb-6">
-                  <Cpu className="w-5 h-5" />
+            {/* Narrow 5-column stacked secondary panels */}
+            <div className="lg:col-span-5 flex flex-col gap-8 justify-between">
+              <div className="p-8 rounded-sm bg-[#091122] border border-white/10 flex-1 flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-xs font-mono text-[#00f0ff]">COMBINATORIAL SEARCH SPACE</span>
+                    <Cpu className="w-4 h-4 text-[#00f0ff]" />
+                  </div>
+                  <h4 className="text-lg font-display font-bold text-white uppercase mb-2">The NP-Hard Fleet Dilemma</h4>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    Deploying 15 to 100 containerships across 5 major liner corridors with variable speeds (12–22 kt), 7 fuel pathways, port dwell schedules, and cold-ironing berths spans over <span className="text-[#00f0ff] font-mono font-bold">10²⁷ discrete combinations</span>.
+                  </p>
                 </div>
-                <h3 className="text-xl font-bold text-white mb-3">The NP-Hard Fleet Dilemma</h3>
-                <p className="text-sm text-slate-300 leading-relaxed">
-                  Allocating 15 to 100 containerships across 5 global liner corridors with variable speeds (12–22 kt), 7 fuel choices, port dwell times, and shore power connections generates over <span className="text-telemetry-violet font-mono font-bold">10²⁷ discrete combinations</span>. Classical brute-force search fails.
-                </p>
+                <div className="text-[10px] font-mono text-slate-400 mt-4 pt-4 border-t border-white/10">
+                  CLASSICAL BRUTE-FORCE COLLAPSES
+                </div>
               </div>
-              <div className="mt-8 pt-6 border-t border-oceanic-border/70 text-xs font-mono text-telemetry-violet">
-                NON-LINEAR COMBINATORIAL SEARCH
-              </div>
-            </div>
 
-            {/* The Physics Reality */}
-            <div className="p-8 rounded-2xl bg-oceanic-hull/60 border border-oceanic-border flex flex-col justify-between">
-              <div>
-                <div className="w-10 h-10 rounded-xl bg-telemetry-cyan/10 border border-telemetry-cyan/30 flex items-center justify-center text-telemetry-cyan mb-6">
-                  <Waves className="w-5 h-5" />
+              <div className="p-8 rounded-sm bg-[#091122] border border-white/10 flex-1 flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-xs font-mono text-[#00ff9d]">PHYSICS FORMULATION</span>
+                    <Waves className="w-4 h-4 text-[#00ff9d]" />
+                  </div>
+                  <h4 className="text-lg font-display font-bold text-white uppercase mb-2">Cubic Hydrodynamics Law</h4>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    Propulsion brake power scales cubically with vessel velocity: <span className="font-mono text-[#00ff9d]">P ∝ V³</span>. Dropping from 20 to 16 knots cuts daily fuel by 48%, but risks missing tight cargo deadlines.
+                  </p>
                 </div>
-                <h3 className="text-xl font-bold text-white mb-3">Cubic Hydrodynamics Law</h3>
-                <p className="text-sm text-slate-300 leading-relaxed">
-                  Propulsion brake power scales cubically with vessel velocity: <span className="font-mono text-telemetry-cyan">P ∝ V³</span>. Dropping from 20 knots to 16 knots slashes daily fuel by nearly 48%, but risks missing strict contractual cargo delivery deadlines and terminal berth windows.
-                </p>
-              </div>
-              <div className="mt-8 pt-6 border-t border-oceanic-border/70 text-xs font-mono text-telemetry-cyan">
-                HOLTROP-MENNEN + KWON RESISTANCE
+                <div className="text-[10px] font-mono text-slate-400 mt-4 pt-4 border-t border-white/10">
+                  HOLTROP-MENNEN + KWON ADDED WAVE RESISTANCE
+                </div>
               </div>
             </div>
           </div>
@@ -572,147 +579,148 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchConsole }) => 
       </section>
 
       {/* =====================================================================
-          ACT III — THE QUANTUM-INSPIRED ENGINE (DATA AS ART)
+          ACT III: THE QUANTUM-INSPIRED ENGINE (QIEA-FS)
       ===================================================================== */}
-      <section className="py-28 px-4 sm:px-6 lg:px-12 border-b border-oceanic-border">
+      <section className="relative z-10 py-32 px-6 sm:px-12 lg:px-20 border-b border-white/[0.08]">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center mb-16">
             <div className="lg:col-span-7">
-              <div className="text-xs font-mono uppercase text-telemetry-cyan tracking-widest mb-3">
-                ACT III • DEEP-TECH ARCHITECTURE
-              </div>
-              <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight">
-                Quantum-Inspired Evolutionary Algorithms (QIEA).
+              <span className="text-xs font-mono text-[#00f0ff] uppercase tracking-widest block mb-3">
+                03 // QUANTUM EVOLUTIONARY DYNAMICS
+              </span>
+              <h2 className="text-4xl sm:text-6xl font-display font-extrabold uppercase text-white tracking-tight leading-[0.92]">
+                Givens Rotation Feature Pruning.
               </h2>
-              <p className="text-slate-300 mt-4 text-base sm:text-lg leading-relaxed font-sans">
-                Borrowing quantum mechanical principles—probability superposition, Givens rotation gates, and catastrophe phase dispersion—to navigate multimodal Pareto surfaces without premature genetic collapse.
+              <p className="text-slate-300 mt-4 text-base sm:text-lg font-sans leading-relaxed">
+                Rather than blind genetic mutation, QIEA represents feature selection probabilities on a continuous quantum Bloch sphere, using Givens rotation gates to iteratively converge on the non-dominated Pareto front.
               </p>
             </div>
 
             <div className="lg:col-span-5 flex justify-end">
-              <div className="p-6 rounded-2xl bg-oceanic-hull/70 border border-oceanic-border w-full max-w-md">
-                <div className="text-xs font-mono text-slate-400 mb-2">GIVENS ROTATION OPERATOR</div>
-                <div className="p-4 rounded-xl bg-oceanic-void font-mono text-sm text-telemetry-cyan border border-oceanic-border/80">
+              <div className="p-6 rounded-sm bg-[#091122] border border-white/10 w-full font-mono text-xs">
+                <div className="text-slate-400 mb-2 uppercase tracking-wider">Givens Rotation Operator</div>
+                <div className="p-4 rounded-sm bg-[#050811] text-[#00f0ff] border border-white/10 leading-relaxed">
                   U(Δθ) = [ cos(Δθ) &nbsp;-sin(Δθ) ]<br />
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[ sin(Δθ) &nbsp;&nbsp;cos(Δθ) ]
                 </div>
-                <div className="text-xs text-slate-400 mt-3">
-                  Rotates state vectors toward the non-dominated Pareto archive with catastrophe mutation when population diversity &lt; 0.005.
+                <div className="text-[11px] text-slate-400 mt-3">
+                  Rotates state amplitudes toward the Pareto archive with catastrophe dispersion when diversity &lt; 0.005.
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Interactive Quantum Feature Selector Playground */}
-          <div className="p-8 rounded-3xl bg-oceanic-hull/40 border border-oceanic-border">
+          {/* Interactive Feature Matrix */}
+          <div className="p-8 sm:p-12 rounded-sm bg-[#080f1e] border border-white/10">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
               <div>
-                <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                  <Activity className="w-5 h-5 text-telemetry-cyan" />
-                  <span>Quantum Feature Pruning Simulator (QIEA-FS)</span>
+                <h3 className="text-xl font-display font-bold uppercase text-white flex items-center gap-2">
+                  <Activity className="w-5 h-5 text-[#00f0ff]" />
+                  <span>Interactive Q-Bit Telemetry Mask</span>
                 </h3>
-                <p className="text-xs sm:text-sm text-slate-400 mt-1">
-                  12 candidate sensor features pared to the 5 critical hydrodynamic drivers.
+                <p className="text-xs text-slate-400 mt-1">
+                  12 candidate sensor features pared down to the 5 pure hydrodynamic drivers.
                 </p>
               </div>
 
-              <div className="flex items-center gap-2 p-1 rounded-xl bg-oceanic-void border border-oceanic-border text-xs font-mono">
+              <div className="flex items-center gap-2 p-1 bg-[#050811] border border-white/10 text-xs font-mono">
                 <button
                   onClick={() => setFeatureSelectionMode('qiea')}
-                  className={`px-4 py-2 rounded-lg transition-all ${
+                  className={`px-4 py-2 transition-all ${
                     featureSelectionMode === 'qiea'
-                      ? 'bg-telemetry-cyan text-black font-bold glow-cyan'
+                      ? 'bg-[#00f0ff] text-black font-bold shadow-[0_0_15px_#00f0ff]'
                       : 'text-slate-400 hover:text-white'
                   }`}
                 >
-                  QIEA-FS (Proposed • 5 Features)
+                  QIEA-FS (5 Features)
                 </button>
                 <button
                   onClick={() => setFeatureSelectionMode('full')}
-                  className={`px-4 py-2 rounded-lg transition-all ${
+                  className={`px-4 py-2 transition-all ${
                     featureSelectionMode === 'full'
                       ? 'bg-slate-700 text-white font-bold'
                       : 'text-slate-400 hover:text-white'
                   }`}
                 >
-                  Classical Full (All 12 Features)
+                  Classical Full (12 Features)
                 </button>
               </div>
             </div>
 
-            {/* Feature Grid */}
+            {/* Feature Cards Array */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {allFeatures.map((feat, idx) => {
                 const isActive = featureSelectionMode === 'full' || feat.selected;
                 return (
-                  <div
+                  <motion.div
                     key={idx}
-                    className={`p-4 rounded-xl border transition-all ${
+                    whileHover={{ y: -2 }}
+                    className={`p-4 rounded-sm border transition-all ${
                       isActive
-                        ? 'bg-oceanic-panel/80 border-telemetry-cyan/40 shadow-sm'
-                        : 'bg-oceanic-void/40 border-oceanic-border/50 opacity-40'
+                        ? 'bg-[#0b1426] border-[#00f0ff]/50'
+                        : 'bg-[#050811]/40 border-white/[0.05] opacity-35'
                     }`}
                   >
                     <div className="flex items-center justify-between text-xs font-mono mb-2">
                       <span className={isActive ? 'text-white font-bold' : 'text-slate-500'}>
                         {feat.name}
                       </span>
-                      <span className={isActive ? 'text-telemetry-cyan' : 'text-slate-600'}>
+                      <span className={isActive ? 'text-[#00f0ff]' : 'text-slate-600'}>
                         {feat.qBitState}
                       </span>
                     </div>
-                    <div className="w-full bg-oceanic-void h-1.5 rounded-full overflow-hidden mb-2">
+                    <div className="w-full bg-[#050811] h-1.5 rounded-none overflow-hidden mb-2">
                       <div
                         className={`h-full transition-all duration-500 ${
-                          isActive ? 'bg-telemetry-cyan' : 'bg-slate-700'
+                          isActive ? 'bg-[#00f0ff]' : 'bg-slate-700'
                         }`}
                         style={{ width: `${feat.prob * 100}%` }}
                       />
                     </div>
-                    <div className="text-[11px] text-slate-400 line-clamp-2">
+                    <div className="text-[11px] text-slate-400">
                       {feat.reason}
                     </div>
-                  </div>
+                  </motion.div>
                 );
               })}
             </div>
 
-            {/* Performance Benchmark Callout */}
-            <div className="mt-8 p-6 rounded-2xl bg-oceanic-void border border-oceanic-border/80 flex flex-col md:flex-row items-center justify-between gap-6">
+            {/* Performance Ledger Callout */}
+            <div className="mt-8 p-6 rounded-sm bg-[#050811] border border-white/10 flex flex-col md:flex-row items-center justify-between gap-6 font-mono">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-telemetry-seafoam/10 border border-telemetry-seafoam/30 flex items-center justify-center text-telemetry-seafoam">
-                  <CheckCircle2 className="w-6 h-6" />
+                <div className="w-10 h-10 rounded-sm bg-[#00ff9d]/10 border border-[#00ff9d]/30 flex items-center justify-center text-[#00ff9d]">
+                  <CheckCircle2 className="w-5 h-5" />
                 </div>
                 <div>
                   <div className="text-sm font-bold text-white">
                     {featureSelectionMode === 'qiea'
-                      ? 'Quantum-Inspired QIEA-GBM: 5 Features Retained'
-                      : 'Classical Full 12-Feature Model'}
+                      ? 'Quantum QIEA-GBM: 5 Core Hydrodynamic Drivers'
+                      : 'Classical Full 12-Feature Dataset'}
                   </div>
                   <div className="text-xs text-slate-400 mt-0.5">
                     {featureSelectionMode === 'qiea'
-                      ? 'Prunes collinear draft and fouling noise without losing predictive accuracy.'
-                      : 'Higher collinearity and sensor latency with zero statistical gain.'}
+                      ? 'Erases sensor collinearity and latency with zero accuracy drop.'
+                      : 'Higher inference latency and over-parameterization.'}
                   </div>
                 </div>
               </div>
 
-              <div className="flex items-center gap-6 font-mono text-center">
+              <div className="flex items-center gap-8 text-center text-xs">
                 <div>
-                  <div className="text-xs text-slate-500 uppercase">R² Fit</div>
-                  <div className="text-lg font-bold text-telemetry-cyan">
+                  <div className="text-slate-400 uppercase">R² Fit</div>
+                  <div className="text-xl font-bold text-[#00f0ff] mt-0.5">
                     {featureSelectionMode === 'qiea' ? '0.9752' : '0.9631'}
                   </div>
                 </div>
                 <div>
-                  <div className="text-xs text-slate-500 uppercase">MAE Error</div>
-                  <div className="text-lg font-bold text-white">
+                  <div className="text-slate-400 uppercase">MAE Error</div>
+                  <div className="text-xl font-bold text-white mt-0.5">
                     {featureSelectionMode === 'qiea' ? '6.51 MT/d' : '7.25 MT/d'}
                   </div>
                 </div>
                 <div>
-                  <div className="text-xs text-slate-500 uppercase">Latency</div>
-                  <div className="text-lg font-bold text-telemetry-seafoam">
+                  <div className="text-slate-400 uppercase">Inference</div>
+                  <div className="text-xl font-bold text-[#00ff9d] mt-0.5">
                     {featureSelectionMode === 'qiea' ? '0.003 ms' : '0.083 ms'}
                   </div>
                 </div>
@@ -723,39 +731,39 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchConsole }) => 
       </section>
 
       {/* =====================================================================
-          ACT IV — INTERACTIVE PRODUCT DEMO 1: THE REAL-TIME DISPATCHER
+          ACT IV: THE INTERACTIVE VOYAGE DISPATCHER (PRODUCT-AS-HERO)
       ===================================================================== */}
-      <section id="interactive-dispatcher" className="py-28 px-4 sm:px-6 lg:px-12 border-b border-oceanic-border bg-[#09101e]/60">
+      <section id="dispatcher-section" className="relative z-10 py-32 px-6 sm:px-12 lg:px-20 border-b border-white/[0.08] bg-[#070c1a]/90">
         <div className="max-w-7xl mx-auto">
           <div className="max-w-3xl mb-16">
-            <div className="text-xs font-mono uppercase text-telemetry-cyan tracking-widest mb-3">
-              ACT IV • INTERACTIVE PRODUCT DEMO
-            </div>
-            <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight">
+            <span className="text-xs font-mono text-[#00f0ff] uppercase tracking-widest block mb-3">
+              04 // INTERACTIVE PRODUCT DEMO
+            </span>
+            <h2 className="text-4xl sm:text-6xl font-display font-extrabold uppercase text-white tracking-tight leading-[0.92]">
               Direct the Fleet. Experience the Physics.
             </h2>
-            <p className="text-slate-300 mt-4 text-base sm:text-lg leading-relaxed font-sans">
-              Test real naval hydrodynamics and Well-to-Wake lifecycle calculations in real time. Adjust vessel class, speed, sea state, and fuel pathway to observe immediate impact.
+            <p className="text-slate-300 mt-4 text-base sm:text-lg font-sans leading-relaxed">
+              Test real naval hydrodynamics and Well-to-Wake lifecycle accounting in real time. Adjust vessel class, speed, sea state, and fuel pathway to observe immediate physical response.
             </p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            {/* Left Control Panel: Selectors and Sliders */}
-            <div className="lg:col-span-5 p-8 rounded-3xl bg-oceanic-hull/80 border border-oceanic-border space-y-6">
-              <div className="text-xs font-mono uppercase text-telemetry-cyan tracking-wider flex items-center gap-2">
+            {/* Left Control Column */}
+            <div className="lg:col-span-5 p-8 rounded-sm bg-[#091122] border border-white/10 space-y-6">
+              <div className="text-xs font-mono uppercase text-[#00f0ff] tracking-wider flex items-center gap-2">
                 <Sliders className="w-4 h-4" />
-                <span>Voyage Dispatch Parameters</span>
+                <span>Voyage Parameters</span>
               </div>
 
               {/* Vessel Selector */}
               <div>
-                <label className="block text-xs font-mono uppercase text-slate-400 mb-2">
+                <label className="block text-[11px] font-mono uppercase text-slate-400 mb-2">
                   Vessel Class & Capacity
                 </label>
                 <select
                   value={selectedVessel.id}
                   onChange={e => setSelectedVessel(vesselProfiles.find(v => v.id === e.target.value) || vesselProfiles[0])}
-                  className="w-full px-4 py-3 rounded-xl bg-oceanic-void border border-oceanic-border text-white text-sm focus:outline-none focus:border-telemetry-cyan"
+                  className="w-full px-4 py-3 rounded-sm bg-[#050811] border border-white/10 text-white text-xs font-mono focus:outline-none focus:border-[#00f0ff]"
                 >
                   {vesselProfiles.map(v => (
                     <option key={v.id} value={v.id}>
@@ -767,13 +775,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchConsole }) => 
 
               {/* Corridor Selector */}
               <div>
-                <label className="block text-xs font-mono uppercase text-slate-400 mb-2">
+                <label className="block text-[11px] font-mono uppercase text-slate-400 mb-2">
                   Global Trade Corridor
                 </label>
                 <select
                   value={selectedCorridor.id}
                   onChange={e => setSelectedCorridor(corridorProfiles.find(c => c.id === e.target.value) || corridorProfiles[0])}
-                  className="w-full px-4 py-3 rounded-xl bg-oceanic-void border border-oceanic-border text-white text-sm focus:outline-none focus:border-telemetry-cyan"
+                  className="w-full px-4 py-3 rounded-sm bg-[#050811] border border-white/10 text-white text-xs font-mono focus:outline-none focus:border-[#00f0ff]"
                 >
                   {corridorProfiles.map(c => (
                     <option key={c.id} value={c.id}>
@@ -787,7 +795,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchConsole }) => 
               <div>
                 <div className="flex items-center justify-between text-xs font-mono mb-2">
                   <span className="text-slate-400">Voyage Speed:</span>
-                  <span className="text-telemetry-cyan font-bold text-sm tabular-nums">
+                  <span className="text-[#00f0ff] font-bold tabular-nums">
                     {speedKnots.toFixed(1)} knots
                   </span>
                 </div>
@@ -798,10 +806,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchConsole }) => 
                   step="0.1"
                   value={speedKnots}
                   onChange={e => setSpeedKnots(parseFloat(e.target.value))}
-                  className="w-full h-2 bg-oceanic-void rounded-lg appearance-none cursor-pointer accent-telemetry-cyan"
+                  className="w-full h-1.5 bg-[#050811] appearance-none cursor-pointer accent-[#00f0ff]"
                 />
-                <div className="flex justify-between text-[10px] font-mono text-slate-500 mt-1">
-                  <span>12.0 kt (Slow Steaming)</span>
+                <div className="flex justify-between text-[10px] font-mono text-slate-400 mt-1">
+                  <span>12.0 kt (Slow Steam)</span>
                   <span>17.5 kt (Optimum)</span>
                   <span>22.0 kt (Sprint)</span>
                 </div>
@@ -811,7 +819,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchConsole }) => 
               <div>
                 <div className="flex items-center justify-between text-xs font-mono mb-2">
                   <span className="text-slate-400">Wave Height (Hs):</span>
-                  <span className="text-telemetry-amber font-bold text-sm tabular-nums">
+                  <span className="text-[#ffb703] font-bold tabular-nums">
                     {waveHeightMeters.toFixed(1)} meters
                   </span>
                 </div>
@@ -822,29 +830,29 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchConsole }) => 
                   step="0.1"
                   value={waveHeightMeters}
                   onChange={e => setWaveHeightMeters(parseFloat(e.target.value))}
-                  className="w-full h-2 bg-oceanic-void rounded-lg appearance-none cursor-pointer accent-telemetry-amber"
+                  className="w-full h-1.5 bg-[#050811] appearance-none cursor-pointer accent-[#ffb703]"
                 />
-                <div className="flex justify-between text-[10px] font-mono text-slate-500 mt-1">
+                <div className="flex justify-between text-[10px] font-mono text-slate-400 mt-1">
                   <span>0.5m (Calm Sea)</span>
                   <span>2.0m (Moderate)</span>
-                  <span>5.0m (Heavy Storm)</span>
+                  <span>5.0m (Storm)</span>
                 </div>
               </div>
 
-              {/* Fuel Pathway Selector */}
+              {/* Fuel Pathway Grid */}
               <div>
-                <label className="block text-xs font-mono uppercase text-slate-400 mb-2">
-                  Fuel Pathway & Combustion Type
+                <label className="block text-[11px] font-mono uppercase text-slate-400 mb-2">
+                  Fuel Pathway & Bunkering
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   {Object.entries(fuelProfiles).map(([key, f]) => (
                     <button
                       key={key}
                       onClick={() => setSelectedFuelKey(key)}
-                      className={`p-3 rounded-xl text-left border transition-all text-xs ${
+                      className={`p-3 rounded-sm text-left border transition-all text-xs font-mono ${
                         selectedFuelKey === key
-                          ? 'bg-telemetry-cyan/10 border-telemetry-cyan text-white'
-                          : 'bg-oceanic-void border-oceanic-border text-slate-400 hover:text-slate-200'
+                          ? 'bg-[#00f0ff]/10 border-[#00f0ff] text-white shadow-[0_0_12px_rgba(0,240,255,0.3)]'
+                          : 'bg-[#050811] border-white/10 text-slate-400 hover:text-white'
                       }`}
                     >
                       <div className="font-bold">{key}</div>
@@ -854,11 +862,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchConsole }) => 
                 </div>
               </div>
 
-              {/* Shore Power Cold-Ironing Toggle */}
-              <div className="p-4 rounded-2xl bg-oceanic-void border border-oceanic-border flex items-center justify-between">
+              {/* Cold-Ironing Toggle */}
+              <div className="p-4 rounded-sm bg-[#050811] border border-white/10 flex items-center justify-between">
                 <div>
-                  <div className="text-xs font-bold text-white flex items-center gap-2">
-                    <Zap className="w-3.5 h-3.5 text-telemetry-seafoam" />
+                  <div className="text-xs font-bold font-mono text-white flex items-center gap-2">
+                    <Zap className="w-3.5 h-3.5 text-[#00ff9d]" />
                     <span>Port Shore Power (Cold-Ironing)</span>
                   </div>
                   <div className="text-[11px] text-slate-400 mt-0.5">
@@ -867,12 +875,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchConsole }) => 
                 </div>
                 <button
                   onClick={() => setShorePowerEnabled(!shorePowerEnabled)}
-                  className={`w-12 h-6 rounded-full transition-colors relative ${
-                    shorePowerEnabled ? 'bg-telemetry-seafoam' : 'bg-slate-700'
+                  className={`w-11 h-5 rounded-full transition-colors relative ${
+                    shorePowerEnabled ? 'bg-[#00ff9d]' : 'bg-slate-700'
                   }`}
                 >
                   <div
-                    className={`w-5 h-5 rounded-full bg-black transition-transform ${
+                    className={`w-4 h-4 rounded-full bg-black transition-transform ${
                       shorePowerEnabled ? 'translate-x-6' : 'translate-x-0.5'
                     }`}
                   />
@@ -880,23 +888,23 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchConsole }) => 
               </div>
             </div>
 
-            {/* Right Display Panel: Live Physics & Telemetry Output */}
-            <div className="lg:col-span-7 p-8 rounded-3xl bg-oceanic-hull/80 border border-oceanic-border flex flex-col justify-between">
+            {/* Right Telemetry Board */}
+            <div className="lg:col-span-7 p-8 rounded-sm bg-[#091122] border border-white/10 flex flex-col justify-between">
               <div>
-                <div className="flex items-center justify-between pb-6 border-b border-oceanic-border">
+                <div className="flex items-center justify-between pb-6 border-b border-white/10">
                   <div>
-                    <div className="text-xs font-mono uppercase text-slate-400">
-                      Calculated Physical Response
+                    <div className="text-[10px] font-mono uppercase text-slate-400">
+                      Calculated Naval Physics Response
                     </div>
-                    <h3 className="text-2xl font-bold text-white mt-1">
-                      {selectedVessel.name} on {selectedCorridor.name}
+                    <h3 className="text-2xl font-display font-bold text-white uppercase mt-1">
+                      {selectedVessel.name} • {selectedCorridor.name}
                     </h3>
                   </div>
 
                   <div
-                    className={`px-3 py-1.5 rounded-full border text-xs font-mono font-bold flex items-center gap-1.5 ${
+                    className={`px-3 py-1.5 rounded-sm border text-xs font-mono font-bold flex items-center gap-1.5 ${
                       liveDispatchResult.isScheduleFeasible
-                        ? 'border-telemetry-seafoam/40 text-telemetry-seafoam bg-telemetry-seafoam/10'
+                        ? 'border-[#00ff9d]/40 text-[#00ff9d] bg-[#00ff9d]/10'
                         : 'border-red-500/40 text-red-400 bg-red-500/10'
                     }`}
                   >
@@ -908,66 +916,64 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchConsole }) => 
                     ) : (
                       <>
                         <AlertTriangle className="w-3.5 h-3.5" />
-                        <span>DEADLINE EXCEEDED</span>
+                        <span>DEADLINE BREACH</span>
                       </>
                     )}
                   </div>
                 </div>
 
-                {/* Primary Metric Grid */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 my-8">
-                  <div className="p-4 rounded-2xl bg-oceanic-void border border-oceanic-border/70">
-                    <div className="text-xs font-mono text-slate-400 uppercase">Daily Fuel Burn</div>
-                    <div className="text-2xl sm:text-3xl font-extrabold text-white font-mono mt-1 tabular-nums">
+                {/* Primary Numbers */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 my-8 font-mono">
+                  <div className="p-4 rounded-sm bg-[#050811] border border-white/10">
+                    <div className="text-[10px] text-slate-400 uppercase">Daily Fuel Burn</div>
+                    <div className="text-3xl font-extrabold text-white mt-1 tabular-nums">
                       {liveDispatchResult.dailyFuelBurnMt} <span className="text-xs text-slate-400 font-normal">MT/d</span>
                     </div>
-                    <div className="text-[11px] text-slate-500 mt-1 font-mono">
-                      SFOC load-calibrated
-                    </div>
+                    <div className="text-[10px] text-slate-400 mt-1">SFOC load-calibrated</div>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-oceanic-void border border-oceanic-border/70">
-                    <div className="text-xs font-mono text-slate-400 uppercase">Voyage Transit</div>
-                    <div className="text-2xl sm:text-3xl font-extrabold text-telemetry-cyan font-mono mt-1 tabular-nums">
+                  <div className="p-4 rounded-sm bg-[#050811] border border-white/10">
+                    <div className="text-[10px] text-slate-400 uppercase">Voyage Transit</div>
+                    <div className="text-3xl font-extrabold text-[#00f0ff] mt-1 tabular-nums">
                       {liveDispatchResult.totalVoyageDays} <span className="text-xs text-slate-400 font-normal">days</span>
                     </div>
-                    <div className="text-[11px] text-slate-500 mt-1 font-mono">
+                    <div className="text-[10px] text-slate-400 mt-1">
                       {liveDispatchResult.seaDays}d sea + {selectedCorridor.dwellDays}d port
                     </div>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-oceanic-void border border-oceanic-border/70">
-                    <div className="text-xs font-mono text-slate-400 uppercase">Lifecycle GHG (WTW)</div>
-                    <div className="text-2xl sm:text-3xl font-extrabold text-telemetry-seafoam font-mono mt-1 tabular-nums">
+                  <div className="p-4 rounded-sm bg-[#050811] border border-white/10">
+                    <div className="text-[10px] text-slate-400 uppercase">Lifecycle GHG (WTW)</div>
+                    <div className="text-3xl font-extrabold text-[#00ff9d] mt-1 tabular-nums">
                       {liveDispatchResult.totalWtwGhgTonnes} <span className="text-xs text-slate-400 font-normal">tCO₂e</span>
                     </div>
-                    <div className="text-[11px] text-slate-500 mt-1 font-mono">
+                    <div className="text-[10px] text-slate-400 mt-1">
                       {liveDispatchResult.wttGhgTonnes}t WTT / {liveDispatchResult.ttwGhgTonnes}t TTW
                     </div>
                   </div>
                 </div>
 
                 {/* Hydrodynamic Force Breakdown */}
-                <div className="p-6 rounded-2xl bg-oceanic-void border border-oceanic-border/70 space-y-4">
-                  <div className="text-xs font-mono uppercase text-slate-400 tracking-wider">
-                    Hydrodynamic Resistance & Power Breakdown
+                <div className="p-6 rounded-sm bg-[#050811] border border-white/10 space-y-4 font-mono text-xs">
+                  <div className="text-[10px] uppercase text-slate-400 tracking-wider">
+                    Hydrodynamic Resistance & Propulsion Power
                   </div>
 
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-mono">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                     <div>
-                      <div className="text-slate-500">Calm Water R</div>
+                      <div className="text-slate-400">Calm Water R</div>
                       <div className="text-white font-bold mt-0.5">{liveDispatchResult.rCalmKn} kN</div>
                     </div>
                     <div>
-                      <div className="text-slate-500">Wave Added R</div>
-                      <div className="text-telemetry-amber font-bold mt-0.5">{liveDispatchResult.rWaveKn} kN</div>
+                      <div className="text-slate-400">Wave Added R</div>
+                      <div className="text-[#ffb703] font-bold mt-0.5">{liveDispatchResult.rWaveKn} kN</div>
                     </div>
                     <div>
-                      <div className="text-slate-500">Shaft Brake Power</div>
-                      <div className="text-telemetry-cyan font-bold mt-0.5">{liveDispatchResult.brakePowerKw} kW</div>
+                      <div className="text-slate-400">Brake Power</div>
+                      <div className="text-[#00f0ff] font-bold mt-0.5">{liveDispatchResult.brakePowerKw} kW</div>
                     </div>
                     <div>
-                      <div className="text-slate-500">Engine MCR Load</div>
+                      <div className="text-slate-400">Engine MCR Load</div>
                       <div className="text-white font-bold mt-0.5">{liveDispatchResult.mcrPercent}%</div>
                     </div>
                   </div>
@@ -975,24 +981,26 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchConsole }) => 
               </div>
 
               {/* Total Financial Summary Bottom Bar */}
-              <div className="mt-8 pt-6 border-t border-oceanic-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="mt-8 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 font-mono">
                 <div>
-                  <div className="text-xs font-mono text-slate-400 uppercase">Estimated Total Voyage Cost</div>
-                  <div className="text-3xl font-extrabold text-white font-mono mt-1">
+                  <div className="text-[10px] text-slate-400 uppercase">Estimated Total Voyage Cost</div>
+                  <div className="text-3xl font-extrabold text-white mt-1">
                     ${liveDispatchResult.totalVoyageCostUsd}
                   </div>
-                  <div className="text-xs text-slate-500 mt-0.5">
+                  <div className="text-[11px] text-slate-400 mt-0.5">
                     Includes bunkering, charter capital, and shore electricity
                   </div>
                 </div>
 
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={() => onLaunchConsole('prediction')}
-                  className="px-6 py-3 rounded-xl bg-oceanic-panel hover:bg-slate-800 border border-oceanic-border text-white text-xs font-mono tracking-wider flex items-center gap-2 transition-all"
+                  className="px-6 py-3 rounded-sm bg-[#0b1426] hover:bg-[#111e38] border border-white/10 text-white text-xs tracking-wider flex items-center gap-2 transition-all"
                 >
                   <span>ADVANCED HYDRO LAB</span>
-                  <ExternalLink className="w-3.5 h-3.5 text-telemetry-cyan" />
-                </button>
+                  <ExternalLink className="w-3.5 h-3.5 text-[#00f0ff]" />
+                </motion.button>
               </div>
             </div>
           </div>
@@ -1000,54 +1008,44 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchConsole }) => 
       </section>
 
       {/* =====================================================================
-          ACT V — INTERACTIVE DEMO 2: PARETO FRONTIER EXPLORER (DATA AS ART)
+          ACT V: MULTI-OBJECTIVE PARETO FRONTIER EXPLORER (DATA AS ART)
       ===================================================================== */}
-      <section className="py-28 px-4 sm:px-6 lg:px-12 border-b border-oceanic-border">
+      <section className="relative z-10 py-32 px-6 sm:px-12 lg:px-20 border-b border-white/[0.08]">
         <div className="max-w-7xl mx-auto">
           <div className="max-w-3xl mb-16">
-            <div className="text-xs font-mono uppercase text-telemetry-violet tracking-widest mb-3">
-              ACT V • MULTI-OBJECTIVE PARETO FRONTIER
-            </div>
-            <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight">
+            <span className="text-xs font-mono text-[#d946ef] uppercase tracking-widest block mb-3">
+              05 // MULTI-OBJECTIVE OPTIMIZATION
+            </span>
+            <h2 className="text-4xl sm:text-6xl font-display font-extrabold uppercase text-white tracking-tight leading-[0.92]">
               Resolving the Three-Way Trade-off.
             </h2>
-            <p className="text-slate-300 mt-4 text-base sm:text-lg leading-relaxed font-sans">
+            <p className="text-slate-300 mt-4 text-base sm:text-lg font-sans leading-relaxed">
               There is no single "best" solution. The MO-QIEA engine identifies the exact non-dominated Pareto frontier between Total Fuel Burn, Operating Cost, and Lifecycle GHG Emissions.
             </p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            {/* Visual Vector Scatter Coordinate Canvas */}
-            <div className="lg:col-span-7 p-8 rounded-3xl bg-oceanic-hull/60 border border-oceanic-border relative overflow-hidden">
-              <div className="flex items-center justify-between mb-6">
-                <div className="text-xs font-mono uppercase text-slate-400">
-                  Pareto Trade-off Plane: Cost vs. Lifecycle GHG
-                </div>
-                <div className="text-xs font-mono text-telemetry-cyan">
-                  25 GENERATIONS • 100% FEASIBLE
-                </div>
+            {/* 2D Vector Scatter Coordinate Canvas */}
+            <div className="lg:col-span-7 p-8 rounded-sm bg-[#091122] border border-white/10">
+              <div className="flex items-center justify-between mb-6 font-mono text-xs">
+                <span className="text-slate-400 uppercase">Pareto Trade-off Plane: Cost vs. Lifecycle GHG</span>
+                <span className="text-[#00f0ff]">25 GENERATIONS • 100% FEASIBLE</span>
               </div>
 
-              {/* Vector 2D Scatter Chart Representation */}
-              <div className="relative w-full h-[320px] bg-oceanic-void rounded-2xl border border-oceanic-border/70 p-6 flex flex-col justify-between">
-                {/* Axes Labels */}
-                <div className="text-[10px] font-mono text-slate-500 flex justify-between">
+              <div className="relative w-full h-[320px] bg-[#050811] rounded-sm border border-white/10 p-6 flex flex-col justify-between font-mono">
+                <div className="text-[10px] text-slate-400 flex justify-between">
                   <span>← LOW GHG (28k t)</span>
                   <span>HIGH GHG (48k t) →</span>
                 </div>
 
-                {/* Plot Area */}
+                {/* Plot Space */}
                 <div className="relative w-full h-full my-4">
-                  {/* Grid Lines */}
-                  <div className="absolute inset-0 border-b border-l border-slate-800" />
-                  <div className="absolute top-1/2 left-0 right-0 border-b border-dashed border-slate-800/60" />
-                  <div className="absolute left-1/2 top-0 bottom-0 border-l border-dashed border-slate-800/60" />
+                  <div className="absolute inset-0 border-b border-l border-white/10" />
+                  <div className="absolute top-1/2 left-0 right-0 border-b border-dashed border-white/[0.05]" />
+                  <div className="absolute left-1/2 top-0 bottom-0 border-l border-dashed border-white/[0.05]" />
 
-                  {/* Interactive Pareto Points */}
+                  {/* Interactive Points */}
                   {paretoPlans.map(plan => {
-                    // Coordinate Mapping (Normalized)
-                    // X: Cost ($14M - $22M) -> 10% to 90%
-                    // Y: GHG (28k - 48k) -> 80% to 20%
                     const xPct = ((plan.costMillion - 13.5) / (22.5 - 13.5)) * 80 + 10;
                     const yPct = 90 - ((plan.ghgKt - 26) / (50 - 26)) * 80;
                     const isSelected = plan.id === activeParetoPlanId;
@@ -1064,92 +1062,98 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchConsole }) => 
                         <div
                           className={`w-5 h-5 rounded-full border-2 transition-all flex items-center justify-center ${
                             isSelected
-                              ? 'bg-white border-telemetry-cyan shadow-[0_0_15px_rgba(0,229,255,0.8)]'
-                              : 'bg-oceanic-hull border-slate-400 group-hover:border-white'
+                              ? 'bg-white border-[#00f0ff] shadow-[0_0_15px_#00f0ff]'
+                              : 'bg-[#091122] border-slate-500 group-hover:border-white'
                           }`}
                         >
                           {plan.isKnee && (
-                            <span className="w-1.5 h-1.5 rounded-full bg-telemetry-cyan animate-ping" />
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#00f0ff] animate-ping" />
                           )}
                         </div>
-                        <span className="absolute top-7 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-mono px-2 py-0.5 rounded bg-black/80 border border-slate-700 text-slate-300">
-                          {plan.id === 'plan_knee' ? '★ KNEE' : plan.id.replace('plan_', '').toUpperCase()}
+                        <span className="absolute top-7 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-mono px-2 py-0.5 rounded-sm bg-black/90 border border-white/10 text-slate-300">
+                          {plan.id === 'plan_knee' ? '★ KNEE' : plan.code}
                         </span>
                       </button>
                     );
                   })}
                 </div>
 
-                <div className="text-[10px] font-mono text-slate-500 flex justify-between">
-                  <span>$14M (MIN COST)</span>
+                <div className="text-[10px] text-slate-400 flex justify-between">
+                  <span>$14M (MIN OPEX)</span>
                   <span>$22M (MAX CAPITAL)</span>
                 </div>
               </div>
 
-              <div className="text-xs text-slate-400 mt-4 text-center">
+              <div className="text-xs font-mono text-slate-400 mt-4 text-center">
                 Click any point to inspect fleet-wide operational telemetry and fuel composition.
               </div>
             </div>
 
             {/* Right Detailed Plan Inspection Card */}
-            <div className="lg:col-span-5 p-8 rounded-3xl bg-oceanic-hull/80 border border-oceanic-border flex flex-col justify-between">
+            <div className="lg:col-span-5 p-8 rounded-sm bg-[#091122] border border-white/10 flex flex-col justify-between">
               <div>
-                <div className="flex items-center justify-between mb-4">
-                  <span className={`px-3 py-1 rounded-full border text-xs font-mono font-bold ${activePlan.badgeColor}`}>
-                    {activePlan.badge}
+                <div className="flex items-center justify-between mb-4 font-mono text-xs">
+                  <span className={`px-2.5 py-1 rounded-sm border font-bold ${
+                    activePlan.isKnee
+                      ? 'border-[#00f0ff]/50 text-[#00f0ff] bg-[#00f0ff]/10 shadow-[0_0_12px_rgba(0,240,255,0.3)]'
+                      : 'border-white/20 text-slate-300 bg-white/5'
+                  }`}>
+                    {activePlan.tag}
                   </span>
-                  <span className="text-xs font-mono text-slate-400">PLAN ID: {activePlan.id}</span>
+                  <span className="text-slate-400">PLAN ID: {activePlan.id}</span>
                 </div>
 
-                <h3 className="text-2xl font-bold text-white mb-2">{activePlan.title}</h3>
+                <h3 className="text-2xl font-display font-bold uppercase text-white mb-2">{activePlan.title}</h3>
                 <p className="text-sm text-slate-300 leading-relaxed mb-6 font-sans">
                   {activePlan.description}
                 </p>
 
-                <div className="grid grid-cols-2 gap-4 my-6">
-                  <div className="p-4 rounded-2xl bg-oceanic-void border border-oceanic-border">
-                    <div className="text-xs font-mono text-slate-400">Total Operating Cost</div>
-                    <div className="text-2xl font-extrabold text-white font-mono mt-1">
+                <div className="grid grid-cols-2 gap-4 my-6 font-mono">
+                  <div className="p-4 rounded-sm bg-[#050811] border border-white/10">
+                    <div className="text-[10px] text-slate-400 uppercase">Operating Cost</div>
+                    <div className="text-2xl font-extrabold text-white mt-1">
                       ${activePlan.costMillion}M
                     </div>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-oceanic-void border border-oceanic-border">
-                    <div className="text-xs font-mono text-slate-400">Lifecycle GHG</div>
-                    <div className="text-2xl font-extrabold text-telemetry-seafoam font-mono mt-1">
+                  <div className="p-4 rounded-sm bg-[#050811] border border-white/10">
+                    <div className="text-[10px] text-slate-400 uppercase">Lifecycle GHG</div>
+                    <div className="text-2xl font-extrabold text-[#00ff9d] mt-1">
                       {activePlan.ghgKt}k <span className="text-xs font-normal text-slate-400">tCO₂e</span>
                     </div>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-oceanic-void border border-oceanic-border">
-                    <div className="text-xs font-mono text-slate-400">Fleet Average Speed</div>
-                    <div className="text-xl font-bold text-telemetry-cyan font-mono mt-1">
+                  <div className="p-4 rounded-sm bg-[#050811] border border-white/10">
+                    <div className="text-[10px] text-slate-400 uppercase">Fleet Speed</div>
+                    <div className="text-xl font-bold text-[#00f0ff] mt-1">
                       {activePlan.speed}
                     </div>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-oceanic-void border border-oceanic-border">
-                    <div className="text-xs font-mono text-slate-400">Fleet Fuel Volume</div>
-                    <div className="text-xl font-bold text-white font-mono mt-1">
+                  <div className="p-4 rounded-sm bg-[#050811] border border-white/10">
+                    <div className="text-[10px] text-slate-400 uppercase">Fleet Fuel</div>
+                    <div className="text-xl font-bold text-white mt-1">
                       {activePlan.fuelMt} MT
                     </div>
                   </div>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-oceanic-void border border-oceanic-border/70 text-xs font-mono">
+                <div className="p-4 rounded-sm bg-[#050811] border border-white/10 text-xs font-mono">
                   <span className="text-slate-400">Fuel Allocation Strategy: </span>
-                  <span className="text-telemetry-cyan font-bold">{activePlan.fleetFuelType}</span>
+                  <span className="text-[#00f0ff] font-bold">{activePlan.fleetFuelType}</span>
                 </div>
               </div>
 
-              <div className="mt-8 pt-6 border-t border-oceanic-border">
-                <button
+              <div className="mt-8 pt-6 border-t border-white/10">
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={() => onLaunchConsole('pareto')}
-                  className="w-full py-3.5 rounded-xl bg-telemetry-cyan/10 hover:bg-telemetry-cyan/20 border border-telemetry-cyan/40 text-telemetry-cyan font-bold text-xs tracking-wider flex items-center justify-center gap-2 transition-all"
+                  className="w-full py-3.5 rounded-sm bg-[#00f0ff]/10 hover:bg-[#00f0ff]/20 border border-[#00f0ff]/40 text-[#00f0ff] font-mono font-bold text-xs tracking-wider uppercase flex items-center justify-center gap-2 transition-all"
                 >
-                  <span>INSPECT FULL PARETO IN CONSOLE</span>
+                  <span>INSPECT IN CONSOLE</span>
                   <ArrowRight className="w-4 h-4" />
-                </button>
+                </motion.button>
               </div>
             </div>
           </div>
@@ -1157,28 +1161,28 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchConsole }) => 
       </section>
 
       {/* =====================================================================
-          ACT VI — INTERACTIVE DEMO 3: CARBON TAX POLICY SANDBOX
+          ACT VI: THE CARBON TAX ECONOMIC TIPPING POINT
       ===================================================================== */}
-      <section className="py-28 px-4 sm:px-6 lg:px-12 border-b border-oceanic-border bg-[#09101e]/60">
+      <section className="relative z-10 py-32 px-6 sm:px-12 lg:px-20 border-b border-white/[0.08] bg-[#070c1a]/90">
         <div className="max-w-7xl mx-auto">
           <div className="max-w-3xl mb-16">
-            <div className="text-xs font-mono uppercase text-telemetry-seafoam tracking-widest mb-3">
-              ACT VI • POLICY & CARBON TAX SIMULATION
-            </div>
-            <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight">
+            <span className="text-xs font-mono text-[#00ff9d] uppercase tracking-widest block mb-3">
+              06 // ECONOMIC PARITY SIMULATION
+            </span>
+            <h2 className="text-4xl sm:text-6xl font-display font-extrabold uppercase text-white tracking-tight leading-[0.92]">
               The Economic Tipping Point.
             </h2>
-            <p className="text-slate-300 mt-4 text-base sm:text-lg leading-relaxed font-sans">
-              Alternative fuels currently carry a green premium. Scrub the carbon tax slider below to discover the exact economic crossover point where green fleet deployment becomes strictly cheaper than fossil bunkering.
+            <p className="text-slate-300 mt-4 text-base sm:text-lg font-sans leading-relaxed">
+              Alternative fuels carry an upfront green premium. Scrub the carbon tax slider below to discover the exact economic crossover point where green fleet deployment becomes strictly cheaper than fossil bunkering.
             </p>
           </div>
 
-          <div className="p-8 sm:p-12 rounded-3xl bg-oceanic-hull/80 border border-oceanic-border">
-            <div className="max-w-2xl mx-auto text-center mb-10">
-              <label className="text-xs font-mono uppercase text-slate-400 tracking-wider">
+          <div className="p-8 sm:p-12 rounded-sm bg-[#091122] border border-white/10">
+            <div className="max-w-2xl mx-auto text-center mb-10 font-mono">
+              <label className="text-[11px] uppercase text-slate-400 tracking-wider">
                 Simulated Carbon Tax Levy ($ USD / ton CO₂e)
               </label>
-              <div className="text-5xl font-extrabold text-white font-mono my-3 tabular-nums">
+              <div className="text-5xl font-extrabold text-white my-3 tabular-nums font-mono">
                 ${carbonTaxRate} <span className="text-lg font-normal text-slate-400">/ tCO₂e</span>
               </div>
               <input
@@ -1188,60 +1192,58 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchConsole }) => 
                 step="5"
                 value={carbonTaxRate}
                 onChange={e => setCarbonTaxRate(parseInt(e.target.value))}
-                className="w-full h-3 bg-oceanic-void rounded-lg appearance-none cursor-pointer accent-telemetry-seafoam"
+                className="w-full h-1.5 bg-[#050811] appearance-none cursor-pointer accent-[#00ff9d]"
               />
-              <div className="flex justify-between text-xs font-mono text-slate-500 mt-2">
-                <span>$0 (Current Status Quo)</span>
-                <span className="text-telemetry-cyan font-bold">$165 (Economic Parity Crossover)</span>
-                <span>$250 (Future Net-Zero Target)</span>
+              <div className="flex justify-between text-xs text-slate-400 mt-2">
+                <span>$0 (Current Baseline)</span>
+                <span className="text-[#00f0ff] font-bold">$165 (Economic Parity Crossover)</span>
+                <span>$250 (Target Rate)</span>
               </div>
             </div>
 
-            {/* Comparison Bar Visualization */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8 border-t border-oceanic-border">
-              {/* Baseline Fossil Plan */}
-              <div className="p-6 rounded-2xl bg-oceanic-void border border-oceanic-border">
+            {/* Comparison Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8 border-t border-white/10 font-mono">
+              <div className="p-6 rounded-sm bg-[#050811] border border-white/10">
                 <div className="flex items-center justify-between mb-4">
                   <div className="text-sm font-bold text-white">Status Quo (100% Fossil VLSFO)</div>
-                  <span className="text-xs font-mono text-slate-400">46,800 tCO₂e</span>
+                  <span className="text-xs text-slate-400">46,800 tCO₂e</span>
                 </div>
-                <div className="text-3xl font-extrabold text-white font-mono tabular-nums">
+                <div className="text-3xl font-extrabold text-white tabular-nums">
                   ${policyComparison.baselineTotal}M
                 </div>
-                <div className="text-xs text-slate-400 mt-2 font-mono">
+                <div className="text-xs text-slate-400 mt-2">
                   $14.2M Bunkering + ${(46800 * carbonTaxRate / 1e6).toFixed(2)}M Carbon Tax
                 </div>
               </div>
 
-              {/* Proposed QIEA Green Plan */}
-              <div className={`p-6 rounded-2xl border transition-all ${
+              <div className={`p-6 rounded-sm border transition-all ${
                 policyComparison.isGreenCheaper
-                  ? 'bg-telemetry-seafoam/10 border-telemetry-seafoam shadow-[0_0_20px_rgba(16,185,129,0.2)]'
-                  : 'bg-oceanic-void border-oceanic-border'
+                  ? 'bg-[#00ff9d]/10 border-[#00ff9d] shadow-[0_0_20px_rgba(0,255,157,0.25)]'
+                  : 'bg-[#050811] border-white/10'
               }`}>
                 <div className="flex items-center justify-between mb-4">
-                  <div className="text-sm font-bold text-telemetry-seafoam flex items-center gap-1.5">
+                  <div className="text-sm font-bold text-[#00ff9d] flex items-center gap-1.5">
                     <Sparkles className="w-4 h-4" />
                     <span>Proposed QIEA Green Plan</span>
                   </div>
-                  <span className="text-xs font-mono text-telemetry-seafoam">34,600 tCO₂e</span>
+                  <span className="text-xs text-[#00ff9d]">34,600 tCO₂e</span>
                 </div>
-                <div className="text-3xl font-extrabold text-white font-mono tabular-nums">
+                <div className="text-3xl font-extrabold text-white tabular-nums">
                   ${policyComparison.greenTotal}M
                 </div>
-                <div className="text-xs text-slate-400 mt-2 font-mono">
+                <div className="text-xs text-slate-400 mt-2">
                   $16.7M Bunkering + ${(34600 * carbonTaxRate / 1e6).toFixed(2)}M Carbon Tax
                 </div>
               </div>
             </div>
 
             {/* Net Savings Verdict */}
-            <div className="mt-8 p-6 rounded-2xl bg-oceanic-void border border-oceanic-border/70 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="mt-8 p-6 rounded-sm bg-[#050811] border border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono">
               <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold ${
+                <div className={`w-10 h-10 rounded-sm flex items-center justify-center font-bold ${
                   policyComparison.isGreenCheaper
-                    ? 'bg-telemetry-seafoam/20 text-telemetry-seafoam'
-                    : 'bg-telemetry-amber/20 text-telemetry-amber'
+                    ? 'bg-[#00ff9d]/20 text-[#00ff9d]'
+                    : 'bg-[#ffb703]/20 text-[#ffb703]'
                 }`}>
                   $
                 </div>
@@ -1252,64 +1254,60 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchConsole }) => 
                       : `Fossil is temporarily $${policyComparison.netSavings}M cheaper before crossover`}
                   </div>
                   <div className="text-xs text-slate-400">
-                    Avoids ${policyComparison.taxPenaltyAvoided}M in direct regulatory carbon tax liabilities.
+                    Avoids ${policyComparison.taxPenaltyAvoided}M in direct regulatory carbon liabilities.
                   </div>
                 </div>
               </div>
 
-              <button
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={() => onLaunchConsole('fuels')}
-                className="px-6 py-2.5 rounded-xl bg-oceanic-panel hover:bg-slate-800 border border-oceanic-border text-white text-xs font-mono tracking-wider flex items-center gap-2 transition-all whitespace-nowrap"
+                className="px-6 py-2.5 rounded-sm bg-[#0b1426] hover:bg-[#111e38] border border-white/10 text-white text-xs tracking-wider uppercase flex items-center gap-2 transition-all whitespace-nowrap"
               >
-                <span>TEST POLICY IN CONSOLE</span>
-                <ArrowRight className="w-3.5 h-3.5 text-telemetry-seafoam" />
-              </button>
+                <span>TEST IN CONSOLE</span>
+                <ArrowRight className="w-3.5 h-3.5 text-[#00ff9d]" />
+              </motion.button>
             </div>
           </div>
         </div>
       </section>
 
       {/* =====================================================================
-          ACT VII — AUDIT-GRADE COMPLIANCE & TAMPER-EVIDENT LEDGER
+          ACT VII: CRYPTOGRAPHIC ESG COMPLIANCE LEDGER
       ===================================================================== */}
-      <section className="py-28 px-4 sm:px-6 lg:px-12 border-b border-oceanic-border">
+      <section className="relative z-10 py-32 px-6 sm:px-12 lg:px-20 border-b border-white/[0.08]">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             <div className="lg:col-span-6">
-              <div className="text-xs font-mono uppercase text-telemetry-cyan tracking-widest mb-3">
-                ACT VII • INSTITUTIONAL VERIFICATION
-              </div>
-              <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight">
-                Cryptographic ESG Compliance Ledger.
+              <span className="text-xs font-mono text-[#00f0ff] uppercase tracking-widest block mb-3">
+                07 // AUDIT VERIFICATION
+              </span>
+              <h2 className="text-4xl sm:text-6xl font-display font-extrabold uppercase text-white tracking-tight leading-[0.92]">
+                Cryptographic ESG Ledger.
               </h2>
-              <p className="text-slate-300 mt-4 text-base sm:text-lg leading-relaxed font-sans">
+              <p className="text-slate-300 mt-4 text-base sm:text-lg font-sans leading-relaxed">
                 Every optimization run generates an immutable, tamper-evident SHA-256 verification hash certifying compliance with IMO Resolution MEPC.376(80) and FuelEU Maritime standards.
               </p>
 
-              <div className="mt-8 space-y-4">
+              <div className="mt-8 space-y-4 text-sm font-sans text-slate-300">
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-telemetry-seafoam/20 text-telemetry-seafoam flex items-center justify-center shrink-0 mt-0.5">
-                    <CheckCircle2 className="w-4 h-4" />
-                  </div>
-                  <div className="text-sm text-slate-300">
-                    <strong className="text-white">IMO MEPC.376(80) Methodological Alignment:</strong> Well-to-Tank and Tank-to-Wake emission factors indexed from certified regulatory databases.
+                  <CheckCircle2 className="w-5 h-5 text-[#00ff9d] shrink-0 mt-0.5" />
+                  <div>
+                    <strong className="text-white">IMO MEPC.376(80) Regulatory Alignment:</strong> Well-to-Tank and Tank-to-Wake emission factors indexed from certified regulatory databases.
                   </div>
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-telemetry-seafoam/20 text-telemetry-seafoam flex items-center justify-center shrink-0 mt-0.5">
-                    <CheckCircle2 className="w-4 h-4" />
-                  </div>
-                  <div className="text-sm text-slate-300">
+                  <CheckCircle2 className="w-5 h-5 text-[#00ff9d] shrink-0 mt-0.5" />
+                  <div>
                     <strong className="text-white">FuelEU Maritime Mandates:</strong> Automatic accounting of zero-emission cold-ironing shore power connections at European container berths.
                   </div>
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-telemetry-seafoam/20 text-telemetry-seafoam flex items-center justify-center shrink-0 mt-0.5">
-                    <CheckCircle2 className="w-4 h-4" />
-                  </div>
-                  <div className="text-sm text-slate-300">
+                  <CheckCircle2 className="w-5 h-5 text-[#00ff9d] shrink-0 mt-0.5" />
+                  <div>
                     <strong className="text-white">Audit Export Options:</strong> Printable HTML certificates, verified JSON ledgers, and live REST API endpoints.
                   </div>
                 </div>
@@ -1317,51 +1315,53 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchConsole }) => 
             </div>
 
             {/* Cryptographic SHA-256 Ledger Card */}
-            <div className="lg:col-span-6 p-8 rounded-3xl bg-oceanic-hull/80 border border-oceanic-border">
-              <div className="flex items-center justify-between pb-6 border-b border-oceanic-border">
-                <div className="flex items-center gap-2 text-xs font-mono text-telemetry-cyan">
+            <div className="lg:col-span-6 p-8 rounded-sm bg-[#091122] border border-white/10 font-mono">
+              <div className="flex items-center justify-between pb-6 border-b border-white/10 text-xs">
+                <div className="flex items-center gap-2 text-[#00f0ff]">
                   <Lock className="w-4 h-4" />
                   <span>IMMUTABLE AUDIT CERTIFICATE</span>
                 </div>
-                <span className="px-3 py-1 rounded-full bg-telemetry-seafoam/10 text-telemetry-seafoam border border-telemetry-seafoam/30 text-xs font-mono font-bold">
+                <span className="px-3 py-1 rounded-sm bg-[#00ff9d]/10 text-[#00ff9d] border border-[#00ff9d]/30 font-bold">
                   VERIFIED FEASIBLE
                 </span>
               </div>
 
-              <div className="my-6 space-y-4 font-mono text-xs">
+              <div className="my-6 space-y-4 text-xs">
                 <div>
-                  <div className="text-slate-500 uppercase">Cryptographic Run Signature</div>
-                  <div className="p-3 rounded-xl bg-oceanic-void border border-oceanic-border text-telemetry-cyan break-all mt-1">
+                  <div className="text-slate-400 uppercase text-[10px]">Cryptographic Run Signature</div>
+                  <div className="p-3 rounded-sm bg-[#050811] border border-white/10 text-[#00f0ff] break-all mt-1">
                     a4d339247bf2bc7e5c6a1cf88c946e3923d5733f1ff4f53c9e376834b6bdfbf6
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="p-3 rounded-xl bg-oceanic-void border border-oceanic-border">
-                    <div className="text-slate-500">Run ID</div>
+                  <div className="p-3 rounded-sm bg-[#050811] border border-white/10">
+                    <div className="text-slate-400 uppercase text-[10px]">Run ID</div>
                     <div className="text-white font-bold mt-0.5">run_1790982234_mo_qiea</div>
                   </div>
-                  <div className="p-3 rounded-xl bg-oceanic-void border border-oceanic-border">
-                    <div className="text-slate-500">Solution Plan</div>
+                  <div className="p-3 rounded-sm bg-[#050811] border border-white/10">
+                    <div className="text-slate-400 uppercase text-[10px]">Solution Plan</div>
                     <div className="text-white font-bold mt-0.5">moqiea_g19_i28</div>
                   </div>
                 </div>
               </div>
 
-              <div className="pt-6 border-t border-oceanic-border flex items-center justify-between">
-                <button
+              <div className="pt-6 border-t border-white/10 flex items-center justify-between">
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={() => onLaunchConsole('reports')}
-                  className="px-6 py-3 rounded-xl bg-telemetry-cyan text-black font-bold text-xs tracking-wider flex items-center gap-2 hover:bg-cyan-300 transition-all glow-cyan"
+                  className="px-6 py-3 rounded-sm bg-[#00f0ff] text-black font-bold text-xs tracking-wider uppercase flex items-center gap-2 hover:bg-cyan-300 transition-all shadow-[0_0_15px_rgba(0,240,255,0.4)]"
                 >
                   <FileText className="w-4 h-4" />
                   <span>VIEW AUDIT REPORT</span>
-                </button>
+                </motion.button>
 
                 <a
                   href="/api/reports/json/run_1790982234_mo_qiea"
                   target="_blank"
                   rel="noreferrer"
-                  className="text-xs font-mono text-slate-400 hover:text-white flex items-center gap-1.5 transition-colors"
+                  className="text-xs text-slate-400 hover:text-white flex items-center gap-1.5 transition-colors"
                 >
                   <span>EXPORT RAW JSON</span>
                   <ExternalLink className="w-3.5 h-3.5" />
@@ -1373,57 +1373,61 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchConsole }) => 
       </section>
 
       {/* =====================================================================
-          ACT VIII — FINAL CINEMATIC CALL TO ACTION
+          ACT VIII: FINAL ASYMMETRIC CALL TO ACTION & FOOTER
       ===================================================================== */}
-      <section className="py-32 px-4 sm:px-6 lg:px-12 bg-gradient-to-b from-[#070d18] to-[#040810] text-center relative overflow-hidden">
-        <div className="max-w-4xl mx-auto relative z-10">
-          <div className="w-16 h-16 rounded-2xl bg-telemetry-cyan/10 border border-telemetry-cyan/40 flex items-center justify-center text-telemetry-cyan mx-auto mb-8 glow-cyan">
+      <section className="relative z-10 py-36 px-6 sm:px-12 lg:px-20 text-center bg-gradient-to-b from-[#050811] to-[#020409]">
+        <div className="max-w-4xl mx-auto">
+          <div className="w-16 h-16 rounded-sm bg-[#00f0ff]/10 border border-[#00f0ff]/40 flex items-center justify-center text-[#00f0ff] mx-auto mb-8 shadow-[0_0_30px_rgba(0,240,255,0.3)]">
             <Compass className="w-8 h-8" />
           </div>
 
-          <h2 className="text-4xl sm:text-6xl font-extrabold text-white tracking-tight leading-tight mb-6">
-            Empower Your Fleet with Quantum Intelligence.
+          <h2 className="text-5xl sm:text-7xl font-display font-extrabold uppercase text-white tracking-tight leading-[0.88] mb-6">
+            Command Your Fleet.
           </h2>
 
-          <p className="text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed mb-10 font-sans">
+          <p className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed mb-12 font-sans">
             Ready to deploy? Launch the live decision support console to simulate real corridor deployments, inspect Pareto frontiers, and download certified ESG compliance ledgers.
           </p>
 
-          <div className="flex flex-wrap items-center justify-center gap-4">
-            <button
+          <div className="flex flex-wrap items-center justify-center gap-6">
+            <motion.button
+              whileHover={{ scale: 1.03, y: -2 }}
+              whileTap={{ scale: 0.97 }}
               onClick={() => onLaunchConsole('operations')}
-              className="px-10 py-5 rounded-2xl bg-telemetry-cyan text-black font-extrabold text-sm tracking-wide flex items-center gap-3 hover:bg-cyan-300 transition-all glow-cyan"
+              className="px-10 py-5 rounded-sm bg-[#00f0ff] text-black font-mono font-bold text-xs tracking-widest uppercase flex items-center gap-3 shadow-[0_0_35px_rgba(0,240,255,0.5)] hover:bg-cyan-300 transition-all"
             >
-              <span>ENTER FLEET OPERATIONS CONSOLE</span>
-              <ArrowRight className="w-5 h-5" />
-            </button>
+              <span>ENTER OPERATIONS CONSOLE</span>
+              <ArrowRight className="w-4 h-4" />
+            </motion.button>
 
-            <a
+            <motion.a
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               href="/docs"
               target="_blank"
               rel="noreferrer"
-              className="px-8 py-5 rounded-2xl border border-oceanic-border hover:border-slate-400 text-slate-300 font-semibold text-sm tracking-wide bg-oceanic-hull/60 hover:bg-oceanic-hull transition-all flex items-center gap-2"
+              className="px-8 py-5 rounded-sm border border-white/20 hover:border-white text-slate-300 font-mono text-xs tracking-wider uppercase bg-[#091122]/60 transition-all flex items-center gap-2"
             >
-              <Terminal className="w-4 h-4 text-telemetry-cyan" />
+              <Terminal className="w-4 h-4 text-[#00f0ff]" />
               <span>EXPLORE API DOCS</span>
-            </a>
+            </motion.a>
           </div>
         </div>
       </section>
 
       {/* Persistent Footer */}
-      <footer className="py-12 px-4 sm:px-6 lg:px-12 border-t border-oceanic-border text-xs font-mono text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <footer className="relative z-10 py-12 px-6 sm:px-12 lg:px-20 border-t border-white/[0.08] text-xs font-mono text-slate-400 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div>
           SMART INDIA HACKATHON 2024 • PROBLEM STATEMENT 2 (SIH26138)
         </div>
         <div className="flex items-center gap-6">
-          <button onClick={() => onLaunchConsole('benchmarks')} className="hover:text-slate-300 transition-colors">
+          <button onClick={() => onLaunchConsole('benchmarks')} className="hover:text-white transition-colors">
             BENCHMARKS
           </button>
-          <button onClick={() => onLaunchConsole('reports')} className="hover:text-slate-300 transition-colors">
+          <button onClick={() => onLaunchConsole('reports')} className="hover:text-white transition-colors">
             AUDIT
           </button>
-          <a href="/docs" target="_blank" rel="noreferrer" className="hover:text-slate-300 transition-colors">
+          <a href="/docs" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">
             SWAGGER API
           </a>
         </div>

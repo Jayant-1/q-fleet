@@ -8,23 +8,24 @@ export default {
     extend: {
       colors: {
         oceanic: {
-          void: "#070d18",
-          hull: "#0f172a",
-          panel: "#131e33",
-          border: "#1e293b",
-          borderGlow: "#00e5ff33",
+          void: "#050811",
+          hull: "#0b1220",
+          panel: "#111b2e",
+          border: "#1a273f",
+          borderGlow: "#00f0ff33",
         },
         telemetry: {
-          cyan: "#00e5ff",
-          seafoam: "#10b981",
-          amber: "#f59e0b",
+          cyan: "#00f0ff",
+          seafoam: "#00ff9d",
+          amber: "#ffb703",
           violet: "#d946ef",
-          muted: "#94a3b8",
+          muted: "#64748b",
         }
       },
       fontFamily: {
+        display: ['"Syne"', 'sans-serif'],
+        sans: ['"Space Grotesk"', '"Inter"', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
-        sans: ['"Inter"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
       }
     },
   },
