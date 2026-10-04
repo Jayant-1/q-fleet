@@ -57,6 +57,181 @@
   user-select: none !important;
 }
 
+/* =========================================================================
+   SWISS NAVAL PRECISION RANGE SLIDER
+   Engineered with pure-CSS WebKit track progress (ShadowShahriar zYPPYrQ)
+   featuring CNC-machined vernier billet blocks, 90-degree zero-radius geometry,
+   and zero-latency hardware-accelerated progress tracks.
+   ========================================================================= */
+
+/* Theme variables */
+:root {
+  --slider-fill-dark: #ff6b00;
+  --slider-fill-light: #ea580c;
+  --slider-track-dark: rgba(255, 255, 255, 0.12);
+  --slider-track-light: #e5e7eb;
+}
+
+/* Global Reset & Base Input */
+input[type="range"] {
+  position: relative;
+  background: transparent !important;
+  overflow: hidden;
+  cursor: ew-resize;
+  vertical-align: middle;
+  margin: 6px 0;
+  color: var(--slider-fill-dark);
+  --thumb-height: 22px;
+  --thumb-width: 10px;
+  --track-height: 5px;
+  --track-color: var(--slider-track-dark);
+  --clip-edges: 0px;
+  --brightness-hover: 125%;
+  --brightness-down: 85%;
+  height: var(--thumb-height) !important;
+}
+
+input[type="range"]:focus {
+  outline: none;
+}
+
+input[type="range"]:active {
+  cursor: grabbing;
+}
+
+input[type="range"]:disabled {
+  filter: grayscale(1);
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* 1. WebKit / Blink Engine (Chrome, Safari, Edge) */
+input[type="range"],
+input[type="range"]::-webkit-slider-runnable-track,
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  transition: all ease 100ms;
+  height: var(--thumb-height);
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  position: relative;
+  width: 100%;
+  background: linear-gradient(var(--track-color) 0 0) scroll no-repeat center / 100% calc(var(--track-height) + 1px);
+  cursor: ew-resize;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  position: relative;
+  width: var(--thumb-width);
+  height: var(--thumb-height);
+  border-radius: var(--clip-edges);
+  background-color: currentColor;
+  cursor: grab;
+
+  --clip-top: calc((var(--thumb-height) - var(--track-height)) * 0.5 - 0.5px);
+  --clip-bottom: calc(var(--thumb-height) - var(--clip-top));
+  --clip-further: calc(100% + 1px);
+  --box-fill: calc(-100vmax - var(--thumb-width)) 0 0 100vmax currentColor;
+
+  box-shadow: var(--box-fill);
+  filter: brightness(100%);
+  clip-path: polygon(
+    100% -1px,
+    var(--clip-edges) -1px,
+    0 var(--clip-top),
+    -100vmax var(--clip-top),
+    -100vmax var(--clip-bottom),
+    0 var(--clip-bottom),
+    var(--clip-edges) 100%,
+    var(--clip-further) var(--clip-further)
+  );
+}
+
+input[type="range"]:hover::-webkit-slider-thumb {
+  filter: brightness(var(--brightness-hover)) drop-shadow(0 0 6px currentColor);
+  cursor: grab;
+}
+
+input[type="range"]:active::-webkit-slider-thumb {
+  filter: brightness(var(--brightness-down)) drop-shadow(0 0 10px currentColor);
+  cursor: grabbing;
+}
+
+/* 2. Gecko Engine (Firefox) */
+input[type="range"],
+input[type="range"]::-moz-range-track,
+input[type="range"]::-moz-range-thumb {
+  appearance: none;
+  transition: all ease 100ms;
+  height: var(--thumb-height);
+}
+
+input[type="range"]::-moz-range-track,
+input[type="range"]::-moz-range-thumb,
+input[type="range"]::-moz-range-progress {
+  background: transparent;
+}
+
+input[type="range"]::-moz-range-thumb {
+  background: currentColor;
+  border: 0;
+  width: var(--thumb-width);
+  height: var(--thumb-height);
+  border-radius: var(--clip-edges);
+  cursor: grab;
+  filter: brightness(100%);
+}
+
+input[type="range"]:hover::-moz-range-thumb {
+  filter: brightness(var(--brightness-hover)) drop-shadow(0 0 6px currentColor);
+}
+
+input[type="range"]:active::-moz-range-thumb {
+  filter: brightness(var(--brightness-down)) drop-shadow(0 0 10px currentColor);
+  cursor: grabbing;
+}
+
+input[type="range"]::-moz-range-track {
+  width: 100%;
+  background: var(--track-color);
+  height: calc(var(--track-height) + 1px);
+  border-radius: 0;
+}
+
+input[type="range"]::-moz-range-progress {
+  appearance: none;
+  background: currentColor;
+  height: calc(var(--track-height) + 1px);
+  border-radius: 0;
+  transition-delay: 20ms;
+}
+
+/* 3. Theme Variants */
+/* Light Mode Theme: Used in Fleet Dashboard and Stone-toned Workstations */
+.range-slider-light,
+.range-slider-light input[type="range"],
+.bg-\[\#F8F9FA\] input[type="range"],
+.bg-stone-50 input[type="range"] {
+  color: var(--slider-fill-light) !important;
+  --track-color: var(--slider-track-light) !important;
+}
+
+/* Dark Tactical Theme: Used in Cockpit, Editorial Showcase, and Telemetry Docks */
+.range-slider-dark,
+.range-slider-dark input[type="range"] {
+  color: var(--slider-fill-dark) !important;
+  --track-color: var(--slider-track-dark) !important;
+}
+
+/* Optional Vernier Caliper Reticle Style (available via .slider-reticle class) */
+.slider-reticle::-webkit-slider-thumb {
+  background: 
+    linear-gradient(to right, #121216 0px, #121216 1.5px, transparent 1.5px, transparent calc(100% - 1.5px), #121216 calc(100% - 1.5px), #121216 100%),
+    linear-gradient(to right, transparent calc(50% - 1px), #ffffff calc(50% - 0.5px), #ffffff calc(50% + 0.5px), transparent calc(50% + 1px)),
+    currentColor !important;
+}
+
 /* Print Styles */
 @media print {
   .no-print {

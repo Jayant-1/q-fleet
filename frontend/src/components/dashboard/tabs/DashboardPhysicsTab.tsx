@@ -2,6 +2,7 @@ import React from 'react';
 import { VesselInfo } from '../../../types';
 import { HydrodynamicCalculation } from '../../../store/useDispatchStore';
 import { Gauge, Waves, Anchor, Zap, AlertCircle, ArrowRight } from '@/components/icons';
+import { TacticalRangeSlider } from '../../common/TacticalRangeSlider';
 
 interface Props {
   activeVessel: VesselInfo | null;
@@ -61,83 +62,79 @@ export const DashboardPhysicsTab: React.FC<Props> = ({
           </div>
 
           {/* 1. Cruising Speed Slider (Tour Target) */}
-          <div id="tour-speed-slider" className="space-y-2 p-3 bg-stone-50/60 rounded border border-stone-200/80">
-            <div className="flex justify-between items-center text-xs">
-              <label className="font-medium text-stone-700 font-mono">
-                Cruising Speed
-              </label>
-              <span className="text-sm font-semibold text-stone-900 tabular-nums font-mono">
-                {speedKnots.toFixed(1)} kts
-              </span>
-            </div>
-            <input
-              type="range"
+          {/* 1. Target Speed Slider */}
+          <div id="tour-speed-slider" data-testid="speed-slider-container" className="p-3 bg-stone-50/60 rounded-none border border-stone-200/80">
+            <TacticalRangeSlider
+              theme="light"
+              label={
+                <span className="flex items-center gap-1.5 font-mono text-stone-700">
+                  <Gauge className="w-3.5 h-3.5 text-stone-500" />
+                  Cruising Speed
+                </span>
+              }
+              displayValue={speedKnots.toFixed(1)}
+              unit="kts"
               min={10.0}
               max={22.0}
               step={0.1}
               value={speedKnots}
-              onChange={(e) => setSpeedKnots(parseFloat(e.target.value))}
-              className="w-full accent-orange-600 cursor-pointer"
+              onChange={setSpeedKnots}
+              ticks={[
+                { value: 10.0, label: '10.0 kts (Eco)' },
+                { value: 14.6, label: '14.6 kts (Pareto Knee)', highlight: true },
+                { value: 22.0, label: '22.0 kts (Max)' },
+              ]}
             />
-            <div className="flex justify-between text-[11px] text-gray-400">
-              <span>10.0 kts (Eco)</span>
-              <span className="text-orange-600 font-medium">14.6 kts (Pareto Knee)</span>
-              <span>22.0 kts (Max)</span>
-            </div>
           </div>
 
           {/* 2. Vessel Draft Slider */}
-          <div className="space-y-2 p-3 bg-stone-50/60 rounded border border-stone-200/80">
-            <div className="flex justify-between items-center text-xs">
-              <label className="font-medium text-stone-700 flex items-center gap-1.5 font-mono">
-                <Anchor className="w-3.5 h-3.5 text-stone-500" />
-                Operating Draft
-              </label>
-              <span className="text-sm font-semibold text-stone-900 tabular-nums font-mono">
-                {draftMeters.toFixed(1)} m
-              </span>
-            </div>
-            <input
-              type="range"
+          <div className="p-3 bg-stone-50/60 rounded-none border border-stone-200/80">
+            <TacticalRangeSlider
+              theme="light"
+              label={
+                <span className="flex items-center gap-1.5 font-mono text-stone-700">
+                  <Anchor className="w-3.5 h-3.5 text-stone-500" />
+                  Operating Draft
+                </span>
+              }
+              displayValue={draftMeters.toFixed(1)}
+              unit="m"
               min={11.0}
               max={16.5}
               step={0.1}
               value={draftMeters}
-              onChange={(e) => setDraftMeters(parseFloat(e.target.value))}
-              className="w-full accent-stone-800 cursor-pointer"
+              onChange={setDraftMeters}
+              ticks={[
+                { value: 11.0, label: '11.0 m (Ballast)' },
+                { value: 13.5, label: '13.5 m (Medium)' },
+                { value: 16.5, label: '16.5 m (Full Scantling)' },
+              ]}
             />
-            <div className="flex justify-between text-[11px] text-stone-400 font-mono">
-              <span>11.0 m (Ballast)</span>
-              <span>13.5 m (Medium)</span>
-              <span>16.5 m (Full Scantling)</span>
-            </div>
           </div>
 
           {/* 3. Significant Wave Height */}
-          <div className="space-y-2 p-3 bg-stone-50/60 rounded border border-stone-200/80">
-            <div className="flex justify-between items-center text-xs">
-              <label className="font-medium text-stone-700 flex items-center gap-1.5 font-mono">
-                <Waves className="w-3.5 h-3.5 text-stone-500" />
-                Wave Swell Height (Hs)
-              </label>
-              <span className="text-sm font-semibold text-stone-900 tabular-nums font-mono">
-                {waveHeight.toFixed(1)} m
-              </span>
-            </div>
-            <input
-              type="range"
+          <div className="p-3 bg-stone-50/60 rounded-none border border-stone-200/80">
+            <TacticalRangeSlider
+              theme="light"
+              label={
+                <span className="flex items-center gap-1.5 font-mono text-stone-700">
+                  <Waves className="w-3.5 h-3.5 text-stone-500" />
+                  Wave Swell Height (Hs)
+                </span>
+              }
+              displayValue={waveHeight.toFixed(1)}
+              unit="m"
               min={0.5}
               max={6.0}
               step={0.1}
               value={waveHeight}
-              onChange={(e) => setWaveHeight(parseFloat(e.target.value))}
-              className="w-full accent-stone-800 cursor-pointer"
+              onChange={setWaveHeight}
+              ticks={[
+                { value: 0.5, label: '0.5 m (Calm)' },
+                { value: 2.4, label: '2.4 m (Moderate)' },
+                { value: 6.0, label: '6.0 m (Heavy Storm)' },
+              ]}
             />
-            <div className="flex justify-between text-[11px] text-stone-400 font-mono">
-              <span>0.5 m (Calm)</span>
-              <span>2.4 m (Moderate)</span>
-              <span>6.0 m (Heavy Storm)</span>
-            </div>
           </div>
 
           <div className="pt-2">
@@ -146,6 +143,7 @@ export const DashboardPhysicsTab: React.FC<Props> = ({
                 if (onRunSolver) onRunSolver();
                 onNavigateTab('optimization');
               }}
+              data-testid="apply-target-speed-btn"
               className="w-full py-2.5 px-4 bg-stone-900 hover:bg-stone-800 text-white rounded-lg text-xs font-mono font-medium flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-2xs"
             >
               <span>Apply Target ({speedKnots.toFixed(1)} kts) to Optimizer</span>
@@ -162,7 +160,7 @@ export const DashboardPhysicsTab: React.FC<Props> = ({
               <span className="text-[11px] font-mono font-medium text-stone-400 uppercase tracking-wider block mb-1">
                 Required Propulsion Power
               </span>
-              <div className="text-2xl font-semibold text-stone-900 tabular-nums font-mono">
+              <div data-testid="calc-power-mw" className="text-2xl font-semibold text-stone-900 tabular-nums font-mono">
                 {(calc.brakePowerKw / 1000).toFixed(2)} <span className="text-sm font-normal text-stone-400">MW</span>
               </div>
               <div className="mt-2 text-xs font-mono text-stone-500">
@@ -174,7 +172,7 @@ export const DashboardPhysicsTab: React.FC<Props> = ({
               <span className="text-[11px] font-mono font-medium text-stone-400 uppercase tracking-wider block mb-1">
                 Daily Fuel Consumption
               </span>
-              <div className="text-2xl font-semibold text-orange-600 tabular-nums font-mono">
+              <div data-testid="calc-fuel-burn" className="text-2xl font-semibold text-orange-600 tabular-nums font-mono">
                 {calc.dailyFuelConsumptionMt} <span className="text-sm font-normal text-stone-400">MT / Day</span>
               </div>
               <div className="mt-2 text-xs font-mono text-stone-500">

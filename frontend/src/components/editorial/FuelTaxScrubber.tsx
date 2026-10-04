@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
+import { TacticalRangeSlider } from '../common/TacticalRangeSlider';
 
 interface Props {
-  onEnterCockpit: () => void;
+  onEnterCockpit: (e?: React.MouseEvent) => void;
 }
 
 export const FuelTaxScrubber: React.FC<Props> = ({ onEnterCockpit }) => {
@@ -55,36 +56,42 @@ export const FuelTaxScrubber: React.FC<Props> = ({ onEnterCockpit }) => {
           </h3>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-[#08080a] border border-white/10 p-3">
-          <div className="space-y-1">
-            <div className="flex justify-between font-mono text-[10px] text-zinc-400">
-              <span>EU ETS CARBON TAX RATE:</span>
-              <span className="text-[#ff6b00] font-bold">€{carbonPrice} / TONNE</span>
-            </div>
-            <input
-              type="range"
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-6 bg-[#08080a] border border-white/10 p-4">
+          <div className="flex-1 min-w-[220px]">
+            <TacticalRangeSlider
+              label="EU ETS CARBON TAX RATE"
+              displayValue={`€${carbonPrice}`}
+              unit="/ TONNE"
               min={50}
               max={150}
               step={5}
               value={carbonPrice}
-              onChange={(e) => setCarbonPrice(parseInt(e.target.value))}
-              className="w-44 h-1.5 bg-zinc-800 rounded-none appearance-none cursor-pointer accent-[#ff6b00]"
+              onChange={setCarbonPrice}
+              ticks={[
+                { value: 50, label: '€50' },
+                { value: 85, label: '€85 (2026)', highlight: true },
+                { value: 150, label: '€150' },
+              ]}
             />
           </div>
 
-          <div className="space-y-1">
-            <div className="flex justify-between font-mono text-[10px] text-zinc-400">
-              <span>ANNUAL VOYAGES:</span>
-              <span className="text-white font-bold">{annualVoyages} RUNS</span>
-            </div>
-            <input
-              type="range"
+          <div className="h-10 w-px bg-white/10 hidden sm:block self-center" />
+
+          <div className="flex-1 min-w-[180px]">
+            <TacticalRangeSlider
+              label="ANNUAL VOYAGES"
+              displayValue={annualVoyages}
+              unit="RUNS"
               min={2}
               max={12}
               step={1}
               value={annualVoyages}
-              onChange={(e) => setAnnualVoyages(parseInt(e.target.value))}
-              className="w-28 h-1.5 bg-zinc-800 rounded-none appearance-none cursor-pointer accent-[#ff6b00]"
+              onChange={setAnnualVoyages}
+              ticks={[
+                { value: 2, label: '2' },
+                { value: 6, label: '6 TYPICAL', highlight: true },
+                { value: 12, label: '12 MAX' },
+              ]}
             />
           </div>
         </div>
@@ -162,11 +169,11 @@ export const FuelTaxScrubber: React.FC<Props> = ({ onEnterCockpit }) => {
 
               <div className="mt-6 pt-4 border-t border-white/5">
                 <button
-                  onClick={onEnterCockpit}
-                  className="font-mono text-[11px] uppercase tracking-wider text-zinc-300 hover:text-[#ff6b00] transition-colors flex items-center gap-1 cursor-pointer"
+                  onClick={(e) => onEnterCockpit(e)}
+                  className="font-mono text-[11px] uppercase tracking-wider text-zinc-300 hover:text-[#ff6b00] transition-colors flex items-center gap-1 cursor-pointer select-none"
                 >
-                  <span>MODEL {f.name.split(' ')[0]} IN DASHBOARD</span>
-                  <span>→</span>
+                  <span className="select-none">MODEL {f.name.split(' ')[0]} IN DASHBOARD</span>
+                  <span className="select-none">→</span>
                 </button>
               </div>
             </div>

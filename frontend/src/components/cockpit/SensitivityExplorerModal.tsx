@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Sliders, TrendingDown, DollarSign, Leaf, Zap, HelpCircle } from '@/components/icons';
+import { TacticalRangeSlider } from '../common/TacticalRangeSlider';
 
 interface Props {
   isOpen: boolean;
@@ -95,53 +96,38 @@ export const SensitivityExplorerModal: React.FC<Props> = ({
           {/* Interactive Controls */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-[#121216] border border-white/5">
             <div>
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-neutral-400 uppercase tracking-wider text-[10px]">
-                  Carbon Price / Tax Levy
-                </span>
-                <span className="text-[#ff6b00] font-bold text-sm tabular-nums">
-                  ${localTax.toFixed(0)} / tCO₂e
-                </span>
-              </div>
-              <input
-                type="range"
-                min="0"
-                max="300"
-                step="10"
+              <TacticalRangeSlider
+                label="Carbon Price / Tax Levy"
+                displayValue={`$${localTax.toFixed(0)}`}
+                unit="/ tCO₂e"
+                min={0}
+                max={300}
+                step={10}
                 value={localTax}
-                onChange={(e) => setLocalTax(parseFloat(e.target.value))}
-                className="w-full accent-[#ff6b00] bg-neutral-800 cursor-pointer"
+                onChange={setLocalTax}
+                ticks={[
+                  { value: 0, label: '$0 (Baseline)' },
+                  { value: 100, label: '$100 (EUA)', highlight: true },
+                  { value: 300, label: '$300 (Strict)' },
+                ]}
               />
-              <div className="flex justify-between text-[9px] text-neutral-500 mt-1">
-                <span>$0 (Baseline)</span>
-                <span>$100 (Current EUA)</span>
-                <span>$300 (Strict Net-Zero)</span>
-              </div>
             </div>
 
             <div>
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-neutral-400 uppercase tracking-wider text-[10px]">
-                  Fossil Fuel Volatility Multiplier
-                </span>
-                <span className="text-white font-bold text-sm tabular-nums">
-                  {fuelMultiplier.toFixed(2)}x
-                </span>
-              </div>
-              <input
-                type="range"
-                min="0.6"
-                max="1.8"
-                step="0.05"
+              <TacticalRangeSlider
+                label="Fossil Fuel Volatility Multiplier"
+                displayValue={`${fuelMultiplier.toFixed(2)}x`}
+                min={0.6}
+                max={1.8}
+                step={0.05}
                 value={fuelMultiplier}
-                onChange={(e) => setFuelMultiplier(parseFloat(e.target.value))}
-                className="w-full accent-white bg-neutral-800 cursor-pointer"
+                onChange={setFuelMultiplier}
+                ticks={[
+                  { value: 0.6, label: '0.6x (Cheap Oil)' },
+                  { value: 1.0, label: '1.0x (Standard)', highlight: true },
+                  { value: 1.8, label: '1.8x (Oil Shock)' },
+                ]}
               />
-              <div className="flex justify-between text-[9px] text-neutral-500 mt-1">
-                <span>0.6x (Cheap Oil)</span>
-                <span>1.0x (Standard)</span>
-                <span>1.8x (Oil Shock)</span>
-              </div>
             </div>
           </div>
 

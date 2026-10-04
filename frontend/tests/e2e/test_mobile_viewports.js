@@ -4,42 +4,28 @@
  * Enforces strictly 0px horizontal overflow (scrollWidth <= clientWidth).
  */
 
-import { createRequire } from "module";
-const require = createRequire(import.meta.url);
-
-let playwright;
-try {
-  playwright = require("playwright");
-} catch (e) {
-  try {
-    playwright = require("/home/jayant/.gemini/antigravity/brain/4b98f27f-fda8-4438-a6dc-8bb318a8e5b6/scratch/scraper/node_modules/playwright");
-  } catch (err) {
-    console.error("Playwright module not found:", err);
-    process.exit(1);
-  }
-}
-const { chromium } = playwright;
+import { chromium } from 'playwright';
 
 const VIEWPORTS = [
-  { name: "Mobile Minimal (320px)", width: 320, height: 640 },
-  { name: "Mobile Standard (390px)", width: 390, height: 844 },
-  { name: "Tablet Portrait (768px)", width: 768, height: 1024 },
-  { name: "Tablet Landscape (1024px)", width: 1024, height: 768 },
-  { name: "Desktop (1440px)", width: 1440, height: 900 }
+  { name: 'Mobile Minimal (320px)', width: 320, height: 640 },
+  { name: 'Mobile Standard (390px)', width: 390, height: 844 },
+  { name: 'Tablet Portrait (768px)', width: 768, height: 1024 },
+  { name: 'Tablet Landscape (1024px)', width: 1024, height: 768 },
+  { name: 'Desktop (1440px)', width: 1440, height: 900 }
 ];
 
 const TABS = [
-  "Overview",
-  "Naval Physics",
-  "Pareto Optimization",
-  "Compliance & CII",
-  "Fleet Directory"
+  { id: 'overview', name: 'Overview' },
+  { id: 'physics', name: 'Naval Physics' },
+  { id: 'optimization', name: 'Pareto Optimization' },
+  { id: 'compliance', name: 'Compliance & CII' },
+  { id: 'directory', name: 'Fleet Directory' }
 ];
 
 async function runViewportAudits() {
-  console.log("================================================================================");
-  console.log("Q-FLEET / SIH26138: Multi-Viewport Responsiveness & Zero-Overflow Audit");
-  console.log("================================================================================");
+  console.log('================================================================================');
+  console.log('Q-FLEET / SIH26138: Multi-Viewport Responsiveness & Zero-Overflow Audit');
+  console.log('================================================================================');
 
   const browser = await chromium.launch({ headless: true });
   let totalViolations = 0;
@@ -50,7 +36,7 @@ async function runViewportAudits() {
     const context = await browser.newContext({ viewport: { width: vp.width, height: vp.height } });
     await context.addInitScript(() => {
       try {
-        localStorage.setItem("greenfleet_welcomed_v1", "true");
+        localStorage.setItem('greenfleet_welcomed_v1', 'true');
       } catch (e) {}
     });
 
@@ -58,14 +44,14 @@ async function runViewportAudits() {
 
     // 1. Audit Landing Page
     try {
-      await page.goto("http://127.0.0.1:5173/", { waitUntil: "domcontentloaded" });
+      await page.goto('http://127.0.0.1:5173/', { waitUntil: 'domcontentloaded' });
       await page.waitForTimeout(500);
 
       const landingMetrics = await page.evaluate(() => {
         const docEl = document.documentElement;
         const body = document.body;
         return {
-          scrollWidth: Math.max(docEl.scrollWidth, body.scrollWidth),
+          scrollWidth: Math.max(docEl.scrollWidth, body ? body.scrollWidth : 0),
           innerWidth: window.innerWidth
         };
       });
@@ -85,34 +71,35 @@ async function runViewportAudits() {
 
     // 2. Audit Dashboard Page and all 5 tabs
     try {
-      await page.goto("http://127.0.0.1:5173/dashboard", { waitUntil: "domcontentloaded" });
+      await page.goto('http://127.0.0.1:5173/dashboard', { waitUntil: 'domcontentloaded' });
       await page.waitForTimeout(600);
 
       for (const tab of TABS) {
-        const tabBtn = page.locator(`button:has-text(\"${tab}\")`).first();
+        const tabBtn = page.locator(`[data-testid="tab-${tab.id}"], button:has-text("${tab.name}")`).first();
         if (await tabBtn.count() > 0) {
           await tabBtn.click({ force: true });
-          await page.waitForTimeout(350);
+          await page.waitForTimeout(400);
 
           const tabMetrics = await page.evaluate(() => {
             const docEl = document.documentElement;
             const body = document.body;
             return {
-              scrollWidth: Math.max(docEl.scrollWidth, body.scrollWidth),
+              scrollWidth: Math.max(docEl.scrollWidth, body ? body.scrollWidth : 0),
               innerWidth: window.innerWidth
             };
           });
 
           const tabOverflow = tabMetrics.scrollWidth - tabMetrics.innerWidth;
           if (tabOverflow > 1) {
-            console.error(`  [FAIL] Dashboard Tab [${tab}]: horizontal overflow detected: +${tabOverflow}px (scroll: ${tabMetrics.scrollWidth}px, inner: ${tabMetrics.innerWidth}px)`);
+            console.error(`  [FAIL] Dashboard Tab [${tab.name}]: horizontal overflow detected: +${tabOverflow}px (scroll: ${tabMetrics.scrollWidth}px, inner: ${tabMetrics.innerWidth}px)`);
             totalViolations++;
           } else {
-            console.log(`  [PASS] Dashboard Tab [${tab}]: zero overflow (${tabMetrics.scrollWidth}px / ${tabMetrics.innerWidth}px)`);
+            console.log(`  [PASS] Dashboard Tab [${tab.name}]: zero overflow (${tabMetrics.scrollWidth}px / ${tabMetrics.innerWidth}px)`);
             testsPassed++;
           }
         } else {
-          console.warn(`  [WARN] Dashboard Tab [${tab}] button not found`);
+          console.error(`  [FAIL] Dashboard Tab [${tab.name}] button missing! Required tab must exist.`);
+          totalViolations++;
         }
       }
     } catch (e) {
@@ -125,19 +112,19 @@ async function runViewportAudits() {
 
   await browser.close();
 
-  console.log("\n================================================================================");
+  console.log('\n================================================================================');
   console.log(`Viewport Audit Complete: ${testsPassed} passed, ${totalViolations} violations.`);
-  console.log("================================================================================");
+  console.log('================================================================================');
 
   if (totalViolations > 0) {
     process.exit(1);
   } else {
-    console.log("All viewports passed 100% with zero horizontal overflow! 🎉");
+    console.log('All viewports passed 100% with zero horizontal overflow! 🎉');
     process.exit(0);
   }
 }
 
 runViewportAudits().catch(err => {
-  console.error("Fatal error during viewport audits:", err);
+  console.error('Fatal error during viewport audits:', err);
   process.exit(1);
 });

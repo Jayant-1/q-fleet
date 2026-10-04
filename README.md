@@ -52,11 +52,11 @@ The platform features two synchronized user interfaces designed under an editori
 ### Authoritative Data Sources & Offline Reproducibility
 | Dataset | Source Agency | Raw Records | Cleaned Output | SHA-256 Checksum | Scope Note |
 |---|---|---|---|---|---|
-| **EMSA THETIS-MRV 2022** | European Maritime Safety Agency | 13,059 ships | `data/mrv/mrv_cleaned_vessels.csv` | Official EU Maritime Reporting | Full archive training set |
-| **EMSA THETIS-MRV 2023** | European Maritime Safety Agency | 12,632 ships | `data/mrv/mrv_cleaned_vessels.csv` | Future Temporal Holdout Test | Unseen future holdout |
-| **UN/LOCODE 2024-2** | UNECE | 11,829 ports | `data/ports/ports_cleaned.csv` | Standard Port Geolocation Registry | Transport geographic points |
-| **Curated Hub Terminals** | Port Authorities & Grid Operators | 7 terminals | Calibrated Engineering Model | Verified Shore Power & Grid CI | Calibrated simulation assets |
-| **Committed Offline Fixture** | SIH26138 Repository | 1,000 ships | `data/fixtures/mrv_sample.csv` | Deterministic offline verification | Guaranteed offline fallback |
+| **EMSA THETIS-MRV 2022** | European Maritime Safety Agency | 13,059 annual records | `data/mrv/mrv_cleaned_vessels.csv` | `88d84ad8bafc95fb16a5863a3fb72cfc22e815e37350458aa10c1ad7302d23e5` | Full archive training set |
+| **EMSA THETIS-MRV 2023** | European Maritime Safety Agency | 12,632 annual records | `data/mrv/mrv_cleaned_vessels.csv` | `88d84ad8bafc95fb16a5863a3fb72cfc22e815e37350458aa10c1ad7302d23e5` | Future temporal holdout |
+| **UN/LOCODE 2024-2** | UNECE | 11,829 ports | `data/ports/ports_cleaned.csv` | `2bca082bfac3fb3f539b60f0ee08470539d57af97c84da3350074c6862184609` | Transport geolocation registry |
+| **Curated Hub Terminals** | Port Authorities & Grid Operators | 7 terminals | `data/fixtures/major_ports_fixture.csv` | `94172e22cb080e9cb9a9fcf6a2ed5489e66fd551ab001c6cbdec5b9faff006cc` | Calibrated simulation assets |
+| **Committed Offline Fixture** | SIH26138 Repository | 1,000 annual records | `data/fixtures/mrv_sample.csv` | `2dabe0736c23b2542c07b9c00ec06d62e8a2a5cc887628873c25b980ff94937f` | Guaranteed offline fallback |
 
 ---
 
@@ -121,14 +121,20 @@ We report performance on both the stratified 2,500-vessel benchmark partition (f
 
 ---
 
-## 5. Architecture Diagrams (Excalidraw)
+## 5. Architecture Diagrams & Technical Specifications
 
 Editable vector architecture models are maintained in `docs/architecture/` and available via shareable Excalidraw URLs:
 
-1. **System Topology & Dual UI Context:** [`docs/architecture/system_diagram.excalidraw`](file:///mnt/Jayant/Code/Work%20Station/SIH/SIH26138/docs/architecture/system_diagram.excalidraw)
-2. **Data Pipeline & QIEA Feature Selection:** [`docs/architecture/data_pipeline.excalidraw`](file:///mnt/Jayant/Code/Work%20Station/SIH/SIH26138/docs/architecture/data_pipeline.excalidraw) — [View on Excalidraw](https://excalidraw.com/#json=n-itRtyOpm5FKHBGcltVX,UfpenE2uEDtQH5TITqxKuA)
-3. **MO-QIEA Quantum Optimization Workflow:** [`docs/architecture/optimization_workflow.excalidraw`](file:///mnt/Jayant/Code/Work%20Station/SIH/SIH26138/docs/architecture/optimization_workflow.excalidraw) — [View on Excalidraw](https://excalidraw.com/#json=38PiMSS0D6s2H0O04FkyE,d56ftXHVVSBXXqU9yThA_Q)
-4. **Mission Dispatcher Decision Flow:** [`docs/architecture/user_flow.excalidraw`](file:///mnt/Jayant/Code/Work%20Station/SIH/SIH26138/docs/architecture/user_flow.excalidraw) — [View on Excalidraw](https://excalidraw.com/#json=2duetaYbbcTwQduEWXyK4,2keQi2-qDi7L88kchMLR1g)
+1. **System Topology & Dual UI Context:** [`docs/architecture/system_diagram.excalidraw`](docs/architecture/system_diagram.excalidraw)
+2. **Data Pipeline & QIEA Feature Selection:** [`docs/architecture/data_pipeline.excalidraw`](docs/architecture/data_pipeline.excalidraw) — [View on Excalidraw](https://excalidraw.com/#json=n-itRtyOpm5FKHBGcltVX,UfpenE2uEDtQH5TITqxKuA)
+3. **MO-QIEA Quantum Optimization Workflow:** [`docs/architecture/optimization_workflow.excalidraw`](docs/architecture/optimization_workflow.excalidraw) — [View on Excalidraw](https://excalidraw.com/#json=38PiMSS0D6s2H0O04FkyE,d56ftXHVVSBXXqU9yThA_Q)
+4. **Mission Dispatcher Decision Flow:** [`docs/architecture/user_flow.excalidraw`](docs/architecture/user_flow.excalidraw) — [View on Excalidraw](https://excalidraw.com/#json=2duetaYbbcTwQduEWXyK4,2keQi2-qDi7L88kchMLR1g)
+
+Additional technical and regulatory specifications:
+- **SIH Problem Statement & Scope:** [`docs/sih_problem_statement.md`](docs/sih_problem_statement.md)
+- **Bidirectional Requirements Traceability Matrix:** [`docs/requirements_traceability_matrix.md`](docs/requirements_traceability_matrix.md)
+- **Algorithmic Model Card & Fairness Protocol:** [`docs/model_card.md`](docs/model_card.md)
+- **Verified Evaluator Walkthrough:** [`docs/walkthrough.md`](docs/walkthrough.md)
 
 ---
 
@@ -157,14 +163,14 @@ chmod +x scripts/run_all.sh
 ```bash
 .venv/bin/pytest backend/tests/ -v
 ```
-*Executes all 40 unit, integration, and regulatory tests covering domain models, Holtrop hydrodynamics, QIEA feature selector, MRV empirical holdout accuracy, IMO CII calculations, FuelEU penalties, UN/LOCODE pagination, CSV strict validation, version 2.0 cryptographic audit hash tamper-resistance, HTML escaping against markup injection, and PDF binary parity.*
+*Executes all 45 unit, integration, documentation integrity, and regulatory tests covering domain models, Holtrop hydrodynamics, QIEA feature selector, MRV empirical holdout accuracy, IMO CII calculations, FuelEU penalties, UN/LOCODE pagination, CSV strict validation, cryptographic canonical SHA-256 hash tamper-resistance, HTML escaping against markup injection, and ReportLab PDF binary parity.*
 
 ### Submission Verification Suite (Release Gates)
 ```bash
-# Complete master release gate audit (Backend Pytest + Frontend Build + E2E + Mobile Viewports)
+# Complete master release gate audit (Backend Pytest 45/45 + Frontend Build + E2E 16/16 + Mobile Viewports 30/30)
 pnpm --dir frontend run verify:submission
 
-# Master 23-scenario Playwright E2E suite
+# Master 16-requirement Playwright behavioral E2E suite
 pnpm --dir frontend run test:e2e
 
 # Multi-viewport zero-overflow audit (320px, 390px, 768px, 1024px, 1440px)

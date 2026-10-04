@@ -1,6 +1,7 @@
 import React from 'react';
 import { ParetoSolution, FuelType, FuelSpecification } from '../../../types';
 import { Award, ShieldCheck, DollarSign, Sliders, Leaf, AlertCircle } from '@/components/icons';
+import { TacticalRangeSlider } from '../../common/TacticalRangeSlider';
 
 interface Props {
   selectedSolution: ParetoSolution | null;
@@ -63,10 +64,18 @@ export const DashboardComplianceTab: React.FC<Props> = ({
 
           <div className="flex items-center gap-2">
             <span className="text-xs text-stone-500 font-mono">Fleet Rating:</span>
-            <span className="px-2.5 py-1 rounded font-mono text-sm font-semibold border border-stone-200 bg-stone-100 text-stone-800">
+            <span data-testid="fleet-cii-rating" className="px-2.5 py-1 rounded font-mono text-sm font-semibold border border-stone-200 bg-stone-100 text-stone-800">
               {hasSolution && ciiGrade ? `Grade ${ciiGrade}` : 'Pending'}
             </span>
           </div>
+        </div>
+
+        {/* Indicative Scope Disclaimer */}
+        <div data-testid="regulatory-indicative-disclaimer" className="mb-4 p-3 bg-amber-50/60 border border-amber-200/80 rounded-lg text-xs font-mono text-amber-900 flex items-start gap-2">
+          <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+          <span>
+            <strong>Indicative Scope Notice:</strong> Single-voyage FuelEU Maritime and IMO CII ratings displayed are indicative operational proxies derived from statutory formulas. Formal statutory compliance under Regulation (EU) 2023/1805 and IMO MEPC.328(76) SEEMP Part III is evaluated on an annual calendar-year basis by accredited verifiers.
+          </span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -155,7 +164,7 @@ export const DashboardComplianceTab: React.FC<Props> = ({
             </div>
             <div className="flex justify-between items-center p-3 bg-stone-50 border border-stone-200 rounded text-xs mt-2">
               <span className="font-medium text-stone-700">Compliance Balance:</span>
-              <span className={`px-2.5 py-1 rounded font-mono font-semibold text-xs border ${
+              <span data-testid="fueleu-compliance-balance" className={`px-2.5 py-1 rounded font-mono font-semibold text-xs border ${
                 !hasSolution
                   ? 'bg-stone-100 text-stone-600 border-stone-200'
                   : fueleuPenalty > 0
@@ -182,37 +191,33 @@ export const DashboardComplianceTab: React.FC<Props> = ({
               EU ETS Maritime Policy Sandbox
             </h3>
             <span className="text-xs text-stone-400 font-mono mt-0.5 block">
-              100% Phase-In for intra-EU voyages & 50% for extra-EU port calls
+              100% Phase-In (2025 surrender: 40% of 2024; 2026 surrender: 70% of 2025; 2026 emissions surrendered 100% in 2027)
             </span>
           </div>
 
           <div className="space-y-4 font-mono">
-            <div className="space-y-2">
-              <div className="flex justify-between items-center text-xs">
-                <span className="font-medium text-stone-700">Carbon Allowance Price (EUA):</span>
-                <span className="text-sm font-semibold text-stone-900 tabular-nums">
-                  €{carbonPriceEur} / tonne CO₂
-                </span>
-              </div>
-              <input
-                type="range"
+            <div className="p-3 bg-stone-50/60 rounded-none border border-stone-200/80">
+              <TacticalRangeSlider
+                theme="light"
+                label="Carbon Allowance Price (EUA):"
+                displayValue={`€${carbonPriceEur}`}
+                unit="/ tonne CO₂"
                 min={50}
                 max={150}
                 step={5}
                 value={carbonPriceEur}
-                onChange={(e) => setCarbonPriceEur(parseInt(e.target.value))}
-                className="w-full accent-stone-900 cursor-pointer"
+                onChange={setCarbonPriceEur}
+                ticks={[
+                  { value: 50, label: '€50 (Low Market)' },
+                  { value: 85, label: '€85 (Current 2026 EUA)', highlight: true },
+                  { value: 150, label: '€150 (Strict Target)' },
+                ]}
               />
-              <div className="flex justify-between text-[10px] text-stone-400">
-                <span>€50 (Low Market)</span>
-                <span>€85 (Current 2026 EUA)</span>
-                <span>€150 (Strict Target)</span>
-              </div>
             </div>
 
             <div className="p-3 bg-stone-50 rounded border border-stone-200 flex justify-between items-center text-xs">
               <span className="text-stone-600 font-medium">Estimated ETS Carbon Liability:</span>
-              <span className="text-sm font-semibold text-stone-900 tabular-nums">
+              <span data-testid="ets-carbon-liability" className="text-sm font-semibold text-stone-900 tabular-nums">
                 {hasSolution ? `€${Math.round(etsCost).toLocaleString()}` : 'Awaiting Run'}
               </span>
             </div>

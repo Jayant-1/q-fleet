@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FuelType, VesselInfo, ParetoSolution } from '../../types';
+import { TacticalRangeSlider } from '../common/TacticalRangeSlider';
 
 interface Props {
   fleet: VesselInfo[];
@@ -107,19 +108,21 @@ export const RegulatoryDock: React.FC<Props> = ({
             </div>
 
             {/* EU ETS Carbon Price Slider */}
-            <div className="space-y-1.5 pt-2 border-t border-white/5">
-              <div className="flex justify-between items-baseline">
-                <label className="text-[10px] text-zinc-400 uppercase">EU ETS Carbon Tax</label>
-                <span className="text-white font-bold tabular-nums">€{carbonPriceEur} / TONNE</span>
-              </div>
-              <input
-                type="range"
+            <div className="pt-2 border-t border-white/5">
+              <TacticalRangeSlider
+                label="EU ETS Carbon Tax"
+                displayValue={`€${carbonPriceEur}`}
+                unit="/ TONNE"
                 min={50}
                 max={150}
                 step={5}
                 value={carbonPriceEur}
-                onChange={(e) => setCarbonPriceEur(parseInt(e.target.value))}
-                className="w-full h-1 bg-zinc-800 rounded-none appearance-none cursor-pointer accent-[#ff6b00]"
+                onChange={setCarbonPriceEur}
+                ticks={[
+                  { value: 50, label: '€50' },
+                  { value: 85, label: '€85 (2026)', highlight: true },
+                  { value: 150, label: '€150' },
+                ]}
               />
             </div>
 

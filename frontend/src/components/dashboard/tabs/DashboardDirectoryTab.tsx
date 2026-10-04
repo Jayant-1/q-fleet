@@ -158,6 +158,7 @@ export const DashboardDirectoryTab: React.FC<Props> = ({
         <div className="inline-flex items-center gap-1 bg-stone-100/90 p-1 rounded-lg self-start sm:self-auto">
           <button
             onClick={() => setActiveSubTab('mrv')}
+            data-testid="subtab-mrv"
             className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
               activeSubTab === 'mrv'
                 ? 'bg-white text-stone-900 shadow-2xs font-semibold'
@@ -168,6 +169,7 @@ export const DashboardDirectoryTab: React.FC<Props> = ({
           </button>
           <button
             onClick={() => setActiveSubTab('upload')}
+            data-testid="subtab-upload"
             className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
               activeSubTab === 'upload'
                 ? 'bg-white text-stone-900 shadow-2xs font-semibold'
@@ -178,6 +180,7 @@ export const DashboardDirectoryTab: React.FC<Props> = ({
           </button>
           <button
             onClick={() => setActiveSubTab('ports')}
+            data-testid="subtab-ports"
             className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
               activeSubTab === 'ports'
                 ? 'bg-white text-stone-900 shadow-2xs font-semibold'
@@ -196,7 +199,7 @@ export const DashboardDirectoryTab: React.FC<Props> = ({
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-[11px] font-mono uppercase tracking-wider text-stone-400">
-                  Official Regulatory Archive
+                  official-source dataset
                 </span>
                 <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-stone-100 text-stone-600 border border-stone-200/80">
                   {mrvSourceLabel}
@@ -215,11 +218,13 @@ export const DashboardDirectoryTab: React.FC<Props> = ({
                   placeholder="Search ship name, IMO, type..."
                   value={mrvQuery}
                   onChange={(e) => setMrvQuery(e.target.value)}
+                  data-testid="mrv-search-input"
                   className="w-full pl-8 pr-3 py-2 bg-stone-50 border border-stone-200 hover:border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400 rounded-md text-xs font-mono text-stone-900 transition-colors"
                 />
               </div>
               <button
                 type="submit"
+                data-testid="mrv-search-btn"
                 className="px-3.5 py-2 bg-stone-900 hover:bg-stone-800 text-white text-xs font-medium rounded-md transition-colors whitespace-nowrap shadow-2xs"
               >
                 Search
@@ -315,6 +320,7 @@ export const DashboardDirectoryTab: React.FC<Props> = ({
                 <button
                   onClick={() => setMrvPage((p) => Math.min(mrvTotalPages, p + 1))}
                   disabled={mrvPage >= mrvTotalPages || mrvLoading}
+                  data-testid="mrv-page-next"
                   className="p-1 border border-stone-200 rounded text-stone-600 hover:bg-stone-50 disabled:opacity-40"
                 >
                   <ChevronRight className="w-4 h-4" />
@@ -353,6 +359,7 @@ export const DashboardDirectoryTab: React.FC<Props> = ({
             <textarea
               value={csvText}
               onChange={(e) => setCsvText(e.target.value)}
+              data-testid="csv-textarea"
               rows={8}
               className="w-full p-3.5 bg-stone-50 border border-stone-200 rounded-lg text-xs font-mono text-stone-800 focus:outline-none focus:ring-1 focus:ring-stone-400 leading-relaxed"
             />
@@ -362,6 +369,7 @@ export const DashboardDirectoryTab: React.FC<Props> = ({
             <button
               onClick={handleValidateCsv}
               disabled={validating}
+              data-testid="csv-validate-btn"
               className="px-3.5 py-1.5 bg-stone-900 hover:bg-stone-800 text-white rounded text-xs font-mono font-medium uppercase tracking-wider transition-colors disabled:opacity-50 flex items-center gap-1.5"
             >
               {validating ? (
@@ -387,6 +395,7 @@ export const DashboardDirectoryTab: React.FC<Props> = ({
 
           {validationResult && (
             <div
+              data-testid="csv-validation-result"
               className={`p-4 rounded-lg border text-xs ${
                 validationResult.is_valid
                   ? 'bg-emerald-50/50 border-emerald-200 text-emerald-900'
@@ -555,6 +564,7 @@ export const DashboardDirectoryTab: React.FC<Props> = ({
                   placeholder="Country (e.g. US, CN, NL, IN)..."
                   value={unlocodeCountry}
                   onChange={(e) => setUnlocodeCountry(e.target.value)}
+                  data-testid="unlocode-country-input"
                   className="w-32 px-2.5 py-1.5 bg-stone-50 border border-stone-200 hover:border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400 rounded text-xs font-mono uppercase text-stone-900"
                 />
                 <div className="relative w-full sm:w-60">
@@ -564,11 +574,13 @@ export const DashboardDirectoryTab: React.FC<Props> = ({
                     placeholder="Search port name or LOCODE..."
                     value={unlocodeQuery}
                     onChange={(e) => setUnlocodeQuery(e.target.value)}
+                    data-testid="unlocode-search-input"
                     className="w-full pl-8 pr-3 py-1.5 bg-stone-50 border border-stone-200 hover:border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400 rounded text-xs font-mono text-stone-900"
                   />
                 </div>
                 <button
                   type="submit"
+                  data-testid="unlocode-search-btn"
                   className="px-3 py-1.5 bg-stone-900 hover:bg-stone-800 text-white rounded text-xs font-mono transition-colors"
                 >
                   Search

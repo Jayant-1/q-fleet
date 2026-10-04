@@ -1,12 +1,13 @@
 import React from 'react';
 import { computeLocalHydrodynamics } from '../../store/useDispatchStore';
+import { TacticalRangeSlider } from '../common/TacticalRangeSlider';
 
 interface Props {
   speedKnots: number;
   setSpeedKnots: (v: number) => void;
   waveHeight: number;
   setWaveHeight: (v: number) => void;
-  onEnterCockpit: () => void;
+  onEnterCockpit: (e?: React.MouseEvent) => void;
 }
 
 export const HydrodynamicSlider: React.FC<Props> = ({
@@ -37,55 +38,37 @@ export const HydrodynamicSlider: React.FC<Props> = ({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
         {/* Left Inputs (5 Cols) */}
         <div className="lg:col-span-5 space-y-6">
-          <div>
-            <div className="flex justify-between items-baseline mb-2">
-              <label className="font-mono text-xs uppercase tracking-wider text-zinc-400">
-                Cruising Speed (Knots)
-              </label>
-              <span className="font-mono text-2xl font-bold tabular-nums text-white">
-                {speedKnots.toFixed(1)} <span className="text-xs text-zinc-500 font-normal">KTS</span>
-              </span>
-            </div>
-            <input
-              type="range"
-              min={10.0}
-              max={22.0}
-              step={0.1}
-              value={speedKnots}
-              onChange={(e) => setSpeedKnots(parseFloat(e.target.value))}
-              className="w-full h-1.5 bg-zinc-800 rounded-none appearance-none cursor-pointer accent-[#ff6b00]"
-            />
-            <div className="flex justify-between font-mono text-[10px] text-zinc-500 mt-1">
-              <span>10.0 (SLOW STEAM)</span>
-              <span>14.6 (OPTIMAL KNEE)</span>
-              <span>22.0 (FLANK SPEED)</span>
-            </div>
-          </div>
+          <TacticalRangeSlider
+            label="Cruising Speed (Knots)"
+            displayValue={speedKnots.toFixed(1)}
+            unit="KTS"
+            min={10.0}
+            max={22.0}
+            step={0.1}
+            value={speedKnots}
+            onChange={setSpeedKnots}
+            ticks={[
+              { value: 10.0, label: '10.0 (SLOW STEAM)' },
+              { value: 14.6, label: '14.6 (OPTIMAL KNEE)', highlight: true },
+              { value: 22.0, label: '22.0 (FLANK SPEED)' },
+            ]}
+          />
 
-          <div>
-            <div className="flex justify-between items-baseline mb-2">
-              <label className="font-mono text-xs uppercase tracking-wider text-zinc-400">
-                Significant Wave Height (Hs)
-              </label>
-              <span className="font-mono text-xl font-bold tabular-nums text-white">
-                {waveHeight.toFixed(1)} <span className="text-xs text-zinc-500 font-normal">M</span>
-              </span>
-            </div>
-            <input
-              type="range"
-              min={0.5}
-              max={6.0}
-              step={0.1}
-              value={waveHeight}
-              onChange={(e) => setWaveHeight(parseFloat(e.target.value))}
-              className="w-full h-1.5 bg-zinc-800 rounded-none appearance-none cursor-pointer accent-[#ff6b00]"
-            />
-            <div className="flex justify-between font-mono text-[10px] text-zinc-500 mt-1">
-              <span>0.5M (BEAUFORT 2)</span>
-              <span>3.0M (BEAUFORT 5)</span>
-              <span>6.0M (BEAUFORT 7 GALE)</span>
-            </div>
-          </div>
+          <TacticalRangeSlider
+            label="Significant Wave Height (Hs)"
+            displayValue={waveHeight.toFixed(1)}
+            unit="M"
+            min={0.5}
+            max={6.0}
+            step={0.1}
+            value={waveHeight}
+            onChange={setWaveHeight}
+            ticks={[
+              { value: 0.5, label: '0.5M (BEAUFORT 2)' },
+              { value: 3.0, label: '3.0M (BEAUFORT 5)' },
+              { value: 6.0, label: '6.0M (BEAUFORT 7 GALE)' },
+            ]}
+          />
 
           <div className="pt-2 border-t border-white/5 flex items-center justify-between">
             <span className="font-mono text-xs text-zinc-400">Froude Number (Fn)</span>
@@ -150,11 +133,11 @@ export const HydrodynamicSlider: React.FC<Props> = ({
                 </span>
               </div>
               <button
-                onClick={onEnterCockpit}
-                className="mt-3 text-left font-mono text-xs uppercase tracking-wider text-white hover:text-[#ff6b00] transition-colors flex items-center gap-1.5 cursor-pointer"
+                onClick={(e) => onEnterCockpit(e)}
+                className="mt-3 text-left font-mono text-xs uppercase tracking-wider text-white hover:text-[#ff6b00] transition-colors flex items-center gap-1.5 cursor-pointer select-none"
               >
-                <span>OPTIMIZE THIS IN DASHBOARD</span>
-                <span>→</span>
+                <span className="select-none">OPTIMIZE THIS IN DASHBOARD</span>
+                <span className="select-none">→</span>
               </button>
             </div>
           </div>

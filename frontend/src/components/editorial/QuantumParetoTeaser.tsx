@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 interface Props {
-  onEnterCockpit: () => void;
+  onEnterCockpit: (e?: React.MouseEvent) => void;
 }
 
 interface Point {
@@ -313,11 +313,11 @@ export const QuantumParetoTeaser: React.FC<Props> = ({ onEnterCockpit }) => {
           </div>
 
           <button
-            onClick={onEnterCockpit}
-            className="w-full py-3 bg-[#ff6b00] hover:bg-[#ff8533] text-black font-mono text-xs uppercase font-bold tracking-wider transition-colors flex items-center justify-center gap-2"
+            onClick={(e) => onEnterCockpit(e)}
+            className="w-full py-3 bg-[#ff6b00] hover:bg-[#ff8533] text-black font-mono text-xs uppercase font-bold tracking-wider transition-colors flex items-center justify-center gap-2 cursor-pointer select-none"
           >
-            <span>LOAD THIS CANDIDATE IN DASHBOARD</span>
-            <span>→</span>
+            <span className="select-none">LOAD THIS CANDIDATE IN DASHBOARD</span>
+            <span className="select-none">→</span>
           </button>
         </div>
       </div>

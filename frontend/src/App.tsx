@@ -27,22 +27,44 @@ export const App: React.FC = () => {
   } = store;
 
   // Trigger circle transition into Dashboard starting from button's geometric center
-  const handleEnterCockpit = (e?: React.MouseEvent | { clientX: number; clientY: number }) => {
+  const handleEnterCockpit = (e?: React.MouseEvent | { clientX: number; clientY: number } | HTMLElement) => {
     let origin: { x: number; y: number } = {
       x: typeof window !== 'undefined' ? window.innerWidth / 2 : 600,
       y: typeof window !== 'undefined' ? window.innerHeight / 2 : 400,
     };
 
-    if (e && 'currentTarget' in e && e.currentTarget instanceof HTMLElement) {
-      const rect = e.currentTarget.getBoundingClientRect();
+    let targetEl: HTMLElement | null = null;
+    if (e instanceof HTMLElement) {
+      targetEl = e;
+    } else if (e && 'currentTarget' in e && e.currentTarget instanceof HTMLElement) {
+      targetEl = e.currentTarget;
+    } else if (e && 'target' in e && e.target instanceof HTMLElement) {
+      targetEl = (e.target.closest('button') || e.target) as HTMLElement;
+    }
+
+    if (targetEl) {
+      const rect = targetEl.getBoundingClientRect();
       origin = {
         x: Math.round(rect.left + rect.width / 2),
         y: Math.round(rect.top + rect.height / 2),
       };
-    } else if (e && 'clientX' in e && typeof e.clientX === 'number') {
-      origin = { x: Math.round(e.clientX), y: Math.round(e.clientY) };
+    } else if (e && 'clientX' in e && typeof e.clientX === 'number' && typeof (e as any).clientY === 'number') {
+      const clientX = e.clientX;
+      const clientY = (e as any).clientY;
+      const elFromPoint = typeof document !== 'undefined'
+        ? document.elementFromPoint(clientX, clientY)?.closest('button')
+        : null;
+      if (elFromPoint) {
+        const rect = elFromPoint.getBoundingClientRect();
+        origin = {
+          x: Math.round(rect.left + rect.width / 2),
+          y: Math.round(rect.top + rect.height / 2),
+        };
+      } else {
+        origin = { x: Math.round(clientX), y: Math.round(clientY) };
+      }
     } else {
-      const btn = document.querySelector('[data-nav-dashboard-btn]');
+      const btn = typeof document !== 'undefined' ? document.querySelector('[data-nav-dashboard-btn]') : null;
       if (btn) {
         const rect = btn.getBoundingClientRect();
         origin = {
@@ -60,18 +82,42 @@ export const App: React.FC = () => {
   };
 
   // Trigger circle transition back to Landing starting from Landing button's center
-  const handleNavigateLanding = (e?: React.MouseEvent) => {
+  const handleNavigateLanding = (e?: React.MouseEvent | { clientX: number; clientY: number } | HTMLElement) => {
     let origin: { x: number; y: number } = {
       x: 70,
       y: 32,
     };
 
-    if (e && 'currentTarget' in e && e.currentTarget instanceof HTMLElement) {
-      const rect = e.currentTarget.getBoundingClientRect();
+    let targetEl: HTMLElement | null = null;
+    if (e instanceof HTMLElement) {
+      targetEl = e;
+    } else if (e && 'currentTarget' in e && e.currentTarget instanceof HTMLElement) {
+      targetEl = e.currentTarget;
+    } else if (e && 'target' in e && e.target instanceof HTMLElement) {
+      targetEl = (e.target.closest('button') || e.target) as HTMLElement;
+    }
+
+    if (targetEl) {
+      const rect = targetEl.getBoundingClientRect();
       origin = {
         x: Math.round(rect.left + rect.width / 2),
         y: Math.round(rect.top + rect.height / 2),
       };
+    } else if (e && 'clientX' in e && typeof e.clientX === 'number' && typeof (e as any).clientY === 'number') {
+      const clientX = e.clientX;
+      const clientY = (e as any).clientY;
+      const elFromPoint = typeof document !== 'undefined'
+        ? document.elementFromPoint(clientX, clientY)?.closest('button')
+        : null;
+      if (elFromPoint) {
+        const rect = elFromPoint.getBoundingClientRect();
+        origin = {
+          x: Math.round(rect.left + rect.width / 2),
+          y: Math.round(rect.top + rect.height / 2),
+        };
+      } else {
+        origin = { x: Math.round(clientX), y: Math.round(clientY) };
+      }
     }
 
     setTransitionState({

@@ -100,6 +100,7 @@ export const EditorialShowcase: React.FC<Props> = ({
         <div className="flex items-center gap-3">
           <button
             data-nav-dashboard-btn
+            data-testid="header-enter-cockpit-btn"
             onClick={(e) => onEnterCockpit(e)}
             className="font-mono text-xs px-3 sm:px-4 py-2 bg-[#ff6b00] hover:bg-[#ff8533] text-black font-bold uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer shadow-sm select-none"
           >
@@ -139,6 +140,7 @@ export const EditorialShowcase: React.FC<Props> = ({
             <div className="flex flex-wrap items-center gap-3 pt-2">
               <button
                 onClick={(e) => onEnterCockpit(e)}
+                data-testid="enter-cockpit-btn"
                 className="px-6 py-3.5 bg-[#ff6b00] hover:bg-[#ff8533] text-black font-mono text-xs uppercase font-bold tracking-wider transition-all flex items-center gap-2 cursor-pointer shadow-md"
               >
                 <span>PLAN A SAMPLE VOYAGE →</span>
@@ -386,7 +388,7 @@ export const EditorialShowcase: React.FC<Props> = ({
           setSpeedKnots={setSpeedKnots}
           waveHeight={waveHeight}
           setWaveHeight={setWaveHeight}
-          onEnterCockpit={onEnterCockpit}
+          onEnterCockpit={(e) => onEnterCockpit(e)}
         />
 
         {/* Technical Blueprint Integration */}
@@ -429,7 +431,7 @@ export const EditorialShowcase: React.FC<Props> = ({
         </div>
 
         {/* Pareto Teaser Component */}
-        <QuantumParetoTeaser onEnterCockpit={() => onEnterCockpit()} />
+        <QuantumParetoTeaser onEnterCockpit={(e) => onEnterCockpit(e)} />
 
         {/* Quantum Circuit Architecture Graphic */}
         <div className="mt-8 border border-white/10 bg-[#0e0e12] overflow-hidden">
@@ -496,7 +498,7 @@ export const EditorialShowcase: React.FC<Props> = ({
         </div>
 
         {/* Fuel Tax Scrubber Component */}
-        <FuelTaxScrubber onEnterCockpit={() => onEnterCockpit()} />
+        <FuelTaxScrubber onEnterCockpit={(e) => onEnterCockpit(e)} />
       </section>
 
       {/* SECTION 7: DATA & TRUST (What is Real, Modeled, and Cryptographic) */}
@@ -565,7 +567,7 @@ export const EditorialShowcase: React.FC<Props> = ({
         </div>
 
         {/* Embedded Benchmark Table Component */}
-        <BenchmarkTable onEnterCockpit={() => onEnterCockpit()} />
+        <BenchmarkTable onEnterCockpit={(e) => onEnterCockpit(e)} />
       </section>
 
       {/* SECTION 8: DELIVERABLE OUTPUTS (What the User Receives) */}

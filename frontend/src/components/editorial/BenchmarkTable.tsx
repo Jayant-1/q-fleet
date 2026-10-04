@@ -1,7 +1,7 @@
 import React from 'react';
 
 interface Props {
-  onEnterCockpit: () => void;
+  onEnterCockpit: (e?: React.MouseEvent) => void;
 }
 
 const OPTIMIZATION_BENCHMARKS = [
@@ -101,10 +101,11 @@ export const BenchmarkTable: React.FC<Props> = ({ onEnterCockpit }) => {
         </div>
 
         <button
-          onClick={onEnterCockpit}
-          className="font-mono text-xs px-4 py-2 bg-white hover:bg-zinc-200 text-black font-semibold uppercase tracking-wider transition-colors cursor-pointer"
+          onClick={(e) => onEnterCockpit(e)}
+          className="font-mono text-xs px-4 py-2 bg-white hover:bg-zinc-200 text-black font-semibold uppercase tracking-wider transition-colors cursor-pointer select-none"
         >
-          OPEN BENCHMARKS IN DASHBOARD →
+          <span className="select-none">OPEN BENCHMARKS IN DASHBOARD</span>
+          <span className="select-none"> →</span>
         </button>
       </div>
 

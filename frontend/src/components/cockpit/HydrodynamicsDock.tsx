@@ -1,6 +1,7 @@
 import React from 'react';
 import { VesselInfo } from '../../types';
 import { HydrodynamicCalculation } from '../../store/useDispatchStore';
+import { TacticalRangeSlider } from '../common/TacticalRangeSlider';
 
 interface Props {
   activeVessel: VesselInfo | null;
@@ -48,75 +49,54 @@ export const HydrodynamicsDock: React.FC<Props> = ({
         </div>
 
         {/* Speed Slider */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between items-baseline">
-            <label className="text-[10px] uppercase text-zinc-400">Cruising Speed</label>
-            <span className="text-white font-bold tabular-nums">
-              {speedKnots.toFixed(1)} <span className="text-zinc-500 font-normal">KTS</span>
-            </span>
-          </div>
-          <input
-            type="range"
-            min={10.0}
-            max={22.0}
-            step={0.1}
-            value={speedKnots}
-            onChange={(e) => setSpeedKnots(parseFloat(e.target.value))}
-            className="w-full h-1 bg-zinc-800 rounded-none appearance-none cursor-pointer accent-[#ff6b00]"
-          />
-          <div className="flex justify-between text-[9px] text-zinc-500">
-            <span>10 KTS</span>
-            <span className="text-[#ff6b00]">14.6 KNEE</span>
-            <span>22 KTS</span>
-          </div>
-        </div>
+        <TacticalRangeSlider
+          label="Cruising Speed"
+          displayValue={speedKnots.toFixed(1)}
+          unit="KTS"
+          min={10.0}
+          max={22.0}
+          step={0.1}
+          value={speedKnots}
+          onChange={setSpeedKnots}
+          ticks={[
+            { value: 10.0, label: '10 KTS' },
+            { value: 14.6, label: '14.6 KNEE', highlight: true },
+            { value: 22.0, label: '22 KTS' },
+          ]}
+        />
 
         {/* Draft Slider */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between items-baseline">
-            <label className="text-[10px] uppercase text-zinc-400">Operating Draft</label>
-            <span className="text-white font-bold tabular-nums">
-              {draftMeters.toFixed(1)} <span className="text-zinc-500 font-normal">M</span>
-            </span>
-          </div>
-          <input
-            type="range"
-            min={11.0}
-            max={16.5}
-            step={0.1}
-            value={draftMeters}
-            onChange={(e) => setDraftMeters(parseFloat(e.target.value))}
-            className="w-full h-1 bg-zinc-800 rounded-none appearance-none cursor-pointer accent-[#ff6b00]"
-          />
-          <div className="flex justify-between text-[9px] text-zinc-500">
-            <span>11.0M (BALLAST)</span>
-            <span>15.5M (SCANTLING)</span>
-          </div>
-        </div>
+        <TacticalRangeSlider
+          label="Operating Draft"
+          displayValue={draftMeters.toFixed(1)}
+          unit="M"
+          min={11.0}
+          max={16.5}
+          step={0.1}
+          value={draftMeters}
+          onChange={setDraftMeters}
+          ticks={[
+            { value: 11.0, label: '11.0M (BALLAST)' },
+            { value: 15.5, label: '15.5M (SCANTLING)' },
+          ]}
+        />
 
         {/* Sea State Wave Height Slider */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between items-baseline">
-            <label className="text-[10px] uppercase text-zinc-400">Significant Wave (Hs)</label>
-            <span className="text-white font-bold tabular-nums">
-              {waveHeight.toFixed(1)} <span className="text-zinc-500 font-normal">M</span>
-            </span>
-          </div>
-          <input
-            type="range"
-            min={0.5}
-            max={6.0}
-            step={0.1}
-            value={waveHeight}
-            onChange={(e) => setWaveHeight(parseFloat(e.target.value))}
-            className="w-full h-1 bg-zinc-800 rounded-none appearance-none cursor-pointer accent-[#ff6b00]"
-          />
-          <div className="flex justify-between text-[9px] text-zinc-500">
-            <span>0.5M (CALM)</span>
-            <span>3.0M (MOD)</span>
-            <span>6.0M (ROUGH)</span>
-          </div>
-        </div>
+        <TacticalRangeSlider
+          label="Significant Wave (Hs)"
+          displayValue={waveHeight.toFixed(1)}
+          unit="M"
+          min={0.5}
+          max={6.0}
+          step={0.1}
+          value={waveHeight}
+          onChange={setWaveHeight}
+          ticks={[
+            { value: 0.5, label: '0.5M (CALM)' },
+            { value: 3.0, label: '3.0M (MOD)' },
+            { value: 6.0, label: '6.0M (ROUGH)' },
+          ]}
+        />
 
         {/* Resistance Breakdown Telemetry Card */}
         <div className="bg-[#121216] border border-white/5 p-3 space-y-2">

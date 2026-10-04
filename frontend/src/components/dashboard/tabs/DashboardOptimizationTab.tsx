@@ -80,6 +80,7 @@ export const DashboardOptimizationTab: React.FC<Props> = ({
           <select
             value={selectedAlgo}
             onChange={(e) => setSelectedAlgo(e.target.value)}
+            data-testid="algo-select"
             className="text-xs font-mono bg-white border border-stone-200 rounded px-2.5 py-1.5 text-stone-800 hover:border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400 cursor-pointer shadow-2xs"
           >
             <option value="MO-QIEA">MO-QIEA (Quantum-Inspired)</option>
@@ -90,6 +91,7 @@ export const DashboardOptimizationTab: React.FC<Props> = ({
           <button
             onClick={() => onRunSolver(selectedAlgo)}
             disabled={isSolving}
+            data-testid="rerun-optimization-btn"
             className="px-3.5 py-1.5 bg-stone-900 hover:bg-stone-800 active:scale-[0.98] text-white rounded text-xs font-mono font-medium transition-all shadow-2xs flex items-center gap-2 disabled:opacity-50 cursor-pointer"
           >
             <span>{isSolving ? 'Solving...' : 'Re-Run Optimization'}</span>
@@ -139,16 +141,21 @@ export const DashboardOptimizationTab: React.FC<Props> = ({
                     const isKnee = sol.solution_id === latestOptimization?.compromise_solution_id;
 
                     const minF = Math.min(...paretoFront.map((p) => p.total_fuel_mt));
-                    const maxF = Math.max(...paretoFront.map((p) => p.total_fuel_mt)) || minF + 1;
+                    const maxF = Math.max(...paretoFront.map((p) => p.total_fuel_mt));
                     const minC = Math.min(...paretoFront.map((p) => p.total_cost_usd));
-                    const maxC = Math.max(...paretoFront.map((p) => p.total_cost_usd)) || minC + 1;
+                    const maxC = Math.max(...paretoFront.map((p) => p.total_cost_usd));
 
-                    const cx = 90 + ((sol.total_fuel_mt - minF) / (maxF - minF)) * 440;
-                    const cy = 170 - ((sol.total_cost_usd - minC) / (maxC - minC)) * 120;
+                    const spanF = Math.max(1e-4, maxF - minF);
+                    const spanC = Math.max(1e-4, maxC - minC);
+
+                    const cx = 90 + ((sol.total_fuel_mt - minF) / spanF) * 440;
+                    const cy = 170 - ((sol.total_cost_usd - minC) / spanC) * 120;
 
                     return (
                       <g
                         key={sol.solution_id || idx}
+                        data-testid="pareto-point"
+                        data-solution-id={sol.solution_id}
                         className="cursor-pointer transition-transform hover:scale-125"
                         onClick={() => setSelectedSolution(sol)}
                       >
@@ -174,7 +181,7 @@ export const DashboardOptimizationTab: React.FC<Props> = ({
                 </svg>
 
                 <div className="absolute top-2 right-2 bg-white/95 border border-stone-200 rounded-lg p-2 text-[11px] font-mono text-stone-600 shadow-2xs space-y-1 pointer-events-none">
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1.5" data-testid="compromise-knee-plan">
                     <span className="w-2.5 h-2.5 rounded-full bg-orange-600 inline-block"></span>
                     <span>Compromise Knee Plan</span>
                   </div>
@@ -193,7 +200,7 @@ export const DashboardOptimizationTab: React.FC<Props> = ({
 
           <div className="flex flex-wrap items-center justify-between text-xs font-mono text-stone-600 bg-stone-50/70 p-3 rounded-lg border border-stone-200">
             <div>
-              Active Solution ID: <strong className="text-stone-900 font-mono">{selectedSolution?.solution_id || 'Awaiting Run'}</strong>
+              Active Solution ID: <strong data-testid="active-solution-id" className="text-stone-900 font-mono">{selectedSolution?.solution_id || 'Awaiting Run'}</strong>
             </div>
             <div>
               Algorithm: <strong className="text-stone-900">{selectedSolution?.algorithm || selectedAlgo}</strong>
@@ -221,7 +228,7 @@ export const DashboardOptimizationTab: React.FC<Props> = ({
           <div className="space-y-2.5 font-mono">
             <div className="flex justify-between items-center p-2.5 bg-stone-50/70 rounded border border-stone-100">
               <span className="text-xs text-stone-500">Voyage Bunker Fuel:</span>
-              <span className="text-sm font-semibold text-stone-900 tabular-nums">
+              <span data-testid="scorecard-fuel-burn" className="text-sm font-semibold text-stone-900 tabular-nums">
                 {hasSolution && selectedSolution.total_fuel_mt != null
                   ? `${selectedSolution.total_fuel_mt.toLocaleString(undefined, { maximumFractionDigits: 1 })} MT`
                   : '—'}

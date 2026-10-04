@@ -86,6 +86,7 @@ export const FleetDashboard: React.FC<Props> = ({ store, onNavigateLanding }) =>
           <div className="flex items-center gap-1.5 sm:gap-3 shrink-0 min-w-0">
             <button
               onClick={(e) => onNavigateLanding(e)}
+              data-testid="back-to-landing-btn"
               className="text-stone-400 hover:text-stone-900 transition-colors flex items-center gap-1 text-xs font-mono group py-1 cursor-pointer select-none"
               title="Return to Presentation Landing Page"
             >
@@ -118,6 +119,7 @@ export const FleetDashboard: React.FC<Props> = ({ store, onNavigateLanding }) =>
               <select
                 value={activeCorridorId}
                 onChange={(e) => setActiveCorridorId(e.target.value)}
+                data-testid="corridor-selector"
                 className="text-xs font-mono bg-stone-50 border border-stone-200 hover:border-stone-300 rounded-md px-3 py-1.5 text-stone-800 focus:outline-none focus:ring-1 focus:ring-stone-400 max-w-[260px] truncate transition-colors cursor-pointer shadow-2xs"
               >
                 {corridors.map((c) => (
@@ -142,6 +144,7 @@ export const FleetDashboard: React.FC<Props> = ({ store, onNavigateLanding }) =>
               id="tour-export-pdf"
               onClick={triggerPdfExport}
               disabled={isOptimizationStale}
+              data-testid="export-pdf-btn"
               className={`px-2 sm:px-3 py-1 sm:py-1.5 border rounded-md text-[11px] sm:text-xs font-medium transition-colors shadow-2xs whitespace-nowrap ${
                 isOptimizationStale
                   ? 'bg-stone-50 border-stone-200 text-stone-400 cursor-not-allowed'
@@ -161,10 +164,16 @@ export const FleetDashboard: React.FC<Props> = ({ store, onNavigateLanding }) =>
               id="tour-run-optimization"
               onClick={() => executeQuantumSolver()}
               disabled={isSolving}
+              data-testid="run-optimization-btn"
+              data-stale={isOptimizationStale ? "true" : "false"}
               className="relative px-2 sm:px-3 py-1 sm:py-1.5 bg-stone-900 hover:bg-stone-800 active:scale-[0.98] text-white rounded-md text-[11px] sm:text-xs font-mono font-medium transition-all shadow-2xs flex items-center gap-1 sm:gap-1.5 disabled:opacity-50 whitespace-nowrap"
             >
               {isOptimizationStale && (
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse shrink-0" title="Parameters modified" />
+                <span
+                  data-testid="stale-indicator"
+                  className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse shrink-0"
+                  title="Parameters modified"
+                />
               )}
               <span>{isSolving ? 'Solving...' : <><span className="hidden sm:inline">Run </span>Optimize</>}</span>
             </button>
@@ -185,6 +194,7 @@ export const FleetDashboard: React.FC<Props> = ({ store, onNavigateLanding }) =>
             ].map((tab) => (
               <button
                 key={tab.id}
+                data-testid={`tab-${tab.id}`}
                 onClick={() => setActiveTab(tab.id)}
                 className={`py-2.5 sm:py-3.5 text-xs sm:text-sm font-medium transition-colors whitespace-nowrap border-b-2 shrink-0 ${
                   activeTab === tab.id

@@ -806,7 +806,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchConsole }) => 
                   step="0.1"
                   value={speedKnots}
                   onChange={e => setSpeedKnots(parseFloat(e.target.value))}
-                  className="w-full h-1.5 bg-[#050811] appearance-none cursor-pointer accent-[#00f0ff]"
+                  className="w-full cursor-pointer"
                 />
                 <div className="flex justify-between text-[10px] font-mono text-slate-400 mt-1">
                   <span>12.0 kt (Slow Steam)</span>
@@ -830,7 +830,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchConsole }) => 
                   step="0.1"
                   value={waveHeightMeters}
                   onChange={e => setWaveHeightMeters(parseFloat(e.target.value))}
-                  className="w-full h-1.5 bg-[#050811] appearance-none cursor-pointer accent-[#ffb703]"
+                  className="w-full cursor-pointer"
                 />
                 <div className="flex justify-between text-[10px] font-mono text-slate-400 mt-1">
                   <span>0.5m (Calm Sea)</span>
@@ -1192,7 +1192,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchConsole }) => 
                 step="5"
                 value={carbonTaxRate}
                 onChange={e => setCarbonTaxRate(parseInt(e.target.value))}
-                className="w-full h-1.5 bg-[#050811] appearance-none cursor-pointer accent-[#00ff9d]"
+                className="w-full cursor-pointer"
               />
               <div className="flex justify-between text-xs text-slate-400 mt-2">
                 <span>$0 (Current Baseline)</span>
