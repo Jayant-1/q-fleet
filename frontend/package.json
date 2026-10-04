@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:e2e": "node tests/e2e/run_all_e2e.js",
+    "test:e2e:mobile": "node tests/e2e/test_mobile_viewports.js",
+    "verify:submission": "node tests/e2e/verify_submission.js"
   },
   "dependencies": {
     "framer-motion": "^14.0.0",

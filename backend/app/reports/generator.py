@@ -329,6 +329,7 @@ class AuditReportGenerator:
 
     <div class="disclaimer">
         <strong>Data Provenance & Mathematical Simulation Footnote:</strong> This audit report was synthesized by the Quantum-Inspired Fleet Optimization Engine (SIH26138).
+        Global bunker fuel and fleet operational costs are denominated in USD ($). European Union regulatory liabilities under Directive (EU) 2023/959 (EU ETS) and Regulation (EU) 2023/1805 (FuelEU Maritime) are established in EUR (€) and converted at the European Central Bank (ECB) benchmark exchange rate of 1.08 USD/EUR (€1.00 = $1.08 USD).
         The SHA-256 fingerprint documents mathematical input/output simulation determinism under the specified random seed and configuration (rather than statutory third-party verifier certification).
         Emission factors, Lower Heating Values (LHV), and Well-to-Tank (WTT) / Tank-to-Wake (TTW) splits comply with IMO Resolution MEPC.376(80), IMO MEPC.354(78) (CII Calculation Guidelines), Directive (EU) 2023/959 (EU ETS), and European Union Regulation (EU) 2023/1805 (FuelEU Maritime).
         Cryptographic verification fingerprint: <code>{audit_hash}</code>.
@@ -541,7 +542,8 @@ class AuditReportGenerator:
         # 4. Footnote
         footnote = Paragraph(
             "<b>Data Provenance & Mathematical Simulation Footnote:</b> Calculated in accordance with IMO Resolution MEPC.376(80), "
-            "IMO MEPC.354(78) (CII Calculation Guidelines), Directive (EU) 2023/959 (EU ETS), and European Union Regulation (EU) 2023/1805 (FuelEU Maritime). "
+            "IMO MEPC.354(78) (CII Guidelines), Directive (EU) 2023/959 (EU ETS), and Regulation (EU) 2023/1805 (FuelEU Maritime). "
+            "Costs denominated in USD ($); EU regulatory liabilities established in EUR (€) and converted at ECB benchmark 1.08 USD/EUR. "
             "The SHA-256 fingerprint documents mathematical input/output simulation determinism under the specified random seed and configuration (it does NOT constitute statutory third-party verifier certification): " + audit_hash,
             subtitle_style
         )

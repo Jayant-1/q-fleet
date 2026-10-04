@@ -157,7 +157,19 @@ chmod +x scripts/run_all.sh
 ```bash
 .venv/bin/pytest backend/tests/ -v
 ```
-*Executes all 39 unit, integration, and regulatory tests covering domain models, Holtrop hydrodynamics, QIEA feature selector, MRV empirical holdout accuracy, IMO CII calculations, FuelEU penalties, UN/LOCODE pagination, CSV strict validation, version 2.0 cryptographic audit hash tamper-resistance, HTML escaping against markup injection, and PDF binary parity.*
+*Executes all 40 unit, integration, and regulatory tests covering domain models, Holtrop hydrodynamics, QIEA feature selector, MRV empirical holdout accuracy, IMO CII calculations, FuelEU penalties, UN/LOCODE pagination, CSV strict validation, version 2.0 cryptographic audit hash tamper-resistance, HTML escaping against markup injection, and PDF binary parity.*
+
+### Submission Verification Suite (Release Gates)
+```bash
+# Complete master release gate audit (Backend Pytest + Frontend Build + E2E + Mobile Viewports)
+pnpm --dir frontend run verify:submission
+
+# Master 23-scenario Playwright E2E suite
+pnpm --dir frontend run test:e2e
+
+# Multi-viewport zero-overflow audit (320px, 390px, 768px, 1024px, 1440px)
+pnpm --dir frontend run test:e2e:mobile
+```
 
 ### Headless CLI Benchmark Runner
 ```bash

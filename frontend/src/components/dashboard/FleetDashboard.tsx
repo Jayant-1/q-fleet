@@ -25,7 +25,7 @@ import {
 
 interface Props {
   store: ReturnType<typeof useGlobalDispatchState>;
-  onNavigateLanding: () => void;
+  onNavigateLanding: (e?: React.MouseEvent) => void;
 }
 
 export const FleetDashboard: React.FC<Props> = ({ store, onNavigateLanding }) => {
@@ -85,8 +85,8 @@ export const FleetDashboard: React.FC<Props> = ({ store, onNavigateLanding }) =>
           {/* Left: Clean Brand & Back Navigation */}
           <div className="flex items-center gap-1.5 sm:gap-3 shrink-0 min-w-0">
             <button
-              onClick={onNavigateLanding}
-              className="text-stone-400 hover:text-stone-900 transition-colors flex items-center gap-1 text-xs font-mono group py-1"
+              onClick={(e) => onNavigateLanding(e)}
+              className="text-stone-400 hover:text-stone-900 transition-colors flex items-center gap-1 text-xs font-mono group py-1 cursor-pointer select-none"
               title="Return to Presentation Landing Page"
             >
               <span className="transition-transform group-hover:-translate-x-0.5 text-stone-400">←</span>

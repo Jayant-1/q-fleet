@@ -10,6 +10,7 @@ htmlcov/
 # Node
 frontend/node_modules/
 frontend/dist/
+*.tsbuildinfo
 *.local
 
 # Environment & OS

@@ -158,7 +158,7 @@ export const FuelPathwayLifecycle: React.FC<FuelPathwayLifecycleProps> = ({ fuel
               </h4>
             </div>
             <p className="text-xs text-slate-300">
-              When berthed at compatible electrified ports (e.g. Gothenburg at 45 gCO₂/kWh, Rotterdam at 160 gCO₂/kWh), 
+              When berthed at compatible operational hubs with modeled shore-power connectivity (e.g. Gothenburg at 45 gCO₂/kWh, Rotterdam at 160 gCO₂/kWh), 
               vessels connect to high-voltage shore power, eliminating onboard auxiliary diesel combustion.
             </p>
             <div className="text-[11px] font-mono text-telemetry-seafoam bg-telemetry-seafoam/10 p-2 rounded border border-telemetry-seafoam/30">

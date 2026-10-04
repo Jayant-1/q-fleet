@@ -167,8 +167,9 @@ export const ReportViewer: React.FC<ReportViewerProps> = ({ runId, solution }) =
         {/* Regulatory Disclosure Footnote */}
         <div className="pt-4 border-t border-oceanic-border text-[11px] text-slate-400 font-mono space-y-1">
           <p>
-            <strong>Compliance Notice:</strong> Lifecycle greenhouse gas emissions (Well-to-Wake) account for Well-to-Tank (upstream production/synthesis)
-            and Tank-to-Wake (propulsion combustion). Shore power is exclusively applied during port dwell periods at verified electrified terminals.
+            <strong>Compliance & Currency Notice:</strong> Lifecycle greenhouse gas emissions (Well-to-Wake) account for Well-to-Tank (upstream production/synthesis)
+            and Tank-to-Wake (propulsion combustion). Shore power is exclusively applied during port dwell periods at compatible operational hubs with modeled shore-power connectivity.
+            Bunker fuel and operating expenditures are denominated in USD ($); EU regulatory penalties (EU ETS Directive 2023/959, FuelEU Regulation 2023/1805) are assessed in EUR (€) and converted at the ECB reference benchmark of 1.08 USD/EUR.
           </p>
           <p className="text-[10px] text-slate-400">
             Developed in accordance with Smart India Hackathon Problem Statement 2 (SIH26138) Technical Specification.

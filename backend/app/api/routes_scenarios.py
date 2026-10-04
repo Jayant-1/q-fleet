@@ -167,7 +167,7 @@ def list_ports():
             "is_eca": p.is_eca
         })
     return {
-        "catalog_type": "Curated Operational Terminals (Calibrated Engineering Assets)",
+        "catalog_type": "Curated Operational Hubs (Modeled Shore-Power Attributes)",
         "ports_count": len(ports_data),
         "ports": ports_data
     }

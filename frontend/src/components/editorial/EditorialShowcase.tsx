@@ -99,11 +99,12 @@ export const EditorialShowcase: React.FC<Props> = ({
         {/* Primary Action CTA */}
         <div className="flex items-center gap-3">
           <button
+            data-nav-dashboard-btn
             onClick={(e) => onEnterCockpit(e)}
-            className="font-mono text-xs px-3 sm:px-4 py-2 bg-[#ff6b00] hover:bg-[#ff8533] text-black font-bold uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer shadow-sm"
+            className="font-mono text-xs px-3 sm:px-4 py-2 bg-[#ff6b00] hover:bg-[#ff8533] text-black font-bold uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer shadow-sm select-none"
           >
-            <span>OPEN DASHBOARD</span>
-            <span className="hidden sm:inline text-[10px] bg-black/20 px-1 py-0.5 rounded-none">[⌘K]</span>
+            <span className="select-none">OPEN DASHBOARD</span>
+            <span className="hidden sm:inline text-[10px] bg-black/20 px-1 py-0.5 rounded-none font-mono select-none">[⌘K]</span>
           </button>
         </div>
       </header>
