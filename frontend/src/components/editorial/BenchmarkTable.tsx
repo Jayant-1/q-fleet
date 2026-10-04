@@ -90,7 +90,7 @@ export const BenchmarkTable: React.FC<Props> = ({ onEnterCockpit }) => {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 pb-6 border-b border-white/10">
         <div>
           <span className="font-mono text-[11px] uppercase tracking-[0.15em] text-[#ff6b00]">
-            ACT 6 // REPRODUCIBLE BENCHMARK LEDGER
+            BENCHMARK EVIDENCE // REPRODUCIBLE LEDGER
           </span>
           <h3 className="text-xl md:text-2xl font-bold tracking-tight text-white mt-1">
             Empirical Multi-Objective & Machine Learning Benchmarks
@@ -104,7 +104,7 @@ export const BenchmarkTable: React.FC<Props> = ({ onEnterCockpit }) => {
           onClick={onEnterCockpit}
           className="font-mono text-xs px-4 py-2 bg-white hover:bg-zinc-200 text-black font-semibold uppercase tracking-wider transition-colors cursor-pointer"
         >
-          OPEN BENCHMARK LAB IN COCKPIT →
+          OPEN BENCHMARKS IN DASHBOARD →
         </button>
       </div>
 

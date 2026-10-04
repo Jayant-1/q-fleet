@@ -46,10 +46,10 @@ export const QuantumParetoTeaser: React.FC<Props> = ({ onEnterCockpit }) => {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-6 border-b border-white/10">
         <div>
           <span className="font-mono text-[11px] uppercase tracking-[0.15em] text-[#ff6b00]">
-            ACT 4 // MULTI-OBJECTIVE QUANTUM PARETO FRONTIER
+            MULTI-OBJECTIVE DECISION SUPPORT // PARETO TRADE-OFF FRONTIER
           </span>
           <h3 className="text-xl md:text-2xl font-bold tracking-tight text-white mt-1">
-            Givens Rotation Gates vs Classical Genetic Crossover
+            Balancing Transit Duration vs Bunker Consumption
           </h3>
         </div>
 
@@ -82,7 +82,7 @@ export const QuantumParetoTeaser: React.FC<Props> = ({ onEnterCockpit }) => {
         <div className="lg:col-span-7 bg-[#08080a] border border-white/10 p-4 relative min-h-[360px] flex flex-col justify-between select-none">
           <div className="flex justify-between font-mono text-[10px] text-zinc-500 uppercase tracking-widest pb-2">
             <span>OBJECTIVE: FUEL BURN (MT) VS TRANSIT DURATION (HOURS)</span>
-            <span className="text-[#ff6b00]">CLICK POINT TO PRIME DISPATCH</span>
+            <span className="text-[#ff6b00]">CLICK POINT TO INSPECT VOYAGE PLAN</span>
           </div>
 
           <div className="w-full relative">
@@ -291,23 +291,23 @@ export const QuantumParetoTeaser: React.FC<Props> = ({ onEnterCockpit }) => {
               </div>
             </div>
 
-            {/* Hypervolume & Convergence Audit */}
+            {/* Matched-Budget Benchmark Metrics */}
             <div className="border border-white/10 bg-[#08080a] p-4 space-y-2 font-mono text-xs">
               <div className="flex justify-between items-center text-zinc-400">
-                <span>Hypervolume Metric (HV)</span>
-                <span className="text-white font-bold tabular-nums">0.884 (+16.1% vs NSGA-II)</span>
+                <span>Evaluation Budget</span>
+                <span className="text-white font-bold tabular-nums">1,050 evals (Seed N=42)</span>
               </div>
               <div className="flex justify-between items-center text-zinc-400">
-                <span>Generations to Convergence</span>
-                <span className="text-white font-bold tabular-nums">40 gen (vs 200 gen)</span>
+                <span>Pareto Spacing Spread (Δ)</span>
+                <span className="text-[#ff6b00] font-bold tabular-nums">0.0254 (MO-QIEA widest diversity)</span>
               </div>
               <div className="flex justify-between items-center text-zinc-400">
-                <span>Catastrophe Mutation</span>
-                <span className="text-[#ff6b00] font-bold">ACTIVE (0 Stagnation)</span>
+                <span>Benchmark Hypervolume (HV)</span>
+                <span className="text-zinc-200 tabular-nums">MO-PSO 0.2577 · NSGA-II 0.2366 · QIEA 0.1839</span>
               </div>
               <div className="flex justify-between items-center text-zinc-400">
-                <span>Givens Rotation Step (Δθ)</span>
-                <span className="text-zinc-300 tabular-nums">0.05 · π rad</span>
+                <span>Algorithm Strength</span>
+                <span className="text-emerald-400 font-medium text-[11px]">MO-QIEA uncovers multi-fuel trade-offs</span>
               </div>
             </div>
           </div>
@@ -316,7 +316,7 @@ export const QuantumParetoTeaser: React.FC<Props> = ({ onEnterCockpit }) => {
             onClick={onEnterCockpit}
             className="w-full py-3 bg-[#ff6b00] hover:bg-[#ff8533] text-black font-mono text-xs uppercase font-bold tracking-wider transition-colors flex items-center justify-center gap-2"
           >
-            <span>LAUNCH THIS SOLUTION IN MISSION CONTROL</span>
+            <span>LOAD THIS CANDIDATE IN DASHBOARD</span>
             <span>→</span>
           </button>
         </div>

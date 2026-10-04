@@ -206,7 +206,9 @@ export const InteractiveHeroVessel: React.FC = () => {
 
       {/* Bottom Subtle Vessel Title */}
       <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-4 font-mono text-[10px] z-10 pointer-events-none">
-        <span className="text-white font-bold block tracking-tight">15,000 TEU ULTRA LARGE CONTAINER VESSEL</span>
+        <span className="text-white font-bold block tracking-tight">
+          ILLUSTRATIVE VOYAGE SCENARIO // 15,000 TEU CONTAINER VESSEL (Modeled Demo · Not Live AIS)
+        </span>
       </div>
     </div>
   );

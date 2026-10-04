@@ -48,7 +48,7 @@ export const FuelTaxScrubber: React.FC<Props> = ({ onEnterCockpit }) => {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 pb-6 border-b border-white/10">
         <div>
           <span className="font-mono text-[11px] uppercase tracking-[0.15em] text-[#ff6b00]">
-            ACT 5 // REGULATORY LIFECYCLE & FUEL BENCHMARK
+            REGULATORY LIFECYCLE ECONOMICS // WELL-TO-WAKE ANALYSIS
           </span>
           <h3 className="text-xl md:text-2xl font-bold tracking-tight text-white mt-1">
             Well-to-Wake (WtW) Emissions & Carbon Tax Exposure
@@ -163,15 +163,25 @@ export const FuelTaxScrubber: React.FC<Props> = ({ onEnterCockpit }) => {
               <div className="mt-6 pt-4 border-t border-white/5">
                 <button
                   onClick={onEnterCockpit}
-                  className="font-mono text-[11px] uppercase tracking-wider text-zinc-400 hover:text-[#ff6b00] transition-colors flex items-center gap-1"
+                  className="font-mono text-[11px] uppercase tracking-wider text-zinc-300 hover:text-[#ff6b00] transition-colors flex items-center gap-1 cursor-pointer"
                 >
-                  <span>MODEL {f.name.split(' ')[0]} DISPATCH</span>
+                  <span>MODEL {f.name.split(' ')[0]} IN DASHBOARD</span>
                   <span>→</span>
                 </button>
               </div>
             </div>
           );
         })}
+      </div>
+
+      {/* Statutory Disclaimer Notice */}
+      <div className="mt-6 pt-4 border-t border-white/10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 font-mono text-[10px] text-zinc-500">
+        <div>
+          STATUTORY NOTICE: Indicative decision-support estimates calculated under Directive (EU) 2023/959 and Regulation (EU) 2023/1805.
+        </div>
+        <div className="text-zinc-400">
+          Official compliance requires annual verified reporting through an accredited verifier.
+        </div>
       </div>
     </div>
   );

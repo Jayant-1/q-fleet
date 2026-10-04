@@ -24,9 +24,14 @@ export const HydrodynamicSlider: React.FC<Props> = ({
 
   return (
     <div className="border border-white/10 bg-[#0e0e12] p-6 md:p-8 relative">
-      {/* Blueprint Grid Watermark */}
-      <div className="absolute top-3 right-4 font-mono text-[10px] text-zinc-500 tracking-widest uppercase">
-        REF: HOLTROP-MENNEN-1984 // KWON-1987
+      {/* Model Status Pill */}
+      <div className="flex flex-wrap items-center justify-between gap-2 pb-4 mb-4 border-b border-white/10">
+        <div className="font-mono text-[10px] uppercase text-[#ff6b00] tracking-wider font-semibold">
+          FIRST-PRINCIPLES NAVAL ARCHITECTURE
+        </div>
+        <div className="font-mono text-[10px] px-2 py-0.5 bg-white/5 border border-white/15 text-zinc-300">
+          Modeled Physics Estimate · Holtrop-Mennen (1984) & Kwon (1987)
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
@@ -146,12 +151,17 @@ export const HydrodynamicSlider: React.FC<Props> = ({
               </div>
               <button
                 onClick={onEnterCockpit}
-                className="mt-3 text-left font-mono text-xs uppercase tracking-wider text-white hover:text-[#ff6b00] transition-colors flex items-center gap-1.5"
+                className="mt-3 text-left font-mono text-xs uppercase tracking-wider text-white hover:text-[#ff6b00] transition-colors flex items-center gap-1.5 cursor-pointer"
               >
-                <span>OPEN IN COCKPIT DISPATCH</span>
+                <span>OPTIMIZE THIS IN DASHBOARD</span>
                 <span>→</span>
               </button>
             </div>
+          </div>
+
+          {/* Model Limitations Footnote */}
+          <div className="pt-2 border-t border-white/5 text-[10px] font-mono text-zinc-500">
+            Note: Modeled estimate using semi-empirical towing tank formulations. Real-world consumption depends on engine tuning, hull fouling, and vessel trim.
           </div>
         </div>
       </div>
