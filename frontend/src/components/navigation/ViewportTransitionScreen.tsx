@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Compass, Check } from 'iconoir-react';
+import { QFleetLogo } from '../brand/QFleetLogo';
 
 interface Props {
   isActive: boolean;
@@ -154,9 +155,9 @@ export const ViewportTransitionScreen: React.FC<Props> = ({
             />
 
             {/* Tactical Telemetry Corner Accents */}
-            <div className="absolute top-8 left-8 font-mono text-[10px] text-zinc-400 tracking-[0.25em] uppercase flex items-center gap-2">
+            <div className="absolute top-8 left-8 font-mono text-[10px] text-zinc-400 tracking-[0.25em] uppercase flex items-center gap-2 select-none">
               <span className="w-2 h-2 rounded-full bg-[#ff6b00] animate-ping" />
-              <span className="font-semibold text-white">Q-FLEET // TRANSIT PROTOCOL</span>
+              <span className="font-semibold text-white select-none">Q-FLEET // TRANSIT PROTOCOL</span>
             </div>
             <div className="absolute top-8 right-8 font-mono text-[10px] text-zinc-400 tracking-[0.25em] uppercase">
               WORKSTATION: <span className="text-[#ff6b00]">COCKPIT DISPATCH</span>
@@ -183,7 +184,7 @@ export const ViewportTransitionScreen: React.FC<Props> = ({
                   transition={{ duration: 6, repeat: Infinity, ease: 'linear' }}
                   className="w-16 h-16 rounded-full border border-white/15 flex items-center justify-center bg-black/60 shadow-[0_0_35px_rgba(255,107,0,0.25)]"
                 >
-                  <Compass className="w-8 h-8 text-[#ff6b00]" strokeWidth={2} />
+                  <QFleetLogo className="w-8 h-8 text-[#ff6b00]" />
                 </motion.div>
                 {/* Secondary Orbit Ring */}
                 <motion.div
@@ -194,7 +195,7 @@ export const ViewportTransitionScreen: React.FC<Props> = ({
               </div>
 
               {/* Title & Status */}
-              <h2 className="font-mono text-sm md:text-base font-bold uppercase tracking-[0.25em] text-white">
+              <h2 className="font-mono text-sm md:text-base font-bold uppercase tracking-[0.25em] text-white select-none">
                 Q-FLEET // NAVAL COMMAND
               </h2>
               <p className="font-mono text-xs text-[#ff6b00] tracking-wider mt-1 uppercase font-semibold">

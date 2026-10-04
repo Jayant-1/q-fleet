@@ -1,8 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="none">
-  <rect width="32" height="32" rx="6" fill="#08080a"/>
-  <rect width="32" height="32" rx="6" stroke="#ffffff" stroke-opacity="0.1" stroke-width="1"/>
-  <g transform="translate(4, 4)">
-    <path d="M10.5857 10.5857L16.9496 7.0502L13.4141 13.4142L7.05012 16.9497L10.5857 10.5857Z" stroke="#ff6b00" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="#ff6b00"/>
-    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#ff6b00" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <!-- Quantum Superposition Outer Orbit Arc -->
+  <path d="M 50 12 A 38 38 0 1 0 82 72" stroke="#ff6b00" stroke-width="11" stroke-linecap="round"/>
+  <!-- Forward Cutting Naval Bow Vector / Q Tail -->
+  <path d="M 46 50 L 88 92" stroke="#ff6b00" stroke-width="12" stroke-linecap="round"/>
+  <path d="M 68 92 L 88 92 L 88 72" stroke="#ff6b00" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Quantum Origin Core Point -->
+  <circle cx="50" cy="50" r="7.5" fill="#ffffff"/>
 </svg>

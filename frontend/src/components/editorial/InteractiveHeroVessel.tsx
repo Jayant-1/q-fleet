@@ -1,5 +1,6 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { Compass } from 'iconoir-react';
+import { QFleetLogo } from '../brand/QFleetLogo';
 
 interface Hotspot {
   id: string;
@@ -8,7 +9,6 @@ interface Hotspot {
   title: string;
   tag: string;
   metric: string;
-  desc: string;
 }
 
 const VESSEL_HOTSPOTS: Hotspot[] = [
@@ -19,7 +19,6 @@ const VESSEL_HOTSPOTS: Hotspot[] = [
     title: 'BOW WAVE HYDRODYNAMICS',
     tag: 'R_W: 13.5 kN',
     metric: 'Fn = 0.162',
-    desc: 'Viscous wave-making surge system modeled via Holtrop-Mennen first principles.',
   },
   {
     id: 'cargo',
@@ -28,7 +27,6 @@ const VESSEL_HOTSPOTS: Hotspot[] = [
     title: 'CARGO STOWAGE ALLOCATION',
     tag: '15,000 TEU',
     metric: '185,000 MT',
-    desc: 'Full scantling displacement at 15.5m operating draft across tier stacks.',
   },
   {
     id: 'bridge',
@@ -37,7 +35,6 @@ const VESSEL_HOTSPOTS: Hotspot[] = [
     title: 'PROPULSION & NAVIGATION',
     tag: 'MCR 68,000 kW',
     metric: '14.6 KTS KNEE',
-    desc: 'Brake power loading calibrated for optimal fuel-transit Pareto trade-off.',
   },
 ];
 
@@ -183,21 +180,18 @@ export const InteractiveHeroVessel: React.FC = () => {
             {/* Expanded Telemetry Popup on Hover / Click */}
             {isActive && (
               <div
-                className="absolute z-30 left-7 top-7 w-56 p-3 bg-black/95 backdrop-blur-md border border-[#ff6b00]/60 text-left font-mono shadow-2xl animate-in fade-in zoom-in-95 duration-150 pointer-events-none"
+                className="absolute z-30 left-7 top-7 w-56 p-3 bg-black/95 backdrop-blur-md border border-[#ff6b00]/60 text-left font-mono shadow-2xl animate-in fade-in zoom-in-95 duration-150 pointer-events-none select-none"
                 style={{
                   transform: h.y > 60 ? 'translateY(-110%)' : 'none',
                 }}
               >
-                <div className="text-[10px] text-[#ff6b00] font-bold tracking-wider uppercase flex items-center justify-between">
+                <div className="text-[10px] text-[#ff6b00] font-bold tracking-wider uppercase flex items-center justify-between select-none">
                   <span>{h.title}</span>
-                  <Compass className="w-3 h-3 text-[#ff6b00]" strokeWidth={2} />
+                  <QFleetLogo className="w-3 h-3 text-[#ff6b00]" />
                 </div>
-                <div className="text-white text-xs font-semibold mt-1">
+                <div className="text-white text-xs font-semibold mt-1 select-none">
                   {h.metric}
                 </div>
-                <p className="text-[10px] text-zinc-400 mt-1 font-sans leading-relaxed">
-                  {h.desc}
-                </p>
               </div>
             )}
           </div>

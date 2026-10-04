@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Compass } from 'iconoir-react';
+import { QFleetLogo } from '../brand/QFleetLogo';
 import { CorridorInfo } from '../../types';
 
 interface Props {
@@ -52,9 +53,9 @@ export const CockpitHeader: React.FC<Props> = ({
           <span className="text-[10px] text-zinc-500 font-mono">[⌘K]</span>
         </button>
 
-        <div className="flex items-center gap-2 border-l border-white/10 pl-4">
-          <Compass className="w-4 h-4 text-[#ff6b00]" strokeWidth={2} />
-          <span className="font-mono text-xs font-bold tracking-widest text-white uppercase">
+        <div className="flex items-center gap-2.5 border-l border-white/10 pl-4 select-none">
+          <QFleetLogo className="w-5 h-5 shrink-0" color="#ff6b00" dotColor="#ffffff" />
+          <span className="font-mono text-xs font-bold tracking-widest text-white uppercase select-none">
             Q-FLEET // NAVAL COCKPIT
           </span>
         </div>

@@ -13,6 +13,7 @@ import {
   ArrowRight,
   BookOpen
 } from '@/components/icons';
+import { QFleetLogo } from './brand/QFleetLogo';
 
 export type TabKey =
   | 'operations'
@@ -62,13 +63,13 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
               onClick={() => onToggleViewMode('landing')}
               className="flex items-center gap-3 text-left group focus:outline-none"
             >
-              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-telemetry-cyan/20 to-telemetry-violet/20 border border-telemetry-cyan/40 flex items-center justify-center glow-cyan group-hover:border-telemetry-cyan transition-colors">
-                <Compass className="w-5 h-5 text-telemetry-cyan" />
+              <div className="w-9 h-9 rounded-lg bg-black/60 border border-[#ff6b00]/40 flex items-center justify-center shadow-[0_0_15px_rgba(255,107,0,0.3)] group-hover:border-[#ff6b00] transition-colors select-none">
+                <QFleetLogo className="w-5 h-5 text-[#ff6b00]" color="#ff6b00" dotColor="#ffffff" />
               </div>
               <div>
-                <div className="flex items-center gap-2">
-                  <span className="font-extrabold tracking-tight text-white text-sm sm:text-base font-sans">
-                    QUANTUM<span className="text-telemetry-cyan">MARITIME</span>
+                <div className="flex items-center gap-2 select-none">
+                  <span className="font-extrabold tracking-widest text-white text-sm sm:text-base font-mono">
+                    Q-FLEET
                   </span>
                   <span className="hidden md:inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono bg-telemetry-seafoam/10 text-telemetry-seafoam border border-telemetry-seafoam/30">
                     <ShieldCheck className="w-3 h-3" /> IMO MEPC.376

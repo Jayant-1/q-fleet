@@ -1,5 +1,6 @@
 import React from 'react';
 import { Compass, ArrowDown } from 'iconoir-react';
+import { QFleetLogo } from '../brand/QFleetLogo';
 import { HydrodynamicSlider } from './HydrodynamicSlider';
 import { QuantumParetoTeaser } from './QuantumParetoTeaser';
 import { FuelTaxScrubber } from './FuelTaxScrubber';
@@ -39,12 +40,12 @@ export const EditorialShowcase: React.FC<Props> = ({
       {/* Top Fixed Swiss Navigation Bar (Height: 64px) */}
       <header className="fixed top-0 left-0 right-0 h-16 z-40 bg-[#131315]/90 backdrop-blur-md border-b border-white/10 px-4 sm:px-6 md:px-12 flex items-center justify-between">
         {/* Brand */}
-        <div className="flex items-center gap-3">
-          <span className="font-mono text-xs uppercase tracking-[0.2em] font-bold text-white flex items-center gap-2">
-            <Compass className="w-4 h-4 text-[#ff6b00]" strokeWidth={2} />
+        <div className="flex items-center gap-3 select-none">
+          <span className="font-mono text-xs uppercase tracking-[0.2em] font-bold text-white flex items-center gap-2.5 select-none">
+            <QFleetLogo className="w-5 h-5 shrink-0" color="#ff6b00" dotColor="#ffffff" />
             Q-FLEET
           </span>
-          <span className="hidden sm:inline-block font-mono text-[9px] uppercase tracking-wider text-zinc-500 border-l border-white/10 pl-3">
+          <span className="hidden sm:inline-block font-mono text-[9px] uppercase tracking-wider text-zinc-500 border-l border-white/10 pl-3 select-none">
             MARITIME DECISION SUPPORT
           </span>
         </div>
@@ -694,10 +695,10 @@ export const EditorialShowcase: React.FC<Props> = ({
           <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
             <button
               onClick={(e) => onEnterCockpit(e)}
-              className="px-8 py-4 bg-[#ff6b00] hover:bg-[#ff8533] text-black font-mono text-xs uppercase font-bold tracking-wider transition-all flex items-center gap-2 cursor-pointer shadow-lg"
+              className="px-8 py-4 bg-[#ff6b00] hover:bg-[#ff8533] text-black font-mono text-xs uppercase font-bold tracking-wider transition-all flex items-center gap-2 cursor-pointer shadow-lg select-none"
             >
-              <span>OPEN Q-FLEET DASHBOARD</span>
-              <span className="text-[10px] bg-black/20 px-1.5 py-0.5 rounded-none">[⌘K]</span>
+              <span className="select-none">OPEN Q-FLEET DASHBOARD</span>
+              <span className="text-[10px] bg-black/20 px-1.5 py-0.5 rounded-none select-none">[⌘K]</span>
             </button>
 
             <a

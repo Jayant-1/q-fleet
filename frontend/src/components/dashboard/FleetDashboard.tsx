@@ -7,6 +7,7 @@ import { DashboardComplianceTab } from './tabs/DashboardComplianceTab';
 import { DashboardDirectoryTab } from './tabs/DashboardDirectoryTab';
 import { WelcomeOnboardingModal } from '../tour/WelcomeOnboardingModal';
 import { InteractiveTaskWalkthrough } from '../tour/InteractiveTaskWalkthrough';
+import { QFleetLogo } from '../brand/QFleetLogo';
 import {
   Ship,
   Compass,
@@ -94,12 +95,12 @@ export const FleetDashboard: React.FC<Props> = ({ store, onNavigateLanding }) =>
 
             <div className="h-4 w-px bg-stone-200 hidden xs:block" />
 
-            <div className="flex items-center gap-1 sm:gap-2">
-              <Compass className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#ff6b00]" strokeWidth={2} />
-              <span className="font-semibold text-xs sm:text-sm tracking-tight text-stone-900 font-mono uppercase">
+            <div className="flex items-center gap-1 sm:gap-2 select-none">
+              <QFleetLogo className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" color="#ff6b00" dotColor="#1c1917" />
+              <span className="font-semibold text-xs sm:text-sm tracking-tight text-stone-900 font-mono uppercase select-none">
                 Q-FLEET
               </span>
-              <span className="text-xs font-mono text-stone-400 hidden sm:inline">
+              <span className="text-xs font-mono text-stone-400 hidden sm:inline select-none">
                 / Console
               </span>
               <span className="hidden xs:inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono text-emerald-700 bg-emerald-50 border border-emerald-200/60 ml-0.5">
