@@ -14,6 +14,7 @@ interface Props {
   solverLatencyMs: number;
   benchmarkData: BenchmarkComparisonResponse | null;
   activeCorridor?: CorridorInfo | null;
+  onOpenDisruption?: () => void;
 }
 
 export const DashboardOptimizationTab: React.FC<Props> = ({
@@ -25,6 +26,7 @@ export const DashboardOptimizationTab: React.FC<Props> = ({
   solverLatencyMs,
   benchmarkData,
   activeCorridor,
+  onOpenDisruption,
 }) => {
   const [selectedAlgo, setSelectedAlgo] = useState('MO-QIEA');
   const paretoFront = latestOptimization?.pareto_front || [];
@@ -80,6 +82,18 @@ export const DashboardOptimizationTab: React.FC<Props> = ({
         </div>
 
         <div className="flex items-center gap-2">
+          {onOpenDisruption && (
+            <button
+              onClick={onOpenDisruption}
+              data-testid="nav-disruption-lab-btn"
+              className="px-2.5 sm:px-3 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-800 hover:text-amber-900 border border-amber-200/90 rounded text-xs font-mono font-medium transition-colors shadow-2xs flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
+              title="Open Disruption & Operational Resilience Lab"
+            >
+              <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
+              <span>Disruption Lab</span>
+            </button>
+          )}
+
           <select
             value={selectedAlgo}
             onChange={(e) => setSelectedAlgo(e.target.value)}
@@ -126,62 +140,91 @@ export const DashboardOptimizationTab: React.FC<Props> = ({
           <div className="relative bg-[#FAFAFA] border border-stone-200 rounded-lg p-6 min-h-[300px] flex items-center justify-center">
             {paretoFront.length > 0 ? (
               <div className="w-full h-64 relative">
-                {/* SVG Axes */}
-                <svg className="w-full h-full" viewBox="0 0 600 240">
-                  {/* Grid Lines */}
-                  <line x1="50" y1="20" x2="50" y2="200" stroke="#E7E5E4" strokeWidth="1" />
-                  <line x1="50" y1="200" x2="580" y2="200" stroke="#E7E5E4" strokeWidth="1" />
-                  <line x1="50" y1="110" x2="580" y2="110" stroke="#F5F5F4" strokeWidth="1" strokeDasharray="3 3" />
+                {(() => {
+                  const minF = Math.min(...paretoFront.map((p) => p.total_fuel_mt));
+                  const maxF = Math.max(...paretoFront.map((p) => p.total_fuel_mt));
+                  const minC = Math.min(...paretoFront.map((p) => p.total_cost_usd));
+                  const maxC = Math.max(...paretoFront.map((p) => p.total_cost_usd));
 
-                  {/* Axis Labels */}
-                  <text x="50" y="14" fill="#78716C" fontSize="10" textAnchor="middle">High Cost ($M)</text>
-                  <text x="550" y="215" fill="#78716C" fontSize="10" textAnchor="end">Fuel Burn (MT) →</text>
-                  <text x="50" y="215" fill="#A8A29E" fontSize="10" textAnchor="middle">0</text>
+                  const spanF = Math.max(1e-4, maxF - minF);
+                  const spanC = Math.max(1e-4, maxC - minC);
 
-                  {/* Scatter Points */}
-                  {paretoFront.map((sol, idx) => {
-                    const isSelected = selectedSolution?.solution_id === sol.solution_id;
-                    const isKnee = sol.solution_id === latestOptimization?.compromise_solution_id;
+                  const getX = (fuel: number) => 65 + ((fuel - minF) / spanF) * 490;
+                  const getY = (cost: number) => 185 - ((cost - minC) / spanC) * 145;
 
-                    const minF = Math.min(...paretoFront.map((p) => p.total_fuel_mt));
-                    const maxF = Math.max(...paretoFront.map((p) => p.total_fuel_mt));
-                    const minC = Math.min(...paretoFront.map((p) => p.total_cost_usd));
-                    const maxC = Math.max(...paretoFront.map((p) => p.total_cost_usd));
+                  const midF = (minF + maxF) / 2;
+                  const midC = (minC + maxC) / 2;
 
-                    const spanF = Math.max(1e-4, maxF - minF);
-                    const spanC = Math.max(1e-4, maxC - minC);
+                  const sortedFront = [...paretoFront].sort((a, b) => a.total_fuel_mt - b.total_fuel_mt);
+                  const frontierPath = sortedFront.map((p, i) => `${i === 0 ? 'M' : 'L'} ${getX(p.total_fuel_mt)} ${getY(p.total_cost_usd)}`).join(' ');
 
-                    const cx = 90 + ((sol.total_fuel_mt - minF) / spanF) * 440;
-                    const cy = 170 - ((sol.total_cost_usd - minC) / spanC) * 120;
+                  return (
+                    <svg className="w-full h-full" viewBox="0 0 600 240">
+                      {/* Subtle Grid Lines */}
+                      <line x1="65" y1="40" x2="570" y2="40" stroke="#F0EFEA" strokeWidth="1" strokeDasharray="3 3" />
+                      <line x1="65" y1="112" x2="570" y2="112" stroke="#F0EFEA" strokeWidth="1" strokeDasharray="3 3" />
+                      <line x1="65" y1="185" x2="570" y2="185" stroke="#E7E5E4" strokeWidth="1" />
 
-                    return (
-                      <g
-                        key={sol.solution_id || idx}
-                        data-testid="pareto-point"
-                        data-solution-id={sol.solution_id}
-                        className="cursor-pointer transition-transform hover:scale-125"
-                        onClick={() => setSelectedSolution(sol)}
-                      >
-                        {isKnee && (
-                          <circle cx={cx} cy={cy} r="14" fill="#EA580C" opacity="0.15" />
-                        )}
-                        <circle
-                          cx={cx}
-                          cy={cy}
-                          r={isSelected ? "8" : isKnee ? "7" : "5"}
-                          fill={isKnee ? "#EA580C" : isSelected ? "#1C1917" : "#0284C7"}
-                          stroke="#FFFFFF"
-                          strokeWidth="2"
-                        />
-                        {isSelected && (
-                          <text x={cx} y={cy - 12} fill="#1C1917" fontSize="10" fontWeight="bold" textAnchor="middle">
-                            Active Plan
-                          </text>
-                        )}
-                      </g>
-                    );
-                  })}
-                </svg>
+                      <line x1="65" y1="40" x2="65" y2="185" stroke="#E7E5E4" strokeWidth="1" />
+                      <line x1="310" y1="40" x2="310" y2="185" stroke="#F0EFEA" strokeWidth="1" strokeDasharray="3 3" />
+                      <line x1="555" y1="40" x2="555" y2="185" stroke="#F0EFEA" strokeWidth="1" strokeDasharray="3 3" />
+
+                      {/* Frontier Trade-off Line */}
+                      {sortedFront.length > 1 && (
+                        <path d={frontierPath} fill="none" stroke="#EA580C" strokeWidth="1.5" strokeDasharray="4 3" opacity="0.45" />
+                      )}
+
+                      {/* Y-Axis Cost Ticks & Labels */}
+                      <text x="60" y="44" fill="#78716C" fontSize="9" fontFamily="monospace" textAnchor="end">${(maxC / 1e6).toFixed(2)}M</text>
+                      <text x="60" y="116" fill="#A8A29E" fontSize="9" fontFamily="monospace" textAnchor="end">${(midC / 1e6).toFixed(2)}M</text>
+                      <text x="60" y="188" fill="#78716C" fontSize="9" fontFamily="monospace" textAnchor="end">${(minC / 1e6).toFixed(2)}M</text>
+
+                      {/* X-Axis Fuel Ticks & Labels */}
+                      <text x="65" y="202" fill="#78716C" fontSize="9" fontFamily="monospace" textAnchor="start">{Math.round(minF).toLocaleString()} MT</text>
+                      <text x="310" y="202" fill="#A8A29E" fontSize="9" fontFamily="monospace" textAnchor="middle">{Math.round(midF).toLocaleString()} MT</text>
+                      <text x="555" y="202" fill="#78716C" fontSize="9" fontFamily="monospace" textAnchor="end">{Math.round(maxF).toLocaleString()} MT</text>
+
+                      {/* Axis Category Headings */}
+                      <text x="65" y="24" fill="#57534E" fontSize="10" fontWeight="600" fontFamily="monospace">OPERATING OUTLAY (USD)</text>
+                      <text x="570" y="222" fill="#57534E" fontSize="10" fontWeight="600" fontFamily="monospace" textAnchor="end">VOYAGE FUEL BURN (MT) →</text>
+
+                      {/* Scatter Points */}
+                      {paretoFront.map((sol, idx) => {
+                        const isSelected = selectedSolution?.solution_id === sol.solution_id;
+                        const isKnee = sol.solution_id === latestOptimization?.compromise_solution_id;
+                        const cx = getX(sol.total_fuel_mt);
+                        const cy = getY(sol.total_cost_usd);
+
+                        return (
+                          <g
+                            key={sol.solution_id || idx}
+                            data-testid="pareto-point"
+                            data-solution-id={sol.solution_id}
+                            className="cursor-pointer transition-transform hover:scale-125"
+                            onClick={() => setSelectedSolution(sol)}
+                          >
+                            {isKnee && (
+                              <circle cx={cx} cy={cy} r="14" fill="#EA580C" opacity="0.15" />
+                            )}
+                            <circle
+                              cx={cx}
+                              cy={cy}
+                              r={isSelected ? "8" : isKnee ? "7" : "5"}
+                              fill={isKnee ? "#EA580C" : isSelected ? "#1C1917" : "#0284C7"}
+                              stroke="#FFFFFF"
+                              strokeWidth="2"
+                            />
+                            {isSelected && (
+                              <text x={cx} y={cy - 12} fill="#1C1917" fontSize="10" fontWeight="bold" textAnchor="middle">
+                                Active Plan
+                              </text>
+                            )}
+                          </g>
+                        );
+                      })}
+                    </svg>
+                  );
+                })()}
 
                 <div className="absolute top-2 right-2 bg-white/95 border border-stone-200 rounded-lg p-2 text-[11px] font-mono text-stone-600 shadow-2xs space-y-1 pointer-events-none">
                   <div className="flex items-center gap-1.5" data-testid="compromise-knee-plan">
@@ -348,16 +391,20 @@ export const DashboardOptimizationTab: React.FC<Props> = ({
                     <td className="py-2.5 px-3 text-right tabular-nums">
                       <div>{a.speed_knots} kts</div>
                       {a.speed_adjustment_reason && (
-                        <div className="text-[10px] text-amber-700 font-sans tracking-tight" title={a.speed_adjustment_reason}>
-                          {a.speed_adjustment_reason.includes('Clamped') ? '⚙️ Clamped' : '⚡ Recovery'}
+                        <div className="mt-0.5" title={a.speed_adjustment_reason}>
+                          <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-mono uppercase tracking-wide bg-amber-50 text-amber-800 border border-amber-200/80">
+                            {a.speed_adjustment_reason.includes('Clamped') ? 'Clamped' : 'Recovery'}
+                          </span>
                         </div>
                       )}
                     </td>
                     <td className="py-2.5 px-3">
                       <div>{a.fuel_type}</div>
                       {a.fuel_adjustment_reason && (
-                        <div className="text-[10px] text-amber-700 font-sans tracking-tight" title={a.fuel_adjustment_reason}>
-                          {a.fuel_adjustment_reason.includes('ECA') ? '🌿 ECA Rule' : '🔄 Substituted'}
+                        <div className="mt-0.5" title={a.fuel_adjustment_reason}>
+                          <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-mono uppercase tracking-wide bg-emerald-50 text-emerald-800 border border-emerald-200/80">
+                            {a.fuel_adjustment_reason.includes('ECA') ? 'ECA Mandate' : 'Substituted'}
+                          </span>
                         </div>
                       )}
                     </td>

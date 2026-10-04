@@ -9,7 +9,6 @@ import {
   ShieldCheck,
   Ship,
   Layers,
-  Sparkles,
   Download,
   AlertTriangle,
   Flame,

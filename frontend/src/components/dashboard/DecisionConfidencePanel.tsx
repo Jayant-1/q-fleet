@@ -46,43 +46,43 @@ export const DecisionConfidencePanel: React.FC<Props> = ({ selectedSolution }) =
         </span>
       </div>
 
-      {/* 2 Confidence Interval Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {/* 2 Confidence Interval Columns */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 bg-stone-50/70 p-4 sm:p-5 rounded-lg border border-stone-200/80">
         {/* Fuel Bound */}
-        <div className="p-4 bg-stone-50/80 rounded-lg border border-stone-200 space-y-2">
-          <div className="text-[11px] uppercase tracking-wider text-stone-500 font-medium">
+        <div className="space-y-2">
+          <div className="text-[11px] uppercase tracking-wider text-stone-500 font-semibold">
             Voyage Fuel Consumption (95% Interval)
           </div>
-          <div className="flex items-baseline justify-between text-stone-900 font-bold text-sm">
+          <div className="flex items-baseline gap-3 text-stone-900 font-bold text-base">
             <span>{fuelLower.toLocaleString()} MT</span>
-            <span className="text-stone-400 font-normal">to</span>
+            <span className="text-stone-400 font-normal text-xs">to</span>
             <span>{fuelUpper.toLocaleString()} MT</span>
           </div>
-          <div className="text-[10px] text-stone-500 pt-1 border-t border-stone-200">
-            Median estimate: <strong>{fuel.toLocaleString(undefined, { maximumFractionDigits: 1 })} MT</strong> (±4.5% coverage bound)
+          <div className="text-[11px] text-stone-500 pt-1 border-t border-stone-200/80">
+            Median estimate: <strong className="text-stone-800">{fuel.toLocaleString(undefined, { maximumFractionDigits: 1 })} MT</strong> (±4.5% coverage bound)
           </div>
         </div>
 
         {/* Cost Bound */}
-        <div className="p-4 bg-stone-50/80 rounded-lg border border-stone-200 space-y-2">
-          <div className="text-[11px] uppercase tracking-wider text-stone-500 font-medium">
+        <div className="space-y-2 sm:border-l sm:border-stone-200/80 sm:pl-6">
+          <div className="text-[11px] uppercase tracking-wider text-stone-500 font-semibold">
             Commercial Outlay (95% Interval)
           </div>
-          <div className="flex items-baseline justify-between text-stone-900 font-bold text-sm">
+          <div className="flex items-baseline gap-3 text-stone-900 font-bold text-base">
             <span>${(costLower / 1e6).toFixed(2)}M</span>
-            <span className="text-stone-400 font-normal">to</span>
+            <span className="text-stone-400 font-normal text-xs">to</span>
             <span>${(costUpper / 1e6).toFixed(2)}M</span>
           </div>
-          <div className="text-[10px] text-stone-500 pt-1 border-t border-stone-200">
-            Median estimate: <strong>${(cost / 1e6).toFixed(2)}M</strong> (bunker price + carbon tax uncertainty)
+          <div className="text-[11px] text-stone-500 pt-1 border-t border-stone-200/80">
+            Median estimate: <strong className="text-stone-800">${(cost / 1e6).toFixed(2)}M</strong> (bunker price + carbon tax uncertainty)
           </div>
         </div>
       </div>
 
-      {/* Distinguishing Aleatoric vs Epistemic Uncertainty */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-[11px] text-stone-600 leading-relaxed">
-        <div className="p-3 bg-white rounded-lg border border-stone-200 space-y-1">
-          <span className="font-semibold text-stone-900 block uppercase text-[10px]">
+      {/* Distinguishing Aleatoric vs Epistemic Uncertainty (De-nested Left-Border Columns) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-1 text-[11px] text-stone-600 leading-relaxed">
+        <div className="border-l-2 border-stone-300 pl-3 py-0.5 space-y-1">
+          <span className="font-semibold text-stone-900 block uppercase text-[10px] tracking-wide">
             Statistical Uncertainty (Aleatoric):
           </span>
           <p>
@@ -90,8 +90,8 @@ export const DecisionConfidencePanel: React.FC<Props> = ({ selectedSolution }) =
           </p>
         </div>
 
-        <div className="p-3 bg-white rounded-lg border border-stone-200 space-y-1">
-          <span className="font-semibold text-stone-900 block uppercase text-[10px]">
+        <div className="border-l-2 border-stone-300 pl-3 py-0.5 space-y-1">
+          <span className="font-semibold text-stone-900 block uppercase text-[10px] tracking-wide">
             Physical Parameter Sensitivity (Epistemic):
           </span>
           <p>
@@ -100,12 +100,12 @@ export const DecisionConfidencePanel: React.FC<Props> = ({ selectedSolution }) =
         </div>
       </div>
 
-      {/* Mathematical Rigor Note */}
-      <div className="p-3 bg-emerald-50/60 rounded-lg border border-emerald-200 flex items-start gap-2 text-emerald-900 text-xs">
+      {/* Distribution-Free Conformal Guarantee Banner */}
+      <div className="p-3.5 bg-emerald-50/70 rounded-lg border border-emerald-200/80 flex items-start gap-2.5 text-emerald-900 text-xs">
         <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
         <div className="space-y-0.5 text-[11px]">
           <span className="font-bold">Distribution-Free Conformal Guarantee:</span>
-          <p className="text-emerald-800">
+          <p className="text-emerald-800 leading-relaxed">
             Intervals are computed using non-parametric inductive conformal prediction. They provide rigorous finite-sample marginal coverage guarantees without assuming Gaussian or symmetrical error distributions.
           </p>
         </div>

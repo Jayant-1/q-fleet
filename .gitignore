@@ -21,3 +21,6 @@ Thumbs.db
 # Runtime Run Dumps
 data/runs/*.json
 !data/runs/.gitkeep
+.vercel
+.env*
+_uv/

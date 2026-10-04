@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Ship, Compass, ArrowRight, Check, X, Sparkles, Layers, Award } from '@/components/icons';
+import { Ship, Compass, ArrowRight, Check, X, Layers, Award } from '@/components/icons';
 
 interface Props {
   isOpen: boolean;
@@ -22,7 +22,7 @@ export const WelcomeOnboardingModal: React.FC<Props> = ({
         {/* Top Header */}
         <div className="px-6 pt-6 pb-2 flex items-center justify-between">
           <div className="flex items-center gap-2 text-xs font-semibold text-orange-600 uppercase tracking-wider">
-            <Sparkles className="w-4 h-4" />
+            <Compass className="w-4 h-4" />
             <span>Welcome to Q-FLEET Workstation</span>
           </div>
           <button
@@ -170,7 +170,7 @@ export const WelcomeOnboardingModal: React.FC<Props> = ({
                   className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-colors shadow-xs"
                 >
                   Start Hands-On Walkthrough
-                  <Sparkles className="w-3.5 h-3.5" />
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               </>
             )}

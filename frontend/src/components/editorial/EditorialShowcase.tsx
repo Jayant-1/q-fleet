@@ -117,7 +117,6 @@ export const EditorialShowcase: React.FC<Props> = ({
             className="font-mono text-xs px-3 sm:px-4 py-2 bg-[#ff6b00] hover:bg-[#ff8533] text-black font-bold uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer shadow-sm select-none"
           >
             <span className="select-none">OPEN DASHBOARD</span>
-            <span className="hidden sm:inline text-[10px] bg-black/20 px-1 py-0.5 rounded-none font-mono select-none">[⌘K]</span>
           </button>
         </div>
       </header>

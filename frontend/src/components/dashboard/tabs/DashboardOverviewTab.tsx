@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { CorridorInfo, VesselInfo, ParetoSolution, FuelType } from '../../../types';
-import { Fuel, DollarSign, Leaf, Award, Compass, Ship, Navigation } from '@/components/icons';
+import { Fuel, DollarSign, Leaf, Award, Compass, Ship, Navigation, AlertTriangle, Globe } from '@/components/icons';
+import { RouteSpecsModal } from '../routes/RouteSpecsModal';
+import { MaritimeRealisticMap } from '../map/MaritimeRealisticMap';
 
 interface Props {
   corridors: CorridorInfo[];
@@ -12,6 +14,7 @@ interface Props {
   speedKnots: number;
   carbonPriceEur: number;
   onNavigateTab: (tabId: string) => void;
+  onOpenDisruption?: () => void;
 }
 
 export const DashboardOverviewTab: React.FC<Props> = ({
@@ -24,7 +27,9 @@ export const DashboardOverviewTab: React.FC<Props> = ({
   speedKnots,
   carbonPriceEur,
   onNavigateTab,
+  onOpenDisruption,
 }) => {
+  const [isSpecsOpen, setIsSpecsOpen] = useState(false);
   const hasSolution = !!selectedSolution;
   const totalFuelMt = selectedSolution?.total_fuel_mt;
   const totalCostUsd = selectedSolution?.total_cost_usd;
@@ -131,7 +136,8 @@ export const DashboardOverviewTab: React.FC<Props> = ({
       </div>
 
       {/* 2. Active Route & Interactive Map Card */}
-      <div className="bg-white rounded-lg border border-stone-200/90 shadow-2xs overflow-hidden">
+      <div data-testid="active-corridor-card" className="bg-white rounded-lg border border-stone-200/90 shadow-2xs overflow-hidden">
+        {/* Card Header with Port Telemetry & Actions */}
         <div className="px-5 py-3.5 border-b border-stone-100 flex flex-wrap items-center justify-between gap-4">
           <div>
             <div className="text-[11px] font-mono uppercase tracking-wider text-stone-400">
@@ -142,103 +148,104 @@ export const DashboardOverviewTab: React.FC<Props> = ({
             </h2>
           </div>
 
-          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-mono text-stone-500">
-            <span>{activeCorridor?.origin_port?.port_id} ({activeCorridor?.origin_port?.name})</span>
-            <span className="text-stone-300">→</span>
-            <span>{activeCorridor?.destination_port?.port_id} ({activeCorridor?.destination_port?.name})</span>
-            <span className="text-stone-300">·</span>
-            <span className="text-stone-700 font-semibold">{activeCorridor?.distance_nm?.toLocaleString()} NM</span>
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-mono text-stone-500">
+              <span>{activeCorridor?.origin_port?.port_id} ({activeCorridor?.origin_port?.name})</span>
+              <span className="text-stone-300">→</span>
+              <span>{activeCorridor?.destination_port?.port_id} ({activeCorridor?.destination_port?.name})</span>
+              <span className="text-stone-300">·</span>
+              <span className="text-stone-700 font-semibold">{activeCorridor?.distance_nm?.toLocaleString()} NM</span>
+            </div>
+
+            {/* Route Specs Matrix Comparison Trigger */}
+            <button
+              onClick={() => setIsSpecsOpen(true)}
+              data-testid="open-route-specs-btn"
+              className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-mono font-medium text-stone-700 bg-stone-50 hover:bg-stone-100 hover:text-stone-900 border border-stone-200/90 hover:border-stone-300 rounded-md transition-colors shadow-2xs cursor-pointer"
+              title="Compare All 7 Global Corridors & Transport Specs"
+            >
+              <Globe className="w-3.5 h-3.5 text-stone-500" />
+              <span>Route Specs</span>
+            </button>
+
+            {onOpenDisruption && (
+              <button
+                onClick={onOpenDisruption}
+                data-testid="nav-disruption-lab-btn"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono font-medium text-amber-800 bg-amber-50 hover:bg-amber-100 hover:text-amber-900 border border-amber-200/90 rounded-md transition-colors shadow-2xs cursor-pointer"
+                title="Simulate Route Disruptions (Sea-state surge, Port delays, Carbon tax spikes)"
+              >
+                <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
+                <span>Disruption Lab</span>
+              </button>
+            )}
           </div>
         </div>
 
-        {/* Clean Vector Visual Map Canvas */}
-        <div className="relative bg-[#FAFAFA] p-6 flex flex-col items-center justify-center min-h-[280px]">
-          <svg className="w-full max-w-4xl h-56" viewBox="0 0 800 300" fill="none">
-            {/* World background continent silhouettes (soft minimalist gray) */}
-            <path
-              d="M 120,60 Q 200,40 260,80 T 320,140 Q 300,200 240,240 T 160,220 Z"
-              fill="#E5E7EB"
-              opacity="0.6"
-            />
-            <path
-              d="M 380,40 Q 480,30 580,70 T 700,120 Q 680,220 560,250 T 420,200 Z"
-              fill="#E5E7EB"
-              opacity="0.6"
-            />
-            <path
-              d="M 300,130 Q 350,110 380,140 T 370,220 Q 320,240 290,200 Z"
-              fill="#E5E7EB"
-              opacity="0.5"
-            />
-
-            {/* Geodesic Route Path */}
-            <path
-              d="M 180,110 Q 320,70 420,150 T 640,110"
-              stroke="#EA580C"
-              strokeWidth="2.5"
-              strokeDasharray="4 4"
-              className="animate-pulse"
-            />
-
-            {/* Waypoint Nodes */}
-            <g transform="translate(180, 110)">
-              <circle r="7" fill="#EA580C" />
-              <circle r="14" fill="#EA580C" opacity="0.2" />
-              <text x="-10" y="-14" fill="#111827" fontSize="11" fontWeight="bold">
-                {activeCorridor?.origin_port?.port_id || 'ORIGIN'}
-              </text>
-            </g>
-
-            <g transform="translate(330, 95)">
-              <circle r="4" fill="#4B5563" />
-              <text x="-15" y="16" fill="#6B7280" fontSize="10">
-                Malacca (WP1)
-              </text>
-            </g>
-
-            <g transform="translate(420, 150)">
-              <circle r="4" fill="#4B5563" />
-              <text x="-10" y="18" fill="#6B7280" fontSize="10">
-                Suez (WP2)
-              </text>
-            </g>
-
-            <g transform="translate(530, 125)">
-              <circle r="4" fill="#4B5563" />
-              <text x="-15" y="16" fill="#6B7280" fontSize="10">
-                Gibraltar (WP3)
-              </text>
-            </g>
-
-            <g transform="translate(640, 110)">
-              <circle r="7" fill="#EA580C" />
-              <circle r="14" fill="#EA580C" opacity="0.2" />
-              <text x="-25" y="-14" fill="#111827" fontSize="11" fontWeight="bold">
-                {activeCorridor?.destination_port?.port_id || 'DEST'}
-              </text>
-            </g>
-          </svg>
+        {/* Interactive Corridor Quick-Switcher Strip (Breathable, zero horizontal scrollbar) */}
+        <div className="px-5 py-2.5 bg-stone-50/70 border-b border-stone-100 flex flex-wrap items-center gap-2.5 overflow-hidden">
+          <span className="text-xs font-mono text-stone-500 font-semibold uppercase tracking-wider shrink-0 flex items-center gap-1.5 mr-1">
+            <Compass className="w-3.5 h-3.5 text-amber-600" />
+            <span>Corridors:</span>
+          </span>
+          <div className="flex flex-wrap items-center gap-2">
+            {corridors.map((c) => {
+              const isActive = c.route_id === activeCorridorId;
+              return (
+                <button
+                  key={c.route_id}
+                  onClick={() => setActiveCorridorId(c.route_id)}
+                  data-testid={`corridor-chip-${c.route_id}`}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-mono transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap shadow-2xs ${
+                    isActive
+                      ? 'bg-stone-900 text-white font-semibold ring-1 ring-stone-900 shadow-xs'
+                      : 'bg-white hover:bg-stone-100 text-stone-700 border border-stone-200/90 hover:border-stone-300'
+                  }`}
+                  title={`${c.name} (${c.distance_nm.toLocaleString()} NM)`}
+                >
+                  {isActive && <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />}
+                  <span className="font-semibold">{c.origin_port?.port_id}→{c.destination_port?.port_id}</span>
+                  <span className={`text-[11px] ${isActive ? 'text-stone-300' : 'text-stone-400'}`}>
+                    ({(c.distance_nm / 1000).toFixed(1)}k NM)
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
+
+        {/* Realistic Maritime Interactive GIS Map Engine */}
+        <MaritimeRealisticMap
+          corridors={corridors}
+          activeCorridorId={activeCorridorId}
+          onSelectCorridor={setActiveCorridorId}
+          speedKnots={speedKnots}
+        />
 
         {/* Integrated Chart HUD Telemetry Strip */}
         <div className="border-t border-stone-100 bg-stone-50/70 px-5 py-2.5 flex flex-wrap items-center justify-between text-xs font-mono text-stone-600 gap-3">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 flex-wrap">
+            <div className="flex items-center gap-1.5 text-stone-700">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-stone-500">Live Cartography:</span>{' '}
+              <strong className="text-stone-900 font-semibold">WGS-84</strong>
+            </div>
             <div>
               <span className="text-stone-400">Cruising Speed:</span>{' '}
               <strong className="text-stone-900 font-semibold">{speedKnots.toFixed(1)} kts</strong>
             </div>
             <div>
+              <span className="text-stone-400">Max Transit:</span>{' '}
+              <span className="text-stone-800 font-semibold">{activeCorridor?.max_transit_time_days}d</span>
+            </div>
+            <div>
               <span className="text-stone-400">Cold Ironing:</span>{' '}
               <span className="text-stone-700">{activeCorridor?.destination_port?.has_cold_ironing ? 'Available' : 'Auxiliary'}</span>
-            </div>
-            <div className="hidden sm:block">
-              <span className="text-stone-400">Projection:</span>{' '}
-              <span className="text-stone-700">WGS-84 Geodesic</span>
             </div>
           </div>
           <button
             onClick={() => onNavigateTab('physics')}
-            className="text-stone-600 hover:text-stone-900 font-medium transition-colors"
+            className="text-stone-600 hover:text-stone-900 font-medium transition-colors cursor-pointer"
           >
             Adjust Physics →
           </button>
@@ -335,7 +342,16 @@ export const DashboardOverviewTab: React.FC<Props> = ({
               </tbody>
             </table>
           </div>
-        </div>
       </div>
+
+      {/* 4. Global Corridors Specifications & Trade Matrix Drawer Modal */}
+      <RouteSpecsModal
+        isOpen={isSpecsOpen}
+        onClose={() => setIsSpecsOpen(false)}
+        corridors={corridors}
+        activeCorridorId={activeCorridorId}
+        onSelectCorridor={setActiveCorridorId}
+      />
+    </div>
   );
 };

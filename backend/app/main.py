@@ -36,6 +36,19 @@ app.include_router(scen_router)
 app.include_router(rep_router)
 
 
+@app.middleware("http")
+async def normalize_api_path(request, call_next):
+    """Normalize incoming serverless request path if /api prefix is stripped."""
+    path = request.scope.get("path", "")
+    prefixes = ("/optimize", "/predict", "/benchmarks", "/scenarios", "/reports", "/health")
+    if any(path.startswith(p) for p in prefixes):
+        request.scope["path"] = f"/api{path}"
+    return await call_next(request)
+
+
+@app.get("/")
+@app.get("/api")
+@app.get("/health")
 @app.get("/api/health")
 def health_check():
     """System health check endpoint."""

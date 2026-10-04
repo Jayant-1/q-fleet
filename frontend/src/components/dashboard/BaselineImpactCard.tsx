@@ -70,11 +70,11 @@ export const BaselineImpactCard: React.FC<Props> = ({
         </div>
       </div>
 
-      {/* 4 Core Comparison Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* 4 Core Comparison Metrics (Unified Scorecard Grid) */}
+      <div className="bg-stone-50/60 rounded-lg border border-stone-200/80 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-stone-200/80">
         {/* Metric 1: Fuel Burn */}
-        <div className="p-4 rounded-lg bg-stone-50/80 border border-stone-200/80 space-y-2 font-mono">
-          <div className="text-[11px] uppercase tracking-wider text-stone-500 font-medium">
+        <div className="p-4 space-y-2 font-mono">
+          <div className="text-[11px] uppercase tracking-wider text-stone-500 font-semibold">
             Voyage Bunker Fuel
           </div>
           <div className="flex items-baseline justify-between">
@@ -88,7 +88,7 @@ export const BaselineImpactCard: React.FC<Props> = ({
           </div>
           <div
             data-testid="baseline-fuel-diff"
-            className="pt-1.5 border-t border-stone-200/60 flex items-center justify-between text-xs"
+            className="pt-1.5 border-t border-stone-200/80 flex items-center justify-between text-xs"
           >
             <span className="text-stone-500">Bunker Delta:</span>
             <span className="font-bold text-emerald-700">
@@ -98,8 +98,8 @@ export const BaselineImpactCard: React.FC<Props> = ({
         </div>
 
         {/* Metric 2: Operating Cost */}
-        <div className="p-4 rounded-lg bg-stone-50/80 border border-stone-200/80 space-y-2 font-mono">
-          <div className="text-[11px] uppercase tracking-wider text-stone-500 font-medium">
+        <div className="p-4 space-y-2 font-mono">
+          <div className="text-[11px] uppercase tracking-wider text-stone-500 font-semibold">
             Total Commercial Outlay
           </div>
           <div className="flex items-baseline justify-between">
@@ -113,7 +113,7 @@ export const BaselineImpactCard: React.FC<Props> = ({
           </div>
           <div
             data-testid="baseline-cost-diff"
-            className="pt-1.5 border-t border-stone-200/60 flex items-center justify-between text-xs"
+            className="pt-1.5 border-t border-stone-200/80 flex items-center justify-between text-xs"
           >
             <span className="text-stone-500">Cost Delta:</span>
             <span className="font-bold text-emerald-700">
@@ -123,8 +123,8 @@ export const BaselineImpactCard: React.FC<Props> = ({
         </div>
 
         {/* Metric 3: Lifecycle GHG */}
-        <div className="p-4 rounded-lg bg-stone-50/80 border border-stone-200/80 space-y-2 font-mono">
-          <div className="text-[11px] uppercase tracking-wider text-stone-500 font-medium">
+        <div className="p-4 space-y-2 font-mono">
+          <div className="text-[11px] uppercase tracking-wider text-stone-500 font-semibold">
             Lifecycle GHG (WTW)
           </div>
           <div className="flex items-baseline justify-between">
@@ -138,7 +138,7 @@ export const BaselineImpactCard: React.FC<Props> = ({
           </div>
           <div
             data-testid="baseline-ghg-diff"
-            className="pt-1.5 border-t border-stone-200/60 flex items-center justify-between text-xs"
+            className="pt-1.5 border-t border-stone-200/80 flex items-center justify-between text-xs"
           >
             <span className="text-stone-500">GHG Abated:</span>
             <span className="font-bold text-emerald-700">
@@ -148,8 +148,8 @@ export const BaselineImpactCard: React.FC<Props> = ({
         </div>
 
         {/* Metric 4: CII Letter Grade */}
-        <div className="p-4 rounded-lg bg-stone-50/80 border border-stone-200/80 space-y-2 font-mono">
-          <div className="text-[11px] uppercase tracking-wider text-stone-500 font-medium">
+        <div className="p-4 space-y-2 font-mono">
+          <div className="text-[11px] uppercase tracking-wider text-stone-500 font-semibold">
             Fleet CII Grade
           </div>
           <div className="flex items-baseline justify-between">
@@ -161,7 +161,7 @@ export const BaselineImpactCard: React.FC<Props> = ({
               Grade {optCii}
             </span>
           </div>
-          <div className="pt-1.5 border-t border-stone-200/60 flex items-center justify-between text-xs">
+          <div className="pt-1.5 border-t border-stone-200/80 flex items-center justify-between text-xs">
             <span className="text-stone-500">Statutory Status:</span>
             <span className="font-bold text-emerald-700">
               Corrective Plan Avoided
@@ -172,9 +172,9 @@ export const BaselineImpactCard: React.FC<Props> = ({
 
       {/* Statutory Regulatory Savings Bar */}
       {(fueleuSaved > 0 || etsSaved > 0) && (
-        <div className="p-3.5 bg-blue-50/50 rounded-lg border border-blue-200/70 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs font-mono">
-          <div className="flex items-center gap-2 text-blue-900 font-semibold">
-            <Award className="w-4 h-4 text-blue-600" />
+        <div className="p-3 bg-stone-100/70 rounded-lg border border-stone-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs font-mono">
+          <div className="flex items-center gap-2 text-stone-900 font-semibold">
+            <Award className="w-4 h-4 text-orange-600" />
             <span>Statutory Non-Compliance Liabilities Prevented:</span>
           </div>
           <div className="flex flex-wrap items-center gap-4 text-stone-700">
@@ -193,10 +193,10 @@ export const BaselineImpactCard: React.FC<Props> = ({
       )}
 
       {/* Honest Scientific Disclosure Footnote */}
-      <div className="p-3 bg-stone-50 rounded-lg border border-stone-200 flex items-start gap-2 text-stone-600 text-xs font-mono">
-        <Info className="w-4 h-4 text-stone-500 shrink-0 mt-0.5" />
+      <div className="pt-3 border-t border-stone-100 flex items-start gap-2.5 text-stone-500 text-xs font-mono">
+        <Info className="w-4 h-4 text-stone-400 shrink-0 mt-0.5" />
         <div className="space-y-0.5 leading-relaxed">
-          <div className="font-semibold text-stone-800">
+          <div className="font-semibold text-stone-700 text-[11px] uppercase tracking-wide">
             [MODELED SCENARIO COMPARISON: First-Principles Simulation Delta]
           </div>
           <div className="text-[11px] text-stone-500">

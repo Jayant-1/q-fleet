@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, ArrowRight, ArrowLeft, X, CheckCircle2, Award, Zap, Play } from '@/components/icons';
+import { Compass, ArrowRight, ArrowLeft, X, CheckCircle2, Award, Zap, Play } from '@/components/icons';
 
 interface Props {
   isActive: boolean;
@@ -135,7 +135,7 @@ export const InteractiveTaskWalkthrough: React.FC<Props> = ({
           <div className="flex items-center justify-between border-b border-gray-100 pb-3 mb-3">
             <div className="flex items-center gap-2">
               <div className="w-6 h-6 rounded-md bg-orange-100 text-orange-700 flex items-center justify-center">
-                <Sparkles className="w-3.5 h-3.5" />
+                <Compass className="w-3.5 h-3.5" />
               </div>
               <span className="text-xs font-bold text-orange-900">
                 Interactive Task Walkthrough

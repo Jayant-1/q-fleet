@@ -30,7 +30,16 @@ router = APIRouter(prefix="/api/optimize", tags=["Optimization"])
 # Global Run Results Store (run_id -> run_data)
 OPTIMIZATION_RUNS_STORE: Dict[str, Dict[str, Any]] = {}
 RUNS_DIR = Path(__file__).resolve().parent.parent.parent.parent / "data" / "runs"
-RUNS_DIR.mkdir(parents=True, exist_ok=True)
+TMP_RUNS_DIR = Path("/tmp/qfleet_runs")
+FIXTURES_DIR = Path(__file__).resolve().parent.parent.parent.parent / "data" / "fixtures"
+try:
+    RUNS_DIR.mkdir(parents=True, exist_ok=True)
+except OSError:
+    pass
+try:
+    TMP_RUNS_DIR.mkdir(parents=True, exist_ok=True)
+except OSError:
+    pass
 
 
 def parse_custom_vessel(d: Dict[str, Any]) -> VesselSpecification:
@@ -151,6 +160,10 @@ def get_run_entry(run_id: str) -> Optional[Dict[str, Any]]:
         return entry
 
     disk_path = RUNS_DIR / f"{run_id}.json"
+    if not disk_path.exists():
+        disk_path = TMP_RUNS_DIR / f"{run_id}.json"
+    if not disk_path.exists() and run_id in ["sample", "default", "sample_run"]:
+        disk_path = FIXTURES_DIR / "sample_run.json"
     if disk_path.exists():
         try:
             with open(disk_path, "r", encoding="utf-8") as f:
@@ -396,8 +409,17 @@ def run_fleet_optimization(req: OptimizeRunRequest):
             "response": response_data.model_dump(),
             "problem_params": entry["problem_params"]
         }
-        with open(RUNS_DIR / f"{run_id}.json", "w", encoding="utf-8") as f:
-            json.dump(disk_payload, f, indent=2, default=str)
+        try:
+            with open(RUNS_DIR / f"{run_id}.json", "w", encoding="utf-8") as f:
+                json.dump(disk_payload, f, indent=2, default=str)
+        except OSError:
+            pass  # Read-only serverless filesystem fallback: in-memory store retained
+
+        try:
+            with open(TMP_RUNS_DIR / f"{run_id}.json", "w", encoding="utf-8") as f:
+                json.dump(disk_payload, f, indent=2, default=str)
+        except OSError:
+            pass
 
         return response_data
     except ValueError as ve:

@@ -7,7 +7,8 @@ Label: [SYNTHETIC-SIMULATED: Hydrodynamic Holtrop-Mennen Formulation].
 
 import math
 import numpy as np
-from typing import Tuple, Dict, Any, List
+import pandas as pd
+from typing import Tuple, Dict, Any, List, Optional
 from backend.app.domain.models import VesselType
 
 

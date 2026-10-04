@@ -8,7 +8,7 @@ import {
   TrendingUp,
   X,
   RotateCcw,
-  Sparkles,
+  Activity,
   Ship,
   ArrowRight
 } from '@/components/icons';
@@ -214,7 +214,7 @@ export const DisruptionLabModal: React.FC<Props> = ({
             >
               <div className="flex items-center justify-between border-b border-orange-100 pb-2">
                 <span className="font-bold text-orange-950 uppercase text-[11px] flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-orange-600" />
+                  <Activity className="w-3.5 h-3.5 text-orange-600" />
                   Reactive Dispatch Adaptation
                 </span>
                 <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-100 text-emerald-900 font-bold">
@@ -279,7 +279,7 @@ export const DisruptionLabModal: React.FC<Props> = ({
                 data-testid="simulate-disruption-btn"
                 className="px-4 py-2 bg-stone-900 hover:bg-stone-800 text-white rounded-lg font-medium transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
               >
-                <Sparkles className="w-3.5 h-3.5" />
+                <Activity className="w-3.5 h-3.5" />
                 <span>{isSimulating ? 'Simulating Dynamic Reaction...' : 'Simulate Resilience Reaction'}</span>
               </button>
             ) : (

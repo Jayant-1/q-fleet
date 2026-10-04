@@ -1,0 +1,15 @@
+.git
+.venv
+__pycache__
+*.py[cod]
+.pytest_cache
+.coverage
+htmlcov
+frontend/node_modules
+node_modules
+*.tsbuildinfo
+data/runs/*.json
+data/raw
+backend/tests
+frontend/tests
+screenshots

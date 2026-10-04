@@ -22,7 +22,6 @@ import {
   Lock,
   Scale,
   RefreshCw,
-  Sparkles,
   ChevronRight
 } from '@/components/icons';
 import { TabKey } from './HeaderNav';
@@ -1223,7 +1222,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchConsole }) => 
               }`}>
                 <div className="flex items-center justify-between mb-4">
                   <div className="text-sm font-bold text-[#00ff9d] flex items-center gap-1.5">
-                    <Sparkles className="w-4 h-4" />
+                    <ShieldCheck className="w-4 h-4" />
                     <span>Proposed QIEA Green Plan</span>
                   </div>
                   <span className="text-xs text-[#00ff9d]">34,600 tCO₂e</span>

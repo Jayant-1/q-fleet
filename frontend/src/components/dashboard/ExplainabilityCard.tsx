@@ -1,6 +1,6 @@
 import React from 'react';
 import { ParetoSolution, CorridorInfo } from '../../types';
-import { Award, CheckCircle2, AlertTriangle, ShieldCheck, Sparkles, TrendingUp, Info } from '@/components/icons';
+import { Award, CheckCircle2, AlertTriangle, ShieldCheck, TrendingUp, Info } from '@/components/icons';
 
 interface Props {
   selectedSolution?: ParetoSolution | null;
@@ -31,9 +31,9 @@ export const ExplainabilityCard: React.FC<Props> = ({
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-stone-100 pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono uppercase tracking-wider bg-sky-50 text-sky-700 border border-sky-200 font-semibold">
-              <Sparkles className="w-3 h-3" />
-              Decision Explainability
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono uppercase tracking-wider bg-stone-100 text-stone-800 border border-stone-200 font-semibold">
+              <ShieldCheck className="w-3 h-3 text-stone-700" />
+              Decision Rationale
             </span>
             <span className="text-[11px] font-mono text-stone-400">
               Pareto Selection Breakdown
@@ -97,7 +97,7 @@ export const ExplainabilityCard: React.FC<Props> = ({
             </li>
             <li className="flex items-start gap-2">
               <span className="text-amber-600 font-bold shrink-0">✕</span>
-              <span><strong>High-Speed Sprint (&gt;19.5 kts):</strong> Rejected due to cubic wave drag surge ($P \sim V^3$) degrading IMO CII to Grade E.</span>
+              <span><strong>High-Speed Sprint (&gt;19.5 kts):</strong> Rejected due to non-linear cubic drag surge (P ∝ V³) degrading IMO CII to Grade E.</span>
             </li>
           </ul>
         </div>
@@ -105,15 +105,15 @@ export const ExplainabilityCard: React.FC<Props> = ({
         {/* Pillar 3: Sensitivity Flip Thresholds */}
         <div className="p-4 rounded-lg bg-stone-50/60 border border-stone-200/80 space-y-3">
           <div className="flex items-center gap-2 text-stone-900 font-semibold text-xs uppercase tracking-wider font-mono">
-            <TrendingUp className="w-4 h-4 text-sky-600" />
+            <TrendingUp className="w-4 h-4 text-stone-700" />
             <span>3. Decision Flip Thresholds</span>
           </div>
           <div className="space-y-2.5 text-xs text-stone-600 font-mono leading-relaxed">
-            <div className="p-2.5 bg-white rounded border border-stone-200">
+            <div className="p-2.5 bg-stone-100/70 rounded-md border-l-2 border-stone-400 pl-3">
               <span className="font-semibold text-stone-900 block text-[11px] uppercase">Carbon Tax Pivot:</span>
               <span>If carbon tax increases from <strong>${carbonTax.toFixed(0)}/t</strong> to <strong>&gt;$165/t</strong>, the Pareto knee shifts towards Bio-Methanol dual-fuel.</span>
             </div>
-            <div className="p-2.5 bg-white rounded border border-stone-200">
+            <div className="p-2.5 bg-stone-100/70 rounded-md border-l-2 border-stone-400 pl-3">
               <span className="font-semibold text-stone-900 block text-[11px] uppercase">Bunker Price Sensitivity:</span>
               <span>If fossil fuel prices rise by <strong>+15%</strong>, speed slows by <strong>-0.8 kts</strong> across deep-sea legs to minimize fuel expense.</span>
             </div>

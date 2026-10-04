@@ -1,0 +1,28 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "vite",
+  "buildCommand": "pnpm --dir frontend build",
+  "outputDirectory": "frontend/dist",
+  "installCommand": "pnpm --dir frontend install",
+  "functions": {
+    "api/index.py": {
+      "includeFiles": "backend/app/**,data/fixtures/**,data/mrv/**,data/ports/**,data/data_provenance_manifest.json",
+      "excludeFiles": "{.env*,backend/tests/**,frontend/**,data/raw/**,data/runs/**,data/eurostat/**,docs/**,scratch/**,screenshots/**,playwright-report/**,test-results/**}",
+      "maxDuration": 60
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

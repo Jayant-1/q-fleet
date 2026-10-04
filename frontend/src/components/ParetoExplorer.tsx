@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ParetoSolution } from '../types';
-import { Layers, Sparkles, TrendingDown, Check, Info } from '@/components/icons';
+import { Layers, ShieldCheck, TrendingDown, Check, Info } from '@/components/icons';
 
 interface ParetoExplorerProps {
   solutions: ParetoSolution[];
@@ -181,7 +181,7 @@ export const ParetoExplorer: React.FC<ParetoExplorerProps> = ({
         <div className="lg:col-span-4 bg-oceanic-panel/70 border border-oceanic-border rounded-lg p-4 space-y-4">
           <div className="flex items-center justify-between">
             <span className="text-xs font-mono text-telemetry-cyan uppercase tracking-wider flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5" />
+              <ShieldCheck className="w-3.5 h-3.5" />
               {activeSolution.solution_id === compromiseSolutionId ? 'KNEE COMPROMISE PLAN' : 'INSPECTED PLAN'}
             </span>
             <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-telemetry-seafoam/20 text-telemetry-seafoam">

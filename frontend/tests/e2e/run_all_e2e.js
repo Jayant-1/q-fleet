@@ -594,9 +594,9 @@ IMPOSSIBLE_SHIP,Container_UltraLarge,-5000,99.5,INVALID_FUEL`;
 
   // 18. Disruption Lab Modal & Real-Time Sea-State/Delay Simulation
   await step(18, 'Disruption Lab: open incident injection modal, simulate monsoon sea-state surge, assert reactive metrics', async () => {
-    const disruptionBtn = page.locator('[data-testid="nav-disruption-lab-btn"]');
+    const disruptionBtn = page.locator('[data-testid="nav-disruption-lab-btn"]').first();
     if (await disruptionBtn.count() === 0) {
-      throw new Error('Disruption Lab button [data-testid="nav-disruption-lab-btn"] not found in dashboard header');
+      throw new Error('Disruption Lab button [data-testid="nav-disruption-lab-btn"] not found');
     }
     await disruptionBtn.click({ force: true });
     await page.waitForTimeout(500);

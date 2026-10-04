@@ -5,7 +5,7 @@ Computes MAE, RMSE, MAPE, R2, and Inference Latency across classical and quantum
 
 import time
 import numpy as np
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 from backend.app.prediction.dataset import (
     generate_synthetic_voyage_dataset,
     get_train_val_test_splits,

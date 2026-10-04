@@ -8,21 +8,15 @@ import { DashboardDirectoryTab } from './tabs/DashboardDirectoryTab';
 import { WelcomeOnboardingModal } from '../tour/WelcomeOnboardingModal';
 import { InteractiveTaskWalkthrough } from '../tour/InteractiveTaskWalkthrough';
 import { DisruptionLabModal } from './DisruptionLabModal';
+import { RouteCommandSelector } from './routes/RouteCommandSelector';
 import { QFleetLogo } from '../brand/QFleetLogo';
 import {
   Ship,
   Compass,
-  Play,
-  FileDown,
-  Sparkles,
   Layers,
-  Gauge,
   TrendingUp,
   Award,
-  BookOpen,
   ArrowLeft,
-  CheckCircle2,
-  AlertTriangle,
 } from '@/components/icons';
 
 interface Props {
@@ -93,20 +87,20 @@ export const FleetDashboard: React.FC<Props> = ({ store, onNavigateLanding, onNa
       <header className="bg-white/95 backdrop-blur-md border-b border-stone-200/60 sticky top-0 z-40 w-full max-w-full">
         <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-1.5 sm:gap-4 min-w-0">
           {/* Left: Clean Brand & Back Navigation */}
-          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0 min-w-0">
+          <div className="flex-1 flex items-center gap-1.5 sm:gap-3 min-w-0 justify-start">
             <button
               onClick={(e) => onNavigateLanding(e)}
               data-testid="back-to-landing-btn"
-              className="text-stone-400 hover:text-stone-900 transition-colors flex items-center gap-1 text-xs font-mono group py-1 cursor-pointer select-none"
+              className="text-stone-400 hover:text-stone-900 transition-colors flex items-center gap-1 text-xs font-mono group py-1 cursor-pointer select-none shrink-0"
               title="Return to Presentation Landing Page"
             >
               <span className="transition-transform group-hover:-translate-x-0.5 text-stone-600">←</span>
               <span className="hidden xs:inline">Landing</span>
             </button>
 
-            <div className="h-4 w-px bg-stone-200 hidden xs:block" />
+            <div className="h-4 w-px bg-stone-200 hidden xs:block shrink-0" />
 
-            <div className="flex items-center gap-1 sm:gap-2 select-none">
+            <div className="flex items-center gap-1 sm:gap-2 select-none shrink-0">
               <QFleetLogo
                 className="w-4 h-4 sm:w-5 sm:h-5 shrink-0 hover:scale-105 transition-transform cursor-pointer"
                 color="#ff6b00"
@@ -137,72 +131,31 @@ export const FleetDashboard: React.FC<Props> = ({ store, onNavigateLanding, onNa
                   }
                 }}
                 title="Return to Presentation Landing Page"
-                className="font-semibold text-xs sm:text-sm tracking-tight text-stone-900 hover:text-[#ff6b00] transition-colors font-mono uppercase select-none cursor-pointer"
+                className="font-semibold text-xs sm:text-sm tracking-tight text-stone-900 hover:text-[#ff6b00] transition-colors font-mono uppercase select-none cursor-pointer shrink-0"
               >
                 Q-FLEET
               </span>
-              <span className="text-xs font-mono text-stone-400 hidden sm:inline select-none cursor-default">
+              <span className="text-xs font-mono text-stone-400 hidden sm:inline select-none cursor-default shrink-0">
                 / Console
               </span>
-              <span className="hidden xs:inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono text-emerald-700 bg-emerald-50 border border-emerald-200/60 ml-0.5 select-none pointer-events-none">
+              <span className="hidden md:inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono text-emerald-700 bg-emerald-50 border border-emerald-200/60 ml-0.5 select-none pointer-events-none shrink-0">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                 Live
               </span>
             </div>
           </div>
 
-          {/* Right: Route Selector & Key Actions */}
-          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
-            {/* Contextual Corridor Selector */}
-            <div className="hidden md:flex items-center gap-2">
-              <span className="text-xs font-mono text-stone-400">Route:</span>
-              <select
-                value={activeCorridorId}
-                onChange={(e) => setActiveCorridorId(e.target.value)}
-                data-testid="corridor-selector"
-                className="text-xs font-mono bg-stone-50 border border-stone-200 hover:border-stone-300 rounded-md px-3 py-1.5 text-stone-800 focus:outline-none focus:ring-1 focus:ring-stone-400 max-w-[260px] truncate transition-colors cursor-pointer shadow-2xs"
-              >
-                {corridors.map((c) => (
-                  <option key={c.route_id} value={c.route_id}>
-                    {c.name} ({c.distance_nm} NM)
-                  </option>
-                ))}
-              </select>
-            </div>
+          {/* Center: Precision Route Command Selector */}
+          <div className="shrink-0 flex items-center justify-center px-1 sm:px-2 z-20">
+            <RouteCommandSelector
+              corridors={corridors}
+              activeCorridorId={activeCorridorId}
+              onSelectCorridor={setActiveCorridorId}
+            />
+          </div>
 
-            {/* Tour Launcher */}
-            <button
-              onClick={() => setIsWalkthroughActive(true)}
-              className="px-2 py-1 text-xs font-medium text-stone-500 hover:text-stone-900 hover:bg-stone-50 rounded-md transition-colors hidden sm:inline-block cursor-pointer"
-              title="Interactive Product Tour"
-            >
-              Tour
-            </button>
-
-            {/* Judge Mode Button */}
-            {onNavigateJudge && (
-              <button
-                onClick={onNavigateJudge}
-                data-testid="nav-judge-mode-btn"
-                className="px-2 sm:px-2.5 py-1 sm:py-1.5 bg-orange-600 hover:bg-orange-700 text-white rounded-md text-[11px] sm:text-xs font-mono font-bold uppercase tracking-wider transition-colors shadow-2xs flex items-center gap-1 cursor-pointer whitespace-nowrap"
-                title="Enter 3-Minute Guided Judge Evaluation Mode"
-              >
-                <Sparkles className="w-3.5 h-3.5" />
-                <span className="hidden xs:inline">Judge Mode</span>
-              </button>
-            )}
-
-            {/* Disruption Lab Launcher */}
-            <button
-              onClick={() => setIsDisruptionOpen(true)}
-              data-testid="nav-disruption-lab-btn"
-              className="px-2 sm:px-2.5 py-1 sm:py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-md text-[11px] sm:text-xs font-mono font-medium transition-colors border border-stone-200 cursor-pointer hidden md:flex items-center gap-1 whitespace-nowrap"
-              title="Open Disruption & Operational Resilience Lab"
-            >
-              <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
-              <span>Disruption Lab</span>
-            </button>
-
+          {/* Right: Key Actions */}
+          <div className="flex-1 flex items-center gap-1 sm:gap-2 shrink-0 justify-end">
             {/* Export PDF */}
             <button
               id="tour-export-pdf"
@@ -286,6 +239,7 @@ export const FleetDashboard: React.FC<Props> = ({ store, onNavigateLanding, onNa
             speedKnots={speedKnots}
             carbonPriceEur={carbonPriceEur}
             onNavigateTab={setActiveTab}
+            onOpenDisruption={() => setIsDisruptionOpen(true)}
           />
         )}
 
@@ -314,6 +268,7 @@ export const FleetDashboard: React.FC<Props> = ({ store, onNavigateLanding, onNa
             solverLatencyMs={solverLatencyMs}
             benchmarkData={benchmarkData}
             activeCorridor={activeCorridor}
+            onOpenDisruption={() => setIsDisruptionOpen(true)}
           />
         )}
 
