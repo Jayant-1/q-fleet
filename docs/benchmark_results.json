@@ -1,5 +1,5 @@
 {
-  "prediction_benchmark": {
+  "voyage_prediction_benchmark": {
     "dataset_samples": 2000,
     "train_samples": 1400,
     "val_samples": 300,
@@ -50,8 +50,8 @@
           "water_depth_meters",
           "engine_mcr_ratio"
         ],
-        "training_time_seconds": 0.09,
-        "inference_latency_per_sample_ms": 0.083
+        "training_time_seconds": 0.1,
+        "inference_latency_per_sample_ms": 0.082
       },
       {
         "model_name": "Classical GA-GBM (Binary GA Feature Selection)",
@@ -69,7 +69,7 @@
           "current_knots",
           "sea_water_temp_c"
         ],
-        "training_time_seconds": 0.48,
+        "training_time_seconds": 0.49,
         "inference_latency_per_sample_ms": 0.003
       },
       {
@@ -86,32 +86,81 @@
           "wind_speed_knots",
           "current_knots"
         ],
-        "training_time_seconds": 0.45,
-        "inference_latency_per_sample_ms": 0.003
+        "training_time_seconds": 0.49,
+        "inference_latency_per_sample_ms": 0.004
       }
     ],
     "provenance": "[SYNTHETIC-SIMULATED: Hydrodynamic Holtrop-Mennen Dataset]"
   },
-  "optimization_benchmark": {
-    "benchmark_id": "bench_1790982153",
+  "mrv_empirical_benchmark": {
+    "benchmark_dataset": "EMSA THETIS-MRV (Official 2022-2023 EU Reporting)",
+    "train_samples": 1044,
+    "val_samples": 184,
+    "test_samples": 1272,
+    "split_strategy": "Temporal Holdout: Train=2022, Test=2023 (Zero Target Leakage)",
+    "results": [
+      {
+        "model_name": "Classical Ridge Regression (Linear Baseline)",
+        "r2_score": 0.3971,
+        "mae_annual_mt": 1736.053,
+        "rmse_annual_mt": 3012.752,
+        "mape_pct": 101.06,
+        "features_used_count": 8,
+        "training_time_seconds": 0.0,
+        "inference_latency_per_sample_ms": 0.0
+      },
+      {
+        "model_name": "Classical Random Forest (Non-Linear Baseline)",
+        "r2_score": 0.6284,
+        "mae_annual_mt": 1190.791,
+        "rmse_annual_mt": 2365.269,
+        "mape_pct": 52.95,
+        "features_used_count": 8,
+        "training_time_seconds": 0.08,
+        "inference_latency_per_sample_ms": 0.018
+      },
+      {
+        "model_name": "Classical GA-GBM (Genetic Algorithm Feature Selection)",
+        "r2_score": 0.5563,
+        "mae_annual_mt": 1274.341,
+        "rmse_annual_mt": 2584.712,
+        "mape_pct": 57.73,
+        "features_used_count": 3,
+        "training_time_seconds": 0.31,
+        "inference_latency_per_sample_ms": 0.001
+      },
+      {
+        "model_name": "Quantum-Inspired QIEA-GBM (Proposed Rotation Gate Selection)",
+        "r2_score": 0.5734,
+        "mae_annual_mt": 1256.356,
+        "rmse_annual_mt": 2534.148,
+        "mape_pct": 56.85,
+        "features_used_count": 3,
+        "training_time_seconds": 0.37,
+        "inference_latency_per_sample_ms": 0.002
+      }
+    ]
+  },
+  "fleet_optimization_benchmark": {
+    "benchmark_id": "bench_1791066605",
     "budget_evaluations_per_algorithm": 1050,
     "algorithms_compared": [
       {
         "algorithm": "MO-QIEA (Proposed)",
         "total_evaluations": 1050,
-        "execution_time_seconds": 0.55,
+        "execution_time_seconds": 0.86,
         "pareto_front_size": 4,
-        "hypervolume": 0.184,
-        "spacing_spread": 0.0243,
+        "hypervolume": 0.1839,
+        "spacing_spread": 0.0254,
         "min_fuel_mt": 10643.5,
-        "min_cost_usd": 16972275.6,
+        "min_cost_usd": 16975282.4,
         "min_lifecycle_ghg_tco2e": 37034.4,
         "feasibility_rate_pct": 100.0,
         "convergence_curve": [
           {
             "generation": 1,
             "best_fuel_mt": 13062.2,
-            "best_cost_usd": 16766422.3,
+            "best_cost_usd": 16766864.2,
             "best_ghg_tco2e": 40623.9,
             "hypervolume": 0.1572,
             "population_diversity": 0.0012
@@ -119,47 +168,47 @@
           {
             "generation": 2,
             "best_fuel_mt": 10430.4,
-            "best_cost_usd": 13139681.6,
+            "best_cost_usd": 13132799.6,
             "best_ghg_tco2e": 28827.9,
-            "hypervolume": 0.2761,
+            "hypervolume": 0.2763,
             "population_diversity": 0.002
           },
           {
             "generation": 3,
             "best_fuel_mt": 12752.8,
-            "best_cost_usd": 17286504.6,
+            "best_cost_usd": 17270005.6,
             "best_ghg_tco2e": 29052.2,
-            "hypervolume": 0.1511,
+            "hypervolume": 0.1514,
             "population_diversity": 0.0028
           },
           {
             "generation": 4,
             "best_fuel_mt": 11028.3,
-            "best_cost_usd": 15910823.2,
+            "best_cost_usd": 15960162.4,
             "best_ghg_tco2e": 36533.8,
-            "hypervolume": 0.2032,
+            "hypervolume": 0.2021,
             "population_diversity": 0.003
           },
           {
             "generation": 5,
             "best_fuel_mt": 9656.7,
-            "best_cost_usd": 13346848.5,
+            "best_cost_usd": 13343704.4,
             "best_ghg_tco2e": 31344.1,
-            "hypervolume": 0.2861,
+            "hypervolume": 0.2862,
             "population_diversity": 0.0035
           },
           {
             "generation": 6,
             "best_fuel_mt": 9963.2,
-            "best_cost_usd": 13502253.3,
+            "best_cost_usd": 13527139.3,
             "best_ghg_tco2e": 31565.0,
-            "hypervolume": 0.2766,
+            "hypervolume": 0.276,
             "population_diversity": 0.0037
           },
           {
             "generation": 7,
             "best_fuel_mt": 11008.7,
-            "best_cost_usd": 16667367.2,
+            "best_cost_usd": 16668245.2,
             "best_ghg_tco2e": 37346.6,
             "hypervolume": 0.1865,
             "population_diversity": 0.0037
@@ -167,185 +216,185 @@
           {
             "generation": 8,
             "best_fuel_mt": 10657.5,
-            "best_cost_usd": 16066985.8,
+            "best_cost_usd": 16052790.0,
             "best_ghg_tco2e": 33451.7,
-            "hypervolume": 0.2046,
+            "hypervolume": 0.205,
             "population_diversity": 0.0037
           },
           {
             "generation": 9,
             "best_fuel_mt": 9431.1,
-            "best_cost_usd": 12581737.4,
+            "best_cost_usd": 12572830.9,
             "best_ghg_tco2e": 29101.3,
-            "hypervolume": 0.3093,
+            "hypervolume": 0.3096,
             "population_diversity": 0.0041
           },
           {
             "generation": 10,
             "best_fuel_mt": 10643.5,
-            "best_cost_usd": 16208607.4,
+            "best_cost_usd": 16210891.6,
             "best_ghg_tco2e": 38682.6,
-            "hypervolume": 0.1979,
+            "hypervolume": 0.1978,
             "population_diversity": 0.0035
           },
           {
             "generation": 11,
             "best_fuel_mt": 9730.4,
-            "best_cost_usd": 13930462.2,
+            "best_cost_usd": 13912484.6,
             "best_ghg_tco2e": 32191.5,
-            "hypervolume": 0.2704,
+            "hypervolume": 0.2709,
             "population_diversity": 0.0037
           },
           {
             "generation": 12,
             "best_fuel_mt": 11158.6,
-            "best_cost_usd": 15660675.7,
+            "best_cost_usd": 15649179.5,
             "best_ghg_tco2e": 36160.4,
-            "hypervolume": 0.2068,
+            "hypervolume": 0.2071,
             "population_diversity": 0.0045
           },
           {
             "generation": 13,
             "best_fuel_mt": 10189.2,
-            "best_cost_usd": 14260713.7,
+            "best_cost_usd": 14320478.0,
             "best_ghg_tco2e": 35199.4,
-            "hypervolume": 0.2545,
+            "hypervolume": 0.2531,
             "population_diversity": 0.0045
           },
           {
             "generation": 14,
             "best_fuel_mt": 10039.9,
-            "best_cost_usd": 14316333.4,
+            "best_cost_usd": 14326826.8,
             "best_ghg_tco2e": 33793.5,
-            "hypervolume": 0.2547,
+            "hypervolume": 0.2545,
             "population_diversity": 0.0042
           },
           {
             "generation": 15,
             "best_fuel_mt": 9768.5,
-            "best_cost_usd": 13817629.8,
+            "best_cost_usd": 13810296.3,
             "best_ghg_tco2e": 33234.3,
-            "hypervolume": 0.2725,
+            "hypervolume": 0.2727,
             "population_diversity": 0.0038
           },
           {
             "generation": 16,
             "best_fuel_mt": 9233.2,
-            "best_cost_usd": 12913682.1,
+            "best_cost_usd": 12910149.5,
             "best_ghg_tco2e": 29316.2,
-            "hypervolume": 0.3049,
+            "hypervolume": 0.305,
             "population_diversity": 0.0047
           },
           {
             "generation": 17,
             "best_fuel_mt": 10706.8,
-            "best_cost_usd": 14103831.0,
+            "best_cost_usd": 14117516.5,
             "best_ghg_tco2e": 32111.8,
-            "hypervolume": 0.2492,
+            "hypervolume": 0.2489,
             "population_diversity": 0.0049
           },
           {
             "generation": 18,
             "best_fuel_mt": 9869.8,
-            "best_cost_usd": 13601337.8,
+            "best_cost_usd": 13618232.3,
             "best_ghg_tco2e": 32506.3,
-            "hypervolume": 0.2737,
+            "hypervolume": 0.2733,
             "population_diversity": 0.005
           },
           {
             "generation": 19,
             "best_fuel_mt": 10963.4,
-            "best_cost_usd": 14932918.5,
+            "best_cost_usd": 14942798.9,
             "best_ghg_tco2e": 34474.5,
-            "hypervolume": 0.2229,
+            "hypervolume": 0.2226,
             "population_diversity": 0.0036
           },
           {
             "generation": 20,
             "best_fuel_mt": 10242.7,
-            "best_cost_usd": 13661192.3,
+            "best_cost_usd": 13658596.9,
             "best_ghg_tco2e": 34088.7,
-            "hypervolume": 0.2677,
+            "hypervolume": 0.2678,
             "population_diversity": 0.0041
           },
           {
             "generation": 21,
             "best_fuel_mt": 11043.4,
-            "best_cost_usd": 14025285.4,
+            "best_cost_usd": 14020305.2,
             "best_ghg_tco2e": 33443.6,
-            "hypervolume": 0.2425,
+            "hypervolume": 0.2426,
             "population_diversity": 0.0045
           },
           {
             "generation": 22,
             "best_fuel_mt": 8283.9,
-            "best_cost_usd": 12232957.5,
+            "best_cost_usd": 12226800.8,
             "best_ghg_tco2e": 28105.5,
-            "hypervolume": 0.336,
+            "hypervolume": 0.3362,
             "population_diversity": 0.0048
           },
           {
             "generation": 23,
             "best_fuel_mt": 10788.5,
-            "best_cost_usd": 12985136.4,
+            "best_cost_usd": 12974973.1,
             "best_ghg_tco2e": 35162.9,
-            "hypervolume": 0.2732,
+            "hypervolume": 0.2734,
             "population_diversity": 0.0055
           },
           {
             "generation": 24,
             "best_fuel_mt": 9585.5,
-            "best_cost_usd": 14368186.6,
+            "best_cost_usd": 14376000.9,
             "best_ghg_tco2e": 30676.8,
-            "hypervolume": 0.2622,
+            "hypervolume": 0.262,
             "population_diversity": 0.0041
           },
           {
             "generation": 25,
             "best_fuel_mt": 9678.0,
-            "best_cost_usd": 14774833.2,
+            "best_cost_usd": 14825735.2,
             "best_ghg_tco2e": 31788.5,
-            "hypervolume": 0.2504,
+            "hypervolume": 0.2493,
             "population_diversity": 0.004
           },
           {
             "generation": 26,
             "best_fuel_mt": 9466.4,
-            "best_cost_usd": 15063442.6,
+            "best_cost_usd": 15080388.6,
             "best_ghg_tco2e": 33476.1,
-            "hypervolume": 0.2428,
+            "hypervolume": 0.2425,
             "population_diversity": 0.0043
           },
           {
             "generation": 27,
             "best_fuel_mt": 10865.6,
-            "best_cost_usd": 14458006.5,
+            "best_cost_usd": 14473723.2,
             "best_ghg_tco2e": 33559.1,
-            "hypervolume": 0.2384,
+            "hypervolume": 0.2381,
             "population_diversity": 0.0033
           },
           {
             "generation": 28,
             "best_fuel_mt": 10997.8,
-            "best_cost_usd": 13844139.7,
+            "best_cost_usd": 13838357.6,
             "best_ghg_tco2e": 31834.4,
-            "hypervolume": 0.2495,
+            "hypervolume": 0.2497,
             "population_diversity": 0.0038
           },
           {
             "generation": 29,
             "best_fuel_mt": 9702.4,
-            "best_cost_usd": 13519587.6,
+            "best_cost_usd": 13525645.8,
             "best_ghg_tco2e": 32940.1,
-            "hypervolume": 0.281,
+            "hypervolume": 0.2808,
             "population_diversity": 0.004
           },
           {
             "generation": 30,
             "best_fuel_mt": 11339.5,
-            "best_cost_usd": 16307013.5,
+            "best_cost_usd": 16312022.9,
             "best_ghg_tco2e": 36008.9,
-            "hypervolume": 0.19,
+            "hypervolume": 0.1899,
             "population_diversity": 0.0041
           }
         ]
@@ -353,253 +402,253 @@
       {
         "algorithm": "NSGA-II (Baseline)",
         "total_evaluations": 1050,
-        "execution_time_seconds": 0.86,
+        "execution_time_seconds": 1.5,
         "pareto_front_size": 2,
-        "hypervolume": 0.1215,
+        "hypervolume": 0.2366,
         "spacing_spread": 0.0,
-        "min_fuel_mt": 12399.3,
-        "min_cost_usd": 18969476.3,
-        "min_lifecycle_ghg_tco2e": 45920.7,
+        "min_fuel_mt": 9979.4,
+        "min_cost_usd": 15155521.9,
+        "min_lifecycle_ghg_tco2e": 37035.3,
         "feasibility_rate_pct": 100.0,
         "convergence_curve": [
           {
             "generation": 1,
             "best_fuel_mt": 10899.0,
-            "best_cost_usd": 12507655.0,
+            "best_cost_usd": 12521008.6,
             "best_ghg_tco2e": 34892.4,
-            "hypervolume": 0.2814,
+            "hypervolume": 0.281,
             "population_diversity": 0.5
           },
           {
             "generation": 2,
             "best_fuel_mt": 9811.4,
-            "best_cost_usd": 12507655.0,
+            "best_cost_usd": 12517126.0,
             "best_ghg_tco2e": 33631.8,
-            "hypervolume": 0.3027,
+            "hypervolume": 0.3025,
             "population_diversity": 0.5
           },
           {
             "generation": 3,
             "best_fuel_mt": 9811.4,
-            "best_cost_usd": 12507655.0,
+            "best_cost_usd": 12517126.0,
             "best_ghg_tco2e": 33631.8,
-            "hypervolume": 0.3028,
+            "hypervolume": 0.3026,
             "population_diversity": 0.5
           },
           {
             "generation": 4,
             "best_fuel_mt": 9811.4,
-            "best_cost_usd": 12462021.5,
-            "best_ghg_tco2e": 33125.7,
-            "hypervolume": 0.3047,
+            "best_cost_usd": 12434029.0,
+            "best_ghg_tco2e": 33631.8,
+            "hypervolume": 0.3046,
             "population_diversity": 0.5
           },
           {
             "generation": 5,
-            "best_fuel_mt": 9811.4,
-            "best_cost_usd": 11138655.1,
-            "best_ghg_tco2e": 30877.0,
-            "hypervolume": 0.3365,
+            "best_fuel_mt": 9118.5,
+            "best_cost_usd": 10391800.0,
+            "best_ghg_tco2e": 27655.3,
+            "hypervolume": 0.3712,
             "population_diversity": 0.5
           },
           {
             "generation": 6,
-            "best_fuel_mt": 9649.7,
-            "best_cost_usd": 11138655.1,
-            "best_ghg_tco2e": 30666.2,
-            "hypervolume": 0.3403,
+            "best_fuel_mt": 9118.5,
+            "best_cost_usd": 10391800.0,
+            "best_ghg_tco2e": 27655.3,
+            "hypervolume": 0.3712,
             "population_diversity": 0.5
           },
           {
             "generation": 7,
-            "best_fuel_mt": 8722.7,
-            "best_cost_usd": 10491717.6,
-            "best_ghg_tco2e": 28292.5,
-            "hypervolume": 0.3773,
+            "best_fuel_mt": 8966.0,
+            "best_cost_usd": 10391800.0,
+            "best_ghg_tco2e": 27655.3,
+            "hypervolume": 0.3744,
             "population_diversity": 0.5
           },
           {
             "generation": 8,
-            "best_fuel_mt": 8081.8,
-            "best_cost_usd": 10234808.2,
-            "best_ghg_tco2e": 26463.5,
-            "hypervolume": 0.3997,
+            "best_fuel_mt": 8403.1,
+            "best_cost_usd": 10252831.9,
+            "best_ghg_tco2e": 27640.4,
+            "hypervolume": 0.3914,
             "population_diversity": 0.5
           },
           {
             "generation": 9,
-            "best_fuel_mt": 7941.4,
-            "best_cost_usd": 10128805.7,
-            "best_ghg_tco2e": 25841.8,
-            "hypervolume": 0.4059,
+            "best_fuel_mt": 7953.6,
+            "best_cost_usd": 10252831.9,
+            "best_ghg_tco2e": 27640.4,
+            "hypervolume": 0.4013,
             "population_diversity": 0.5
           },
           {
             "generation": 10,
-            "best_fuel_mt": 7941.4,
-            "best_cost_usd": 10128805.7,
-            "best_ghg_tco2e": 25841.8,
-            "hypervolume": 0.4059,
+            "best_fuel_mt": 7953.6,
+            "best_cost_usd": 10252831.9,
+            "best_ghg_tco2e": 26360.5,
+            "hypervolume": 0.4017,
             "population_diversity": 0.5
           },
           {
             "generation": 11,
-            "best_fuel_mt": 7763.5,
-            "best_cost_usd": 9811937.0,
-            "best_ghg_tco2e": 25331.9,
-            "hypervolume": 0.4187,
+            "best_fuel_mt": 7953.6,
+            "best_cost_usd": 9450220.0,
+            "best_ghg_tco2e": 26325.2,
+            "hypervolume": 0.4227,
             "population_diversity": 0.5
           },
           {
             "generation": 12,
-            "best_fuel_mt": 7763.5,
-            "best_cost_usd": 9536294.2,
-            "best_ghg_tco2e": 25331.9,
-            "hypervolume": 0.4259,
+            "best_fuel_mt": 7953.6,
+            "best_cost_usd": 9450220.0,
+            "best_ghg_tco2e": 26130.2,
+            "hypervolume": 0.4233,
             "population_diversity": 0.5
           },
           {
             "generation": 13,
-            "best_fuel_mt": 7763.5,
-            "best_cost_usd": 8959952.5,
-            "best_ghg_tco2e": 24411.9,
-            "hypervolume": 0.4417,
+            "best_fuel_mt": 7953.6,
+            "best_cost_usd": 9450220.0,
+            "best_ghg_tco2e": 26130.2,
+            "hypervolume": 0.4233,
             "population_diversity": 0.5
           },
           {
             "generation": 14,
-            "best_fuel_mt": 7511.6,
-            "best_cost_usd": 8739584.9,
-            "best_ghg_tco2e": 24171.6,
-            "hypervolume": 0.4543,
+            "best_fuel_mt": 7792.6,
+            "best_cost_usd": 9450220.0,
+            "best_ghg_tco2e": 25409.2,
+            "hypervolume": 0.4279,
             "population_diversity": 0.5
           },
           {
             "generation": 15,
-            "best_fuel_mt": 7140.2,
-            "best_cost_usd": 8729393.8,
-            "best_ghg_tco2e": 22808.2,
-            "hypervolume": 0.4649,
+            "best_fuel_mt": 7602.2,
+            "best_cost_usd": 9105272.8,
+            "best_ghg_tco2e": 24684.9,
+            "hypervolume": 0.4419,
             "population_diversity": 0.5
           },
           {
             "generation": 16,
-            "best_fuel_mt": 7140.2,
-            "best_cost_usd": 8729393.8,
-            "best_ghg_tco2e": 22808.2,
-            "hypervolume": 0.4649,
+            "best_fuel_mt": 7514.9,
+            "best_cost_usd": 9105272.8,
+            "best_ghg_tco2e": 24333.7,
+            "hypervolume": 0.4444,
             "population_diversity": 0.5
           },
           {
             "generation": 17,
-            "best_fuel_mt": 7140.2,
-            "best_cost_usd": 8729393.8,
-            "best_ghg_tco2e": 22808.2,
-            "hypervolume": 0.4649,
+            "best_fuel_mt": 7514.9,
+            "best_cost_usd": 9105272.8,
+            "best_ghg_tco2e": 24333.7,
+            "hypervolume": 0.4444,
             "population_diversity": 0.5
           },
           {
             "generation": 18,
-            "best_fuel_mt": 7140.2,
-            "best_cost_usd": 8729393.8,
-            "best_ghg_tco2e": 22808.2,
-            "hypervolume": 0.4649,
+            "best_fuel_mt": 7514.9,
+            "best_cost_usd": 9105272.8,
+            "best_ghg_tco2e": 24333.7,
+            "hypervolume": 0.4444,
             "population_diversity": 0.5
           },
           {
             "generation": 19,
-            "best_fuel_mt": 7107.9,
-            "best_cost_usd": 8697244.5,
-            "best_ghg_tco2e": 22690.6,
-            "hypervolume": 0.4667,
+            "best_fuel_mt": 7088.7,
+            "best_cost_usd": 8805797.9,
+            "best_ghg_tco2e": 22785.7,
+            "hypervolume": 0.4641,
             "population_diversity": 0.5
           },
           {
             "generation": 20,
-            "best_fuel_mt": 7107.9,
-            "best_cost_usd": 8697244.5,
-            "best_ghg_tco2e": 22690.6,
-            "hypervolume": 0.4667,
+            "best_fuel_mt": 7046.5,
+            "best_cost_usd": 8805797.9,
+            "best_ghg_tco2e": 22651.6,
+            "hypervolume": 0.4652,
             "population_diversity": 0.5
           },
           {
             "generation": 21,
-            "best_fuel_mt": 7107.9,
-            "best_cost_usd": 8625901.6,
-            "best_ghg_tco2e": 22690.6,
-            "hypervolume": 0.4686,
+            "best_fuel_mt": 7046.5,
+            "best_cost_usd": 8694411.7,
+            "best_ghg_tco2e": 22651.6,
+            "hypervolume": 0.4682,
             "population_diversity": 0.5
           },
           {
             "generation": 22,
-            "best_fuel_mt": 7091.8,
-            "best_cost_usd": 8625901.6,
-            "best_ghg_tco2e": 22690.6,
-            "hypervolume": 0.4691,
+            "best_fuel_mt": 6958.2,
+            "best_cost_usd": 8641169.9,
+            "best_ghg_tco2e": 22328.4,
+            "hypervolume": 0.4722,
             "population_diversity": 0.5
           },
           {
             "generation": 23,
-            "best_fuel_mt": 7091.8,
-            "best_cost_usd": 8625901.6,
-            "best_ghg_tco2e": 22690.6,
-            "hypervolume": 0.4691,
+            "best_fuel_mt": 6958.2,
+            "best_cost_usd": 8641169.9,
+            "best_ghg_tco2e": 22328.4,
+            "hypervolume": 0.4722,
             "population_diversity": 0.5
           },
           {
             "generation": 24,
-            "best_fuel_mt": 7058.1,
-            "best_cost_usd": 8580631.8,
-            "best_ghg_tco2e": 22533.7,
-            "hypervolume": 0.4714,
+            "best_fuel_mt": 6958.2,
+            "best_cost_usd": 8641169.9,
+            "best_ghg_tco2e": 22328.4,
+            "hypervolume": 0.4722,
             "population_diversity": 0.5
           },
           {
             "generation": 25,
-            "best_fuel_mt": 7058.1,
-            "best_cost_usd": 8580631.8,
-            "best_ghg_tco2e": 22533.7,
-            "hypervolume": 0.4714,
+            "best_fuel_mt": 6958.2,
+            "best_cost_usd": 8630001.7,
+            "best_ghg_tco2e": 22328.4,
+            "hypervolume": 0.4725,
             "population_diversity": 0.5
           },
           {
             "generation": 26,
-            "best_fuel_mt": 7058.1,
-            "best_cost_usd": 8580631.8,
-            "best_ghg_tco2e": 22533.7,
-            "hypervolume": 0.4714,
+            "best_fuel_mt": 6896.0,
+            "best_cost_usd": 8589700.2,
+            "best_ghg_tco2e": 22077.1,
+            "hypervolume": 0.4753,
             "population_diversity": 0.5
           },
           {
             "generation": 27,
-            "best_fuel_mt": 7058.1,
-            "best_cost_usd": 8580631.8,
-            "best_ghg_tco2e": 22533.7,
-            "hypervolume": 0.4714,
+            "best_fuel_mt": 6896.0,
+            "best_cost_usd": 8577841.6,
+            "best_ghg_tco2e": 22077.1,
+            "hypervolume": 0.4757,
             "population_diversity": 0.5
           },
           {
             "generation": 28,
-            "best_fuel_mt": 7058.1,
-            "best_cost_usd": 8580631.8,
-            "best_ghg_tco2e": 22533.7,
-            "hypervolume": 0.4714,
+            "best_fuel_mt": 6890.4,
+            "best_cost_usd": 8527163.4,
+            "best_ghg_tco2e": 22055.4,
+            "hypervolume": 0.4773,
             "population_diversity": 0.5
           },
           {
             "generation": 29,
-            "best_fuel_mt": 7058.1,
-            "best_cost_usd": 8580631.8,
-            "best_ghg_tco2e": 22533.7,
-            "hypervolume": 0.4714,
+            "best_fuel_mt": 6890.4,
+            "best_cost_usd": 8527163.4,
+            "best_ghg_tco2e": 22055.4,
+            "hypervolume": 0.4773,
             "population_diversity": 0.5
           },
           {
             "generation": 30,
-            "best_fuel_mt": 7058.1,
-            "best_cost_usd": 8580631.8,
-            "best_ghg_tco2e": 22533.7,
-            "hypervolume": 0.4714,
+            "best_fuel_mt": 6875.5,
+            "best_cost_usd": 8523281.2,
+            "best_ghg_tco2e": 22001.8,
+            "hypervolume": 0.4778,
             "population_diversity": 0.5
           }
         ]
@@ -607,253 +656,253 @@
       {
         "algorithm": "MO-PSO (Baseline)",
         "total_evaluations": 1050,
-        "execution_time_seconds": 0.31,
+        "execution_time_seconds": 0.51,
         "pareto_front_size": 2,
-        "hypervolume": 0.2788,
+        "hypervolume": 0.2577,
         "spacing_spread": 0.0,
-        "min_fuel_mt": 9166.8,
-        "min_cost_usd": 13993409.7,
-        "min_lifecycle_ghg_tco2e": 30106.3,
+        "min_fuel_mt": 9511.3,
+        "min_cost_usd": 14600260.3,
+        "min_lifecycle_ghg_tco2e": 34247.4,
         "feasibility_rate_pct": 100.0,
         "convergence_curve": [
           {
             "generation": 1,
             "best_fuel_mt": 9009.7,
-            "best_cost_usd": 12504867.5,
+            "best_cost_usd": 12500138.9,
             "best_ghg_tco2e": 30429.3,
-            "hypervolume": 0.3197,
+            "hypervolume": 0.3198,
             "population_diversity": 0.45
           },
           {
             "generation": 2,
             "best_fuel_mt": 12292.8,
-            "best_cost_usd": 17568939.4,
+            "best_cost_usd": 17568465.6,
             "best_ghg_tco2e": 38781.4,
-            "hypervolume": 0.1504,
+            "hypervolume": 0.1505,
             "population_diversity": 0.45
           },
           {
             "generation": 3,
             "best_fuel_mt": 12270.3,
-            "best_cost_usd": 16740863.5,
+            "best_cost_usd": 16709703.2,
             "best_ghg_tco2e": 41196.9,
-            "hypervolume": 0.1682,
+            "hypervolume": 0.1689,
             "population_diversity": 0.45
           },
           {
             "generation": 4,
             "best_fuel_mt": 12014.2,
-            "best_cost_usd": 15602636.2,
+            "best_cost_usd": 15642438.0,
             "best_ghg_tco2e": 27620.3,
-            "hypervolume": 0.1953,
+            "hypervolume": 0.1944,
             "population_diversity": 0.45
           },
           {
             "generation": 5,
             "best_fuel_mt": 11045.9,
-            "best_cost_usd": 15150416.7,
+            "best_cost_usd": 15182060.5,
             "best_ghg_tco2e": 35122.7,
-            "hypervolume": 0.2199,
+            "hypervolume": 0.2192,
             "population_diversity": 0.45
           },
           {
             "generation": 6,
-            "best_fuel_mt": 11149.4,
-            "best_cost_usd": 15354786.4,
-            "best_ghg_tco2e": 37610.2,
-            "hypervolume": 0.2137,
+            "best_fuel_mt": 10810.7,
+            "best_cost_usd": 14245436.2,
+            "best_ghg_tco2e": 32731.8,
+            "hypervolume": 0.2442,
             "population_diversity": 0.45
           },
           {
             "generation": 7,
-            "best_fuel_mt": 9905.0,
-            "best_cost_usd": 15502364.7,
-            "best_ghg_tco2e": 33270.1,
-            "hypervolume": 0.2294,
+            "best_fuel_mt": 12820.5,
+            "best_cost_usd": 16300026.9,
+            "best_ghg_tco2e": 33058.3,
+            "hypervolume": 0.1682,
             "population_diversity": 0.45
           },
           {
             "generation": 8,
-            "best_fuel_mt": 11200.0,
-            "best_cost_usd": 16438550.8,
-            "best_ghg_tco2e": 38309.7,
-            "hypervolume": 0.189,
+            "best_fuel_mt": 11717.9,
+            "best_cost_usd": 17350701.1,
+            "best_ghg_tco2e": 31744.4,
+            "hypervolume": 0.1626,
             "population_diversity": 0.45
           },
           {
             "generation": 9,
-            "best_fuel_mt": 11501.8,
-            "best_cost_usd": 16097723.7,
-            "best_ghg_tco2e": 38288.1,
-            "hypervolume": 0.1912,
+            "best_fuel_mt": 11722.2,
+            "best_cost_usd": 17350761.7,
+            "best_ghg_tco2e": 40857.7,
+            "hypervolume": 0.1625,
             "population_diversity": 0.45
           },
           {
             "generation": 10,
-            "best_fuel_mt": 13052.0,
-            "best_cost_usd": 17447475.5,
-            "best_ghg_tco2e": 36545.8,
-            "hypervolume": 0.1437,
+            "best_fuel_mt": 14120.3,
+            "best_cost_usd": 20074344.5,
+            "best_ghg_tco2e": 38706.0,
+            "hypervolume": 0.0857,
             "population_diversity": 0.45
           },
           {
             "generation": 11,
-            "best_fuel_mt": 11603.9,
-            "best_cost_usd": 16837793.2,
-            "best_ghg_tco2e": 42906.4,
-            "hypervolume": 0.1749,
+            "best_fuel_mt": 11970.1,
+            "best_cost_usd": 17682117.4,
+            "best_ghg_tco2e": 42601.9,
+            "hypervolume": 0.1526,
             "population_diversity": 0.45
           },
           {
             "generation": 12,
-            "best_fuel_mt": 10413.9,
-            "best_cost_usd": 16020655.3,
-            "best_ghg_tco2e": 38991.3,
-            "hypervolume": 0.2096,
+            "best_fuel_mt": 12487.9,
+            "best_cost_usd": 17453635.8,
+            "best_ghg_tco2e": 41438.3,
+            "hypervolume": 0.1511,
             "population_diversity": 0.45
           },
           {
             "generation": 13,
-            "best_fuel_mt": 11649.1,
-            "best_cost_usd": 17096741.0,
-            "best_ghg_tco2e": 37292.0,
-            "hypervolume": 0.1688,
+            "best_fuel_mt": 11157.2,
+            "best_cost_usd": 16348787.2,
+            "best_ghg_tco2e": 39073.5,
+            "hypervolume": 0.1916,
             "population_diversity": 0.45
           },
           {
             "generation": 14,
-            "best_fuel_mt": 10993.1,
-            "best_cost_usd": 16027910.6,
-            "best_ghg_tco2e": 38382.7,
-            "hypervolume": 0.2011,
+            "best_fuel_mt": 11168.4,
+            "best_cost_usd": 16187040.1,
+            "best_ghg_tco2e": 40461.4,
+            "hypervolume": 0.195,
             "population_diversity": 0.45
           },
           {
             "generation": 15,
-            "best_fuel_mt": 10567.3,
-            "best_cost_usd": 16040388.9,
-            "best_ghg_tco2e": 39579.7,
-            "hypervolume": 0.2069,
+            "best_fuel_mt": 11499.7,
+            "best_cost_usd": 16582233.8,
+            "best_ghg_tco2e": 41620.6,
+            "hypervolume": 0.1818,
             "population_diversity": 0.45
           },
           {
             "generation": 16,
-            "best_fuel_mt": 10754.4,
-            "best_cost_usd": 16078468.5,
-            "best_ghg_tco2e": 35747.8,
-            "hypervolume": 0.2033,
+            "best_fuel_mt": 12219.3,
+            "best_cost_usd": 17270406.8,
+            "best_ghg_tco2e": 37742.4,
+            "hypervolume": 0.1581,
             "population_diversity": 0.45
           },
           {
             "generation": 17,
-            "best_fuel_mt": 10740.5,
-            "best_cost_usd": 15775319.8,
-            "best_ghg_tco2e": 38787.0,
-            "hypervolume": 0.2103,
+            "best_fuel_mt": 11712.5,
+            "best_cost_usd": 17233484.4,
+            "best_ghg_tco2e": 41150.7,
+            "hypervolume": 0.1651,
             "population_diversity": 0.45
           },
           {
             "generation": 18,
-            "best_fuel_mt": 9933.0,
-            "best_cost_usd": 15356987.0,
-            "best_ghg_tco2e": 36552.9,
-            "hypervolume": 0.2325,
+            "best_fuel_mt": 10884.7,
+            "best_cost_usd": 15962317.2,
+            "best_ghg_tco2e": 38399.7,
+            "hypervolume": 0.2041,
             "population_diversity": 0.45
           },
           {
             "generation": 19,
-            "best_fuel_mt": 11278.7,
-            "best_cost_usd": 16785674.4,
-            "best_ghg_tco2e": 40473.4,
-            "hypervolume": 0.1803,
+            "best_fuel_mt": 12543.3,
+            "best_cost_usd": 17880236.3,
+            "best_ghg_tco2e": 37346.3,
+            "hypervolume": 0.1419,
             "population_diversity": 0.45
           },
           {
             "generation": 20,
-            "best_fuel_mt": 10172.5,
-            "best_cost_usd": 15207044.9,
-            "best_ghg_tco2e": 36624.8,
-            "hypervolume": 0.2323,
+            "best_fuel_mt": 10206.4,
+            "best_cost_usd": 15279794.8,
+            "best_ghg_tco2e": 36775.3,
+            "hypervolume": 0.2301,
             "population_diversity": 0.45
           },
           {
             "generation": 21,
-            "best_fuel_mt": 9534.3,
-            "best_cost_usd": 14697222.5,
-            "best_ghg_tco2e": 35204.0,
-            "hypervolume": 0.2549,
+            "best_fuel_mt": 10392.0,
+            "best_cost_usd": 15874041.6,
+            "best_ghg_tco2e": 35807.1,
+            "hypervolume": 0.2133,
             "population_diversity": 0.45
           },
           {
             "generation": 22,
-            "best_fuel_mt": 10855.0,
-            "best_cost_usd": 16159274.7,
-            "best_ghg_tco2e": 30106.3,
-            "hypervolume": 0.2001,
+            "best_fuel_mt": 10745.5,
+            "best_cost_usd": 15674190.4,
+            "best_ghg_tco2e": 34528.7,
+            "hypervolume": 0.2127,
             "population_diversity": 0.45
           },
           {
             "generation": 23,
-            "best_fuel_mt": 10180.4,
-            "best_cost_usd": 14906379.0,
-            "best_ghg_tco2e": 37338.4,
-            "hypervolume": 0.2393,
+            "best_fuel_mt": 10226.4,
+            "best_cost_usd": 15279668.2,
+            "best_ghg_tco2e": 36834.1,
+            "hypervolume": 0.2298,
             "population_diversity": 0.45
           },
           {
             "generation": 24,
-            "best_fuel_mt": 9928.8,
-            "best_cost_usd": 14918110.7,
-            "best_ghg_tco2e": 34270.3,
-            "hypervolume": 0.2431,
+            "best_fuel_mt": 9522.2,
+            "best_cost_usd": 14600260.3,
+            "best_ghg_tco2e": 34247.4,
+            "hypervolume": 0.2575,
             "population_diversity": 0.45
           },
           {
             "generation": 25,
-            "best_fuel_mt": 9414.5,
-            "best_cost_usd": 14479867.4,
-            "best_ghg_tco2e": 34735.3,
-            "hypervolume": 0.2623,
+            "best_fuel_mt": 10093.5,
+            "best_cost_usd": 15171313.8,
+            "best_ghg_tco2e": 36364.7,
+            "hypervolume": 0.2344,
             "population_diversity": 0.45
           },
           {
             "generation": 26,
-            "best_fuel_mt": 9472.0,
-            "best_cost_usd": 14378454.7,
-            "best_ghg_tco2e": 34131.9,
-            "hypervolume": 0.2639,
+            "best_fuel_mt": 9607.4,
+            "best_cost_usd": 14695791.4,
+            "best_ghg_tco2e": 34555.4,
+            "hypervolume": 0.2538,
             "population_diversity": 0.45
           },
           {
             "generation": 27,
-            "best_fuel_mt": 9166.8,
-            "best_cost_usd": 13993409.7,
-            "best_ghg_tco2e": 30914.2,
-            "hypervolume": 0.2788,
+            "best_fuel_mt": 10105.6,
+            "best_cost_usd": 15279794.8,
+            "best_ghg_tco2e": 34573.4,
+            "hypervolume": 0.2316,
             "population_diversity": 0.45
           },
           {
             "generation": 28,
-            "best_fuel_mt": 9196.8,
-            "best_cost_usd": 14105425.6,
-            "best_ghg_tco2e": 33928.0,
-            "hypervolume": 0.2755,
+            "best_fuel_mt": 9511.3,
+            "best_cost_usd": 14959571.5,
+            "best_ghg_tco2e": 34449.4,
+            "hypervolume": 0.2488,
             "population_diversity": 0.45
           },
           {
             "generation": 29,
-            "best_fuel_mt": 9846.6,
-            "best_cost_usd": 14466539.8,
-            "best_ghg_tco2e": 35656.8,
-            "hypervolume": 0.2554,
+            "best_fuel_mt": 9523.4,
+            "best_cost_usd": 14600836.7,
+            "best_ghg_tco2e": 34251.7,
+            "hypervolume": 0.2575,
             "population_diversity": 0.45
           },
           {
             "generation": 30,
-            "best_fuel_mt": 9448.6,
-            "best_cost_usd": 14482571.1,
-            "best_ghg_tco2e": 34307.7,
-            "hypervolume": 0.2617,
+            "best_fuel_mt": 9531.2,
+            "best_cost_usd": 14703677.4,
+            "best_ghg_tco2e": 34522.9,
+            "hypervolume": 0.2548,
             "population_diversity": 0.45
           }
         ]

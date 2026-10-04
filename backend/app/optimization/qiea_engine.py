@@ -175,21 +175,29 @@ class MultiObjectiveQIEA:
             route_idx = sampled_r - 1  # -1 is idle, 0..R-1 is route
 
             # 2. Fuel choice: sample from |d_f|^2 (filtered by vessel compatibility)
-            fuel_probs = self.q_fuel[ind_idx, v_idx, :].copy() ** 2
-            # Mask incompatible fuels to zero probability
-            for f_i, f_type in enumerate(self.fuel_types):
-                if f_type not in vessel.compatible_fuels:
-                    fuel_probs[f_i] = 0.0
-            if np.sum(fuel_probs) > 0:
-                fuel_probs /= np.sum(fuel_probs)
-                sampled_f = int(self.rng.choice(self.n_fuels, p=fuel_probs))
+            preferred = getattr(self.problem, "preferred_fuel_type", None)
+            if preferred and any(f.value == preferred for f in vessel.compatible_fuels):
+                fuel_type = FuelType(preferred)
             else:
-                sampled_f = self.fuel_types.index(vessel.compatible_fuels[0])
-            fuel_type = self.fuel_types[sampled_f]
+                fuel_probs = self.q_fuel[ind_idx, v_idx, :].copy() ** 2
+                # Mask incompatible fuels to zero probability
+                for f_i, f_type in enumerate(self.fuel_types):
+                    if f_type not in vessel.compatible_fuels:
+                        fuel_probs[f_i] = 0.0
+                if np.sum(fuel_probs) > 0:
+                    fuel_probs /= np.sum(fuel_probs)
+                    sampled_f = int(self.rng.choice(self.n_fuels, p=fuel_probs))
+                else:
+                    sampled_f = self.fuel_types.index(vessel.compatible_fuels[0])
+                fuel_type = self.fuel_types[sampled_f]
 
             # 3. Cruising speed from phase angle: v = v_min + (v_max - v_min) * sin^2(theta)
-            theta_s = self.theta_speed[ind_idx, v_idx]
-            speed = vessel.min_speed_knots + (vessel.max_speed_knots - vessel.min_speed_knots) * (math.sin(theta_s) ** 2)
+            target_sp = getattr(self.problem, "target_speed_knots", None)
+            if target_sp is not None:
+                speed = max(vessel.min_speed_knots, min(vessel.max_speed_knots, float(target_sp)))
+            else:
+                theta_s = self.theta_speed[ind_idx, v_idx]
+                speed = vessel.min_speed_knots + (vessel.max_speed_knots - vessel.min_speed_knots) * (math.sin(theta_s) ** 2)
 
             # 4. Shore power from Q-bit: |beta|^2
             shore_prob = self.q_shore[ind_idx, v_idx, 1] ** 2
@@ -312,6 +320,11 @@ class MultiObjectiveQIEA:
                     elite_idx = self.rng.choice(len(self.archive_chromosomes))
                     elite_chrom = self.archive_chromosomes[elite_idx]
                     self._quantum_rotation_update(ind_idx, gen_chromosomes[ind_idx], elite_chrom)
+            elif len(front1_indices) > 0:
+                for ind_idx in range(self.pop_size):
+                    elite_idx = self.rng.choice(front1_indices)
+                    elite_chrom = gen_chromosomes[elite_idx]
+                    self._quantum_rotation_update(ind_idx, gen_chromosomes[ind_idx], elite_chrom)
 
             # 5. Catastrophe Mutation
             self._check_and_apply_catastrophe()
@@ -336,6 +349,15 @@ class MultiObjectiveQIEA:
             })
 
         execution_time = time.perf_counter() - t_start
+
+        # Fallback if no solution strictly met 100% demand satisfaction (e.g. undersized custom fleet)
+        if len(self.archive_solutions) == 0 and len(gen_solutions) > 0:
+            for idx in front1_indices:
+                sol = gen_solutions[idx]
+                sol.pareto_rank = 1
+                self.archive_solutions.append(sol)
+                self.archive_objectives.append(tuple(gen_objectives[idx]))
+                self.archive_chromosomes.append(gen_chromosomes[idx])
 
         # Calculate Crowding Distance for Final Archive Solutions
         if len(self.archive_solutions) > 0:

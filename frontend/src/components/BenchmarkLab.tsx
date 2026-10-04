@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { fetchBenchmarks } from '../services/api';
 import { BenchmarkComparisonResponse } from '../types';
-import { Cpu, Trophy, TrendingUp, Clock, CheckCircle, BarChart3, RefreshCw } from 'lucide-react';
+import { Cpu, Trophy, TrendingUp, Clock, CheckCircle, BarChart3, RefreshCw } from '@/components/icons';
 
 export const BenchmarkLab: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);

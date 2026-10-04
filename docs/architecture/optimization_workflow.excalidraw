@@ -1,0 +1,143 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "https://excalidraw.com",
+  "elements": [
+    {
+      "id": "qstate_zone",
+      "type": "rectangle",
+      "x": 60,
+      "y": 60,
+      "width": 360,
+      "height": 440,
+      "strokeColor": "#8b5cf6",
+      "backgroundColor": "#d0bfff",
+      "fillStyle": "solid",
+      "opacity": 20,
+      "roundness": { "type": 3 },
+      "strokeWidth": 2,
+      "roughness": 1
+    },
+    {
+      "id": "qstate_title",
+      "type": "text",
+      "x": 80,
+      "y": 80,
+      "text": "1. QUANTUM PROBABILISTIC STATE\n• Chromosome Q = [q₁, q₂, ..., q_m]\n• Q-Bit: |q_i⟩ = cos(θ_i)|0⟩ + sin(θ_i)|1⟩\n• Continuous State Angles: θ_i ∈ [0, π/2]\n• Simultaneous Exploration of Combinatorial\n  Space (Vessel × Route × Speed × Fuel)\n• Quantum Observation Collapse:\n  x_i = 1 if U(0,1) < sin²(θ_i) else 0",
+      "fontSize": 14,
+      "fontFamily": 1,
+      "strokeColor": "#1e1e1e"
+    },
+    {
+      "id": "eval_arrow",
+      "type": "arrow",
+      "x": 420,
+      "y": 280,
+      "width": 80,
+      "height": 0,
+      "points": [[0, 0], [80, 0]],
+      "strokeColor": "#ff6b00",
+      "strokeWidth": 2,
+      "endArrowhead": "arrow"
+    },
+    {
+      "id": "eval_zone",
+      "type": "rectangle",
+      "x": 500,
+      "y": 60,
+      "width": 380,
+      "height": 440,
+      "strokeColor": "#f59e0b",
+      "backgroundColor": "#ffd8a8",
+      "fillStyle": "solid",
+      "opacity": 20,
+      "roundness": { "type": 3 },
+      "strokeWidth": 2,
+      "roughness": 1
+    },
+    {
+      "id": "eval_title",
+      "type": "text",
+      "x": 520,
+      "y": 80,
+      "text": "2. NAVAL PHYSICS & REGULATORY ENGINE\n• Holtrop-Mennen Resistance & Kwon Waves\n• Objectives Evaluated in Parallel:\n  f₁(X): Min Total Cost (Bunker + ETS + FuelEU)\n  f₂(X): Min Lifecycle GHG (WTW tCO2e)\n  f₃(X): Max Cargo Demand Delivered\n• Regulatory Penalty Injections:\n  - IMO MEPC.354(78) CII Grade Boundaries\n  - FuelEU Maritime Deficit (€2,400/t VLSFO-eq)\n  - EU ETS 100% Phase-In (2026 Allowance Cost)",
+      "fontSize": 14,
+      "fontFamily": 1,
+      "strokeColor": "#1e1e1e"
+    },
+    {
+      "id": "gate_arrow",
+      "type": "arrow",
+      "x": 880,
+      "y": 280,
+      "width": 80,
+      "height": 0,
+      "points": [[0, 0], [80, 0]],
+      "strokeColor": "#ff6b00",
+      "strokeWidth": 2,
+      "endArrowhead": "arrow"
+    },
+    {
+      "id": "gate_zone",
+      "type": "rectangle",
+      "x": 960,
+      "y": 60,
+      "width": 380,
+      "height": 440,
+      "strokeColor": "#06b6d4",
+      "backgroundColor": "#c3fae8",
+      "fillStyle": "solid",
+      "opacity": 20,
+      "roundness": { "type": 3 },
+      "strokeWidth": 2,
+      "roughness": 1
+    },
+    {
+      "id": "gate_title",
+      "type": "text",
+      "x": 980,
+      "y": 80,
+      "text": "3. QUANTUM ROTATION GATE UPDATES\n• Non-Dominated Sorting & Crowding Distance\n• Pareto Dominance Matrix between Q-bits\n• Unitary Quantum Gate Matrix U(Δθ):\n  [cos(Δθ)  -sin(Δθ)]\n  [sin(Δθ)   cos(Δθ)]\n• Dynamic Step-size Rotation Strategy:\n  Δθ_i = sign(S_best - x_i) × f(rank, hv)\n• Avoids Premature Convergence vs Classical GA",
+      "fontSize": 14,
+      "fontFamily": 1,
+      "strokeColor": "#1e1e1e"
+    },
+    {
+      "id": "front_arrow",
+      "type": "arrow",
+      "x": 1340,
+      "y": 280,
+      "width": 80,
+      "height": 0,
+      "points": [[0, 0], [80, 0]],
+      "strokeColor": "#ff6b00",
+      "strokeWidth": 2,
+      "endArrowhead": "arrow"
+    },
+    {
+      "id": "front_zone",
+      "type": "rectangle",
+      "x": 1420,
+      "y": 60,
+      "width": 360,
+      "height": 440,
+      "strokeColor": "#22c55e",
+      "backgroundColor": "#b2f2bb",
+      "fillStyle": "solid",
+      "opacity": 20,
+      "roundness": { "type": 3 },
+      "strokeWidth": 2,
+      "roughness": 1
+    },
+    {
+      "id": "front_title",
+      "type": "text",
+      "x": 1440,
+      "y": 80,
+      "text": "4. PARETO ARCHIVE & DISPATCH DECISION\n• Elite Non-Dominated Solutions Archive\n• Hypervolume Indicator Metric Tracking\n• Knee-Point / Compromise Selection:\n  Normalised Euclidean Distance to Ideal\n• Dynamic Feedback to Mission Cockpit:\n  - Vessel-by-vessel optimal speed profile\n  - Bunker fuel allocation & cold ironing\n  - Downloadable Maritime Audit PDF Report",
+      "fontSize": 14,
+      "fontFamily": 1,
+      "strokeColor": "#1e1e1e"
+    }
+  ]
+}

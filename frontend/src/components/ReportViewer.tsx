@@ -1,7 +1,7 @@
 import React from 'react';
 import { ParetoSolution } from '../types';
 import { getReportHtmlUrl, getReportJsonUrl } from '../services/api';
-import { FileText, Printer, Download, ShieldCheck, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { FileText, Printer, Download, ShieldCheck, CheckCircle2, AlertTriangle } from '@/components/icons';
 
 interface ReportViewerProps {
   runId: string;
@@ -67,10 +67,10 @@ export const ReportViewer: React.FC<ReportViewerProps> = ({ runId, solution }) =
         <div className="border-b border-oceanic-border pb-4 flex flex-wrap items-start justify-between gap-4">
           <div>
             <span className="text-[10px] font-mono uppercase text-telemetry-cyan tracking-wider">
-              IMO MEPC.376(80) & FuelEU Maritime Certified
+              IMO MEPC.376(80) & FuelEU Maritime Modeled Compliance
             </span>
             <h1 className="text-xl font-black text-slate-100 font-sans tracking-tight mt-1">
-              MARITIME GREEN FLEET DEPLOYMENT AUDIT REPORT
+              MARITIME GREEN FLEET DEPLOYMENT & DISPATCH REPORT
             </h1>
             <p className="text-xs text-slate-400 font-mono mt-0.5">
               Run ID: <span className="text-slate-200">{runId}</span> • Plan: {solution.solution_id} ({solution.algorithm})
@@ -167,11 +167,11 @@ export const ReportViewer: React.FC<ReportViewerProps> = ({ runId, solution }) =
         {/* Regulatory Disclosure Footnote */}
         <div className="pt-4 border-t border-oceanic-border text-[11px] text-slate-400 font-mono space-y-1">
           <p>
-            <strong>Auditor Notice:</strong> Lifecycle greenhouse gas emissions (Well-to-Wake) account for Well-to-Tank (upstream production/synthesis)
+            <strong>Compliance Notice:</strong> Lifecycle greenhouse gas emissions (Well-to-Wake) account for Well-to-Tank (upstream production/synthesis)
             and Tank-to-Wake (propulsion combustion). Shore power is exclusively applied during port dwell periods at verified electrified terminals.
           </p>
           <p className="text-[10px] text-slate-400">
-            Certified compliant with Smart India Hackathon Problem Statement 2 (SIH26138) Technical Specification.
+            Developed in accordance with Smart India Hackathon Problem Statement 2 (SIH26138) Technical Specification.
           </p>
         </div>
       </div>

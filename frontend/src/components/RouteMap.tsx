@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { CorridorInfo, VesselAllocationItem } from '../types';
-import { Anchor, Wind, Waves, Navigation, Zap, AlertCircle } from 'lucide-react';
+import { Anchor, Wind, Waves, Navigation, Zap, AlertCircle } from '@/components/icons';
 
 interface RouteMapProps {
   corridors: CorridorInfo[];
@@ -143,9 +143,14 @@ export const RouteMap: React.FC<RouteMapProps> = ({
                     cx={pts[Math.floor(pts.length / 2)][0]}
                     cy={pts[Math.floor(pts.length / 2)][1]}
                     r="4"
-                    fill="#00e5ff"
-                    className="animate-ping"
-                  />
+                    fill="none"
+                    stroke="#00e5ff"
+                    strokeWidth="1.5"
+                    className="pointer-events-none"
+                  >
+                    <animate attributeName="r" values="4;14" dur="1.8s" repeatCount="indefinite" />
+                    <animate attributeName="opacity" values="0.9;0" dur="1.8s" repeatCount="indefinite" />
+                  </circle>
                 )}
               </g>
             );

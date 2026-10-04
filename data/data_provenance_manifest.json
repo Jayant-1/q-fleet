@@ -1,0 +1,66 @@
+{
+  "pipeline_name": "SIH26138 Green Fleet Data Ingestion Engine",
+  "generated_at_utc": "2026-10-03T16:43:54Z",
+  "datasets": [
+    {
+      "id": "EMSA_THETIS_MRV_2022",
+      "title": "EMSA THETIS-MRV 2022 Annual Emission Reports",
+      "source_url": "https://mrv.emsa.europa.eu/api/public-emission-report/reporting-period-document/binary/2022/241",
+      "publisher": "European Maritime Safety Agency (EMSA)",
+      "license": "European Union Public Data / Commission Decision 2011/833/EU",
+      "observation_grain": "Annual aggregate per vessel",
+      "file_sha256": "1438ad47b9219888afea2b6115073ca3afec1f10cbc0f7806ed93c5ef57b1d76",
+      "cleaning_rules": "Extracted numerical fields, filtered positive fuel/distance/sea-time, removed target-leakage columns."
+    },
+    {
+      "id": "EMSA_THETIS_MRV_2023",
+      "title": "EMSA THETIS-MRV 2023 Annual Emission Reports",
+      "source_url": "https://mrv.emsa.europa.eu/api/public-emission-report/reporting-period-document/binary/2023/92",
+      "publisher": "European Maritime Safety Agency (EMSA)",
+      "license": "European Union Public Data / Commission Decision 2011/833/EU",
+      "observation_grain": "Annual aggregate per vessel",
+      "file_sha256": "1c1b0421015512e7564ff9dd35a36d0025181c200909a98af87e2ee5943ee2f8",
+      "cleaning_rules": "Strictly independent predictors extracted: ship_type, time_at_sea_hours, technical efficiency (EEDI/EIV/EEXI), ice_class. Zero target-derived features."
+    },
+    {
+      "id": "UN_LOCODE",
+      "title": "United Nations Code for Trade and Transport Locations",
+      "source_url": "https://raw.githubusercontent.com/datasets/un-locode/main/data/code-list.csv",
+      "publisher": "United Nations Economic Commission for Europe (UNECE)",
+      "license": "Public Domain (Open Data)",
+      "observation_grain": "Global Port Geographic Entity (coordinates and code list). Terminal-level shore power and grid intensity are curated operational assumptions.",
+      "file_sha256": "014d5139df76894a89f7eeb529723417e790129a5c7ea3b3dac38c34a03455c1"
+    },
+    {
+      "id": "EUROSTAT_MAR_GO_AM",
+      "title": "Eurostat Maritime Transport Statistics - Goods Handled in Main Ports",
+      "source_url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/mar_go_am_be",
+      "publisher": "European Commission (Eurostat)",
+      "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
+      "observation_grain": "Calibrated corridor trade flow volume assumptions based on Eurostat port-pair statistics."
+    },
+    {
+      "id": "IMO_MEPC_81_ANNEX_10",
+      "title": "IMO MEPC 81 / FuelEU Maritime Lifecycle GHG Emission Factors",
+      "source_url": "https://www.imo.org/en/OurWork/Environment/Pages/GHG-Emissions.aspx",
+      "publisher": "International Maritime Organization (IMO) / European Parliament",
+      "license": "Official UN/EU Treaty Documentation",
+      "observation_grain": "Fuel Grade / Lifecycle Pathway (WTT, TTW, LHV, GWP100 CH4=28, N2O=265)"
+    }
+  ],
+  "temporal_holdout_audit": {
+    "training_period": 2022,
+    "test_holdout_period": 2023,
+    "total_2022_records": 13059,
+    "total_2023_records": 12632,
+    "overlapping_imo_identities_count": 10050,
+    "overlapping_imo_pct_of_2023": 78.3,
+    "imputation_policy": "Imputation statistics (medians/modes) and scalers fit STRICTLY on 2022 training partition to prevent lookahead leakage into 2023."
+  },
+  "offline_reproducibility": {
+    "is_offline_capable": true,
+    "fixture_directory": "data/fixtures/",
+    "total_mrv_records": 25691,
+    "test_sample_record_count": 1000
+  }
+}

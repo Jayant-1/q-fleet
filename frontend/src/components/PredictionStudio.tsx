@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { predictFuelConsumption } from '../services/api';
 import { PredictFuelResponse, FuelType } from '../types';
-import { Activity, Gauge, Wind, Waves, Compass, Cpu, Zap, RotateCcw } from 'lucide-react';
+import { Activity, Gauge, Wind, Waves, Compass, Cpu, Zap, RotateCcw } from '@/components/icons';
 
 export const PredictionStudio: React.FC = () => {
   const [vesselType, setVesselType] = useState<string>('Container_UltraLarge');

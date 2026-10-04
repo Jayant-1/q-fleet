@@ -141,7 +141,7 @@ class ClassicalGAGBMRegressor:
     def __init__(self, seed: int = 42):
         self.seed = seed
         self.scaler = StandardScaler()
-        self.selector = ClassicalGAFeatureSelector(n_features=len(FEATURE_NAMES), seed=seed)
+        self.selector: Optional[ClassicalGAFeatureSelector] = None
         self.optimal_mask: Optional[np.ndarray] = None
         self.regressor = GradientBoostingRegressor(n_estimators=100, max_depth=4, random_state=seed)
         self.training_time_seconds = 0.0
@@ -151,6 +151,7 @@ class ClassicalGAGBMRegressor:
         X_train_scaled = self.scaler.fit_transform(X_train)
         X_val_scaled = self.scaler.transform(X_val)
 
+        self.selector = ClassicalGAFeatureSelector(n_features=X_train.shape[1], seed=self.seed)
         self.optimal_mask = self.selector.fit(X_train, y_train, X_val, y_val)
         active_cols = np.where(self.optimal_mask == 1)[0]
         self.regressor.fit(X_train_scaled[:, active_cols], y_train)

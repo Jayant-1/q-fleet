@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sliders, X, Play, ShieldAlert, DollarSign, CloudRain, Package, Cpu } from 'lucide-react';
+import { Sliders, X, Play, ShieldAlert, DollarSign, CloudRain, Package, Cpu } from '@/components/icons';
 
 interface ScenarioSandboxProps {
   isOpen: boolean;

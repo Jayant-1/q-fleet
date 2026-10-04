@@ -54,7 +54,13 @@ class ClassicalNSGA2Optimizer:
         for vessel in self.problem.fleet:
             r_idx = int(self.rng.choice(self.n_routes + 1)) - 1
             f_type = self.rng.choice(vessel.compatible_fuels)
-            speed = float(self.rng.uniform(vessel.min_speed_knots, vessel.max_speed_knots))
+            if getattr(self.problem, "preferred_fuel_type", None) and any(f.value == self.problem.preferred_fuel_type for f in vessel.compatible_fuels):
+                f_type = FuelType(self.problem.preferred_fuel_type)
+            target_sp = getattr(self.problem, "target_speed_knots", None)
+            if target_sp is not None:
+                speed = max(vessel.min_speed_knots, min(vessel.max_speed_knots, float(target_sp)))
+            else:
+                speed = float(self.rng.uniform(vessel.min_speed_knots, vessel.max_speed_knots))
             shore = bool(self.rng.choice([True, False])) and vessel.has_shore_power_connection
             chrom.append({
                 "route_idx": r_idx,

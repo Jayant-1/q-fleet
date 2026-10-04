@@ -1,0 +1,106 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "https://excalidraw.com",
+  "elements": [
+    {
+      "id": "editorial_box",
+      "type": "rectangle",
+      "x": 60,
+      "y": 60,
+      "width": 340,
+      "height": 460,
+      "strokeColor": "#4a9eed",
+      "backgroundColor": "#a5d8ff",
+      "fillStyle": "solid",
+      "opacity": 20,
+      "roundness": { "type": 3 },
+      "strokeWidth": 2,
+      "roughness": 1
+    },
+    {
+      "id": "editorial_text",
+      "type": "text",
+      "x": 80,
+      "y": 80,
+      "text": "1. EDITORIAL SHOWCASE\n• Act 1: Cinematic Hero & Naval Philosophy\n• Act 2: IMO MEPC.354(78) Regulatory Manifesto\n• Act 3: Holtrop-Mennen Hydrodynamic Slider\n• Act 4: Live MO-QIEA Pareto Frontier Visualizer\n• Act 5: Alternative Fuels Lifecycle Bento Grid\n• Act 6: Quantum vs Classical Benchmark Lab\n• Act 7: Full Swiss Specification Matrix\n\n[Toggle Cockpit via ⌘K or Header Button]",
+      "fontSize": 13,
+      "fontFamily": 1,
+      "strokeColor": "#1e1e1e"
+    },
+    {
+      "id": "flow_to_cockpit",
+      "type": "arrow",
+      "x": 400,
+      "y": 290,
+      "width": 90,
+      "height": 0,
+      "points": [[0, 0], [90, 0]],
+      "strokeColor": "#ff6b00",
+      "strokeWidth": 2,
+      "endArrowhead": "arrow"
+    },
+    {
+      "id": "cockpit_box",
+      "type": "rectangle",
+      "x": 490,
+      "y": 60,
+      "width": 420,
+      "height": 460,
+      "strokeColor": "#ff6b00",
+      "backgroundColor": "#ffd8a8",
+      "fillStyle": "solid",
+      "opacity": 20,
+      "roundness": { "type": 3 },
+      "strokeWidth": 2,
+      "roughness": 1
+    },
+    {
+      "id": "cockpit_text",
+      "type": "text",
+      "x": 510,
+      "y": 80,
+      "text": "2. MISSION DISPATCH COCKPIT\n• Cockpit Header:\n  Corridor selector, live solver latency HUD,\n  keyboard shortcut helpers (Space to solve)\n• Left Bay: Hydrodynamics Studio\n  Adjust speed, draft, waves -> Instant resistance\n• Center Bay: Spatial Map & Pareto Frontier\n  Click Pareto points to inspect speed profile\n• Right Bay: Regulatory Exposure & IMO CII\n  Dynamic CII letter grade (A-E) & FuelEU penalties",
+      "fontSize": 13,
+      "fontFamily": 1,
+      "strokeColor": "#1e1e1e"
+    },
+    {
+      "id": "flow_to_modals",
+      "type": "arrow",
+      "x": 910,
+      "y": 290,
+      "width": 90,
+      "height": 0,
+      "points": [[0, 0], [90, 0]],
+      "strokeColor": "#ff6b00",
+      "strokeWidth": 2,
+      "endArrowhead": "arrow"
+    },
+    {
+      "id": "modals_box",
+      "type": "rectangle",
+      "x": 1000,
+      "y": 60,
+      "width": 440,
+      "height": 460,
+      "strokeColor": "#22c55e",
+      "backgroundColor": "#b2f2bb",
+      "fillStyle": "solid",
+      "opacity": 20,
+      "roundness": { "type": 3 },
+      "strokeWidth": 2,
+      "roughness": 1
+    },
+    {
+      "id": "modals_text",
+      "type": "text",
+      "x": 1020,
+      "y": 80,
+      "text": "3. AUDIT & EXTENSION DRAWERS\n• Vessel Registry Modal:\n  - Search 25,691 real EMSA MRV annual records (15,924 vessels)\n  - Ingest custom fleet CSV with automated validation\n• Port Terminals & Provenance Drawer:\n  - UN/LOCODE coordinates & cold-ironing berths\n  - Data Provenance Manifest with SHA-256 hashes\n• 'Why This Plan?' Sensitivity Explorer:\n  - Carbon tax sandbox & alternative fuel parity curve\n• 1-Click PDF Audit Export:\n  - Formal Maritime Audit report generation",
+      "fontSize": 13,
+      "fontFamily": 1,
+      "strokeColor": "#1e1e1e"
+    }
+  ]
+}

@@ -111,3 +111,127 @@ def run_full_prediction_benchmark(
         "benchmark_results": benchmark_results,
         "provenance": "[SYNTHETIC-SIMULATED: Hydrodynamic Holtrop-Mennen Dataset]"
     }
+
+
+def run_mrv_empirical_benchmark(
+    max_samples: Optional[int] = 5000,
+    seed: int = 42
+) -> Dict[str, Any]:
+    """
+    Executes benchmark on real EMSA THETIS-MRV measured dataset.
+    Uses strict temporal holdout (Train=2022, Test=2023) and zero target leakage.
+    Compares:
+      1. Classical Ridge Regression
+      2. Classical Random Forest
+      3. Classical GA-GBM (Genetic Algorithm Feature Selection)
+      4. Proposed Quantum-Inspired QIEA-GBM (Rotation Gate Superposition Search)
+    """
+    from backend.app.prediction.dataset import load_mrv_vessel_dataset, get_mrv_temporal_splits, MRV_FEATURE_NAMES
+    from sklearn.linear_model import Ridge
+    from sklearn.ensemble import RandomForestRegressor
+    from sklearn.preprocessing import StandardScaler
+
+    df, X, y, feat_names, prep = load_mrv_vessel_dataset(max_samples=max_samples)
+    splits = get_mrv_temporal_splits(df, prep)
+
+    X_train, y_train = splits["X_train"], splits["y_train"]
+    X_val, y_val = splits["X_val"], splits["y_val"]
+    X_test, y_test = splits["X_test"], splits["y_test"]
+
+    scaler = StandardScaler()
+    X_train_s = scaler.fit_transform(X_train)
+    X_val_s = scaler.transform(X_val)
+    X_test_s = scaler.transform(X_test)
+
+    # 1. Classical Ridge
+    t0 = time.perf_counter()
+    ridge = Ridge(alpha=1.0)
+    ridge.fit(X_train_s, y_train)
+    ridge_time = time.perf_counter() - t0
+    t_inf = time.perf_counter()
+    y_pred_ridge = ridge.predict(X_test_s)
+    ridge_lat = ((time.perf_counter() - t_inf) / len(X_test)) * 1000.0
+    ridge_metrics = calculate_regression_metrics(y_test, y_pred_ridge)
+
+    # 2. Classical Random Forest
+    t0 = time.perf_counter()
+    rf = RandomForestRegressor(n_estimators=80, max_depth=10, random_state=seed, n_jobs=-1)
+    rf.fit(X_train_s, y_train)
+    rf_time = time.perf_counter() - t0
+    t_inf = time.perf_counter()
+    y_pred_rf = rf.predict(X_test_s)
+    rf_lat = ((time.perf_counter() - t_inf) / len(X_test)) * 1000.0
+    rf_metrics = calculate_regression_metrics(y_test, y_pred_rf)
+
+    # 3. Classical GA-GBM
+    t0 = time.perf_counter()
+    from backend.app.prediction.classical_models import ClassicalGAGBMRegressor
+    ga_model = ClassicalGAGBMRegressor(seed=seed)
+    ga_model.fit(X_train, y_train, X_val, y_val)
+    ga_time = time.perf_counter() - t0
+    t_inf = time.perf_counter()
+    y_pred_ga = ga_model.predict(X_test)
+    ga_lat = ((time.perf_counter() - t_inf) / len(X_test)) * 1000.0
+    ga_metrics = calculate_regression_metrics(y_test, y_pred_ga)
+
+    # 4. Proposed Quantum-Inspired QIEA-GBM
+    t0 = time.perf_counter()
+    from backend.app.prediction.quantum_inspired_predictor import MRVEmpiricalPredictor
+    qiea_model = MRVEmpiricalPredictor(seed=seed)
+    qiea_model.fit(X_train, y_train, X_val, y_val, feature_names=feat_names)
+    qiea_time = time.perf_counter() - t0
+    t_inf = time.perf_counter()
+    y_pred_qiea = qiea_model.predict(X_test)
+    qiea_lat = ((time.perf_counter() - t_inf) / len(X_test)) * 1000.0
+    qiea_metrics = calculate_regression_metrics(y_test, y_pred_qiea)
+
+    return {
+        "benchmark_dataset": "EMSA THETIS-MRV (Official 2022-2023 EU Reporting)",
+        "train_samples": len(X_train),
+        "val_samples": len(X_val),
+        "test_samples": len(X_test),
+        "split_strategy": "Temporal Holdout: Train=2022, Test=2023 (Zero Target Leakage)",
+        "results": [
+            {
+                "model_name": "Classical Ridge Regression (Linear Baseline)",
+                "r2_score": ridge_metrics["r2_score"],
+                "mae_annual_mt": ridge_metrics["mae_mt_day"],
+                "rmse_annual_mt": ridge_metrics["rmse_mt_day"],
+                "mape_pct": ridge_metrics["mape_pct"],
+                "features_used_count": len(feat_names),
+                "training_time_seconds": round(ridge_time, 2),
+                "inference_latency_per_sample_ms": round(ridge_lat, 3)
+            },
+            {
+                "model_name": "Classical Random Forest (Non-Linear Baseline)",
+                "r2_score": rf_metrics["r2_score"],
+                "mae_annual_mt": rf_metrics["mae_mt_day"],
+                "rmse_annual_mt": rf_metrics["rmse_mt_day"],
+                "mape_pct": rf_metrics["mape_pct"],
+                "features_used_count": len(feat_names),
+                "training_time_seconds": round(rf_time, 2),
+                "inference_latency_per_sample_ms": round(rf_lat, 3)
+            },
+            {
+                "model_name": "Classical GA-GBM (Genetic Algorithm Feature Selection)",
+                "r2_score": ga_metrics["r2_score"],
+                "mae_annual_mt": ga_metrics["mae_mt_day"],
+                "rmse_annual_mt": ga_metrics["rmse_mt_day"],
+                "mape_pct": ga_metrics["mape_pct"],
+                "features_used_count": int(np.sum(ga_model.optimal_mask)) if ga_model.optimal_mask is not None else len(feat_names),
+                "training_time_seconds": round(ga_time, 2),
+                "inference_latency_per_sample_ms": round(ga_lat, 3)
+            },
+            {
+                "model_name": "Quantum-Inspired QIEA-GBM (Proposed Rotation Gate Selection)",
+                "r2_score": qiea_metrics["r2_score"],
+                "mae_annual_mt": qiea_metrics["mae_mt_day"],
+                "rmse_annual_mt": qiea_metrics["rmse_mt_day"],
+                "mape_pct": qiea_metrics["mape_pct"],
+                "features_used_count": int(np.sum(qiea_model.optimal_feature_mask)) if qiea_model.optimal_feature_mask is not None else len(feat_names),
+                "training_time_seconds": round(qiea_time, 2),
+                "inference_latency_per_sample_ms": round(qiea_lat, 3)
+            }
+        ]
+    }
+

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ParetoSolution } from '../types';
-import { Layers, Sparkles, TrendingDown, Check, Info } from 'lucide-react';
+import { Layers, Sparkles, TrendingDown, Check, Info } from '@/components/icons';
 
 interface ParetoExplorerProps {
   solutions: ParetoSolution[];
@@ -147,7 +147,18 @@ export const ParetoExplorer: React.FC<ParetoExplorerProps> = ({
 
                   {/* Knee Point Pulse */}
                   {isKnee && (
-                    <circle cx={x} cy={y} r="18" fill="none" stroke="#d946ef" strokeWidth="1.5" className="animate-ping" />
+                    <circle
+                      cx={x}
+                      cy={y}
+                      r="8"
+                      fill="none"
+                      stroke="#d946ef"
+                      strokeWidth="1.5"
+                      className="pointer-events-none"
+                    >
+                      <animate attributeName="r" values="8;18" dur="2s" repeatCount="indefinite" />
+                      <animate attributeName="opacity" values="0.85;0" dur="2s" repeatCount="indefinite" />
+                    </circle>
                   )}
 
                   {/* Node Circle */}

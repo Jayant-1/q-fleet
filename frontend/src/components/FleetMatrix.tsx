@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { VesselInfo, VesselAllocationItem } from '../types';
-import { Ship, Zap, Gauge, DollarSign, Wind, ShieldAlert, CheckCircle2 } from 'lucide-react';
+import { Ship, Zap, Gauge, DollarSign, Wind, ShieldAlert, CheckCircle2 } from '@/components/icons';
 
 interface FleetMatrixProps {
   fleet: VesselInfo[];

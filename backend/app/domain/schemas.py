@@ -34,7 +34,26 @@ class PredictFuelResponse(BaseModel):
     model_version: str
     inference_latency_ms: float
     is_synthetic_model: bool = True
-    data_provenance_label: str = "[SYNTHETIC-SIMULATED: Hydrodynamic Holtrop-Mennen Power Scaling + QIEA-FS]"
+    data_provenance_label: str = "[MODELED ESTIMATE: Hydrodynamic Holtrop-Mennen Power Scaling + Kwon]"
+
+
+class PredictMRVAnnualRequest(BaseModel):
+    ship_type: str = Field(default="Container ship", description="EMSA MRV ship classification")
+    time_at_sea_hours: float = Field(default=5200.0, ge=10.0, le=8760.0, description="Annual hours underway at sea")
+    efficiency_val_gco2_per_tnm: float = Field(default=5.4, ge=0.0, le=300.0, description="Technical design efficiency (EEDI/EEXI/EIV in gCO2/t-nm)")
+    efficiency_type: str = Field(default="EEDI", description="Certification type: EEDI, EIV, EEXI, or UNKNOWN")
+    has_ice_class: bool = Field(default=False, description="Whether the vessel possesses Finnish-Swedish or polar ice class notation")
+    time_at_sea_through_ice_hours: float = Field(default=0.0, ge=0.0, le=8760.0, description="Annual operating hours navigating in ice")
+
+
+class PredictMRVAnnualResponse(BaseModel):
+    predicted_annual_fuel_mt: float
+    confidence_interval_95_lower_mt: float
+    confidence_interval_95_upper_mt: float
+    active_features_used: List[str]
+    feature_mask: List[int]
+    model_provenance: str
+    inference_latency_ms: float
 
 
 class VesselAllocationItem(BaseModel):
@@ -55,7 +74,16 @@ class VesselAllocationItem(BaseModel):
     transit_time_days: float
     cargo_carried: float
     is_feasible: bool
-    violation_reasons: List[str] = []
+    violation_reasons: List[str] = Field(default_factory=list)
+    cii_rating: str
+    attained_aer: float
+    fueleu_deficit_penalty_usd: float
+    eu_ets_cost_usd: float
+    target_speed_knots: Optional[float] = None
+    applied_speed_knots: float = 0.0
+    speed_adjustment_reason: str = ""
+    fuel_adjustment_reason: str = ""
+    applied_draft_meters: float = 0.0
 
 
 class ParetoSolutionSchema(BaseModel):
@@ -71,6 +99,10 @@ class ParetoSolutionSchema(BaseModel):
     pareto_rank: int
     crowding_distance: float
     allocations: List[VesselAllocationItem]
+    fleet_average_cii_rating: str
+    total_fueleu_penalty_usd: float
+    total_eu_ets_cost_usd: float
+    cii_grade_counts: Dict[str, int] = Field(default_factory=dict)
 
 
 class GenerationConvergenceItem(BaseModel):
@@ -83,15 +115,20 @@ class GenerationConvergenceItem(BaseModel):
 
 
 class OptimizeRunRequest(BaseModel):
-    scenario_id: str = Field(default="global_liner_2026", description="Identifier of scenario configuration")
+    scenario_id: str = Field(default="global_liner_2026", description="Identifier of scenario configuration: 'global_liner_2026' or 'eca_strict_compliance'")
     algorithm: str = Field(default="MO-QIEA", description="Optimization algorithm: 'MO-QIEA', 'NSGA-II', or 'MO-PSO'")
-    population_size: int = Field(default=40, ge=10, le=100, description="Candidate population size")
-    generations: int = Field(default=50, ge=10, le=200, description="Generations budget")
+    population_size: int = Field(default=35, ge=10, le=100, description="Candidate population size")
+    generations: int = Field(default=30, ge=5, le=200, description="Generations budget")
     carbon_tax_per_ton: float = Field(default=100.0, ge=0.0, le=500.0, description="Carbon tax levy ($/ton CO2e WTW)")
     weather_severity_multiplier: float = Field(default=1.0, ge=0.5, le=2.0, description="Sea state severity scalar")
     fuel_price_multipliers: Dict[str, float] = Field(default_factory=dict, description="Fuel cost price multipliers")
     demand_multiplier: float = Field(default=1.0, ge=0.5, le=2.0, description="Cargo volume demand scalar")
     random_seed: int = Field(default=42, description="Pseudorandom generator seed for reproducibility")
+    selected_route_id: Optional[str] = Field(default=None, description="Optional corridor filter: optimizes solely for selected route")
+    custom_fleet: Optional[List[Dict[str, Any]]] = Field(default=None, description="Optional user-imported custom vessel fleet")
+    target_speed_knots: Optional[float] = Field(default=None, ge=8.0, le=30.0, description="Operational cruising speed target constraint (knots)")
+    preferred_fuel_type: Optional[str] = Field(default=None, description="Preferred alternative fuel pathway constraint")
+    operating_draft_meters: Optional[float] = Field(default=None, ge=5.0, le=25.0, description="Vessel operating draft constraint (meters)")
 
 
 class OptimizeRunResponse(BaseModel):
@@ -106,8 +143,19 @@ class OptimizeRunResponse(BaseModel):
     pareto_front: List[ParetoSolutionSchema]
     convergence_history: List[GenerationConvergenceItem]
     compromise_solution_id: str
-    random_seed: int
-    timestamp: str
+    selected_route_id: Optional[str] = None
+    fleet_size: int = 0
+    audit_hash: str = ""
+    random_seed: int = 42
+    timestamp: str = ""
+    carbon_tax_per_ton: float = 100.0
+    weather_severity_multiplier: float = 1.0
+    fuel_price_multipliers: Dict[str, float] = Field(default_factory=dict)
+    demand_multiplier: float = 1.0
+    target_speed_knots: Optional[float] = None
+    preferred_fuel_type: Optional[str] = None
+    operating_draft_meters: Optional[float] = None
+    custom_fleet: Optional[List[Dict[str, Any]]] = None
 
 
 class BenchmarkComparisonRequest(BaseModel):
@@ -141,6 +189,9 @@ class BenchmarkComparisonResponse(BaseModel):
     winner_solution_quality: str
     methodology_notes: str
     data_provenance: str = "[SYNTHETIC-SIMULATED: Strict Budget Parity Benchmark]"
+    random_seed: int = 42
+    run_timestamp: str = ""
+    data_source: str = "docs/benchmark_results.json & live execution"
 
 
 class ScenarioSummarySchema(BaseModel):

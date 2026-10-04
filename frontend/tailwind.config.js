@@ -7,25 +7,33 @@ export default {
   theme: {
     extend: {
       colors: {
-        oceanic: {
-          void: "#050811",
-          hull: "#0b1220",
-          panel: "#111b2e",
-          border: "#1a273f",
-          borderGlow: "#00f0ff33",
+        obsidian: {
+          base: "#08080a",
+          panel: "#111114",
+          card: "#16161a",
+          subsurface: "#1c1c22",
+          border: "rgba(255, 255, 255, 0.08)",
+          borderHover: "rgba(255, 255, 255, 0.18)",
+        },
+        safety: {
+          amber: "#ff6b00",
+          amberMuted: "rgba(255, 107, 0, 0.15)",
+          amberGlow: "rgba(255, 107, 0, 0.35)",
+          amberHover: "#ff8533",
         },
         telemetry: {
-          cyan: "#00f0ff",
-          seafoam: "#00ff9d",
-          amber: "#ffb703",
-          violet: "#d946ef",
-          muted: "#64748b",
+          chalk: "#fafafa",
+          sub: "#a1a1aa",
+          dim: "#71717a",
+          grid: "rgba(255, 255, 255, 0.05)",
         }
       },
       fontFamily: {
-        display: ['"Syne"', 'sans-serif'],
-        sans: ['"Space Grotesk"', '"Inter"', 'sans-serif'],
-        mono: ['"JetBrains Mono"', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
+        display: ['"Space Grotesk"', '"Syne"', 'sans-serif'],
+        headline: ['"Syne"', '"Space Grotesk"', 'sans-serif'],
+        sans: ['"Plus Jakarta Sans"', '"Instrument Sans"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'Menlo', 'monospace'],
+        editorial: ['"Instrument Sans"', '"Plus Jakarta Sans"', 'sans-serif'],
       }
     },
   },

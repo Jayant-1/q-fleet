@@ -12,7 +12,7 @@ import {
   ShieldCheck,
   ArrowRight,
   BookOpen
-} from 'lucide-react';
+} from '@/components/icons';
 
 export type TabKey =
   | 'operations'

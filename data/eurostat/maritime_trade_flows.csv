@@ -1,0 +1,6 @@
+route_id,origin_locode,dest_locode,annual_volume_thousand_tonnes,cargo_type
+AE_EUR_ASIA,NLRTM,SGSIN,42500,Container
+TP_ASIA_USWC,CNSHA,USLAX,58300,Container
+TA_EUR_USEC,BEANR,USNYC,26800,Container
+IO_ME_IN,AEJEA,INNSA,19400,Container
+NS_BALTIC_ECA,DEHAM,SEGOT,8900,Container/RoRo

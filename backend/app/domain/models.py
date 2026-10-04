@@ -32,10 +32,11 @@ class VesselSpecification:
     main_engine_mcr_kw: float              # Maximum Continuous Rating (kW)
     auxiliary_power_kw: float              # Auxiliary hotel & cargo cooling load (kW)
     berth_aux_power_kw: float              # At-berth electrical load (kW)
-    compatible_fuels: List[FuelType]       # Certified fuel engine types
+    compatible_fuels: List[FuelType]       # Compatible engine fuel pathways
     has_shore_power_connection: bool       # High-voltage cold-ironing fitted
     daily_capital_cost_usd: float          # Time-charter equivalent / daily amortized fixed cost ($/day)
     cii_rating_baseline: str = "C"         # Baseline IMO Carbon Intensity Indicator rating
+    gross_tonnage: Optional[float] = None  # Vessel Gross Tonnage (GT) for EU ETS eligibility threshold (>= 5,000 GT)
 
 
 @dataclass
@@ -86,6 +87,15 @@ class VesselDeploymentAllocation:
     cargo_carried: float
     is_feasible: bool
     violation_reasons: List[str] = field(default_factory=list)
+    cii_rating: str = "C"
+    attained_aer: float = 0.0
+    fueleu_deficit_penalty_usd: float = 0.0
+    eu_ets_cost_usd: float = 0.0
+    target_speed_knots: Optional[float] = None
+    applied_speed_knots: float = 0.0
+    speed_adjustment_reason: str = ""
+    fuel_adjustment_reason: str = ""
+    applied_draft_meters: float = 0.0
 
 
 @dataclass
@@ -102,6 +112,10 @@ class FleetDeploymentSolution:
     allocations: List[VesselDeploymentAllocation]
     pareto_rank: int = 1
     crowding_distance: float = 0.0
+    fleet_average_cii_rating: str = "C"
+    total_fueleu_penalty_usd: float = 0.0
+    total_eu_ets_cost_usd: float = 0.0
+    cii_grade_counts: Dict[str, int] = field(default_factory=dict)
 
 
 # Standardized Ports
@@ -197,23 +211,23 @@ GLOBAL_CORRIDORS: Dict[str, Corridor] = {
 
 # Standard Commercial Fleet Roster (15 Vessel Candidates)
 STANDARD_FLEET: List[VesselSpecification] = [
-    VesselSpecification("VESSEL_01", "Oceanic Apex", VesselType.CONTAINER_ULTRALARGE, 195000, 21000, 19.5, 12.0, 22.5, 16.0, 61.4, 399.9, 68000, 4500, 1800, [FuelType.VLSFO, FuelType.MGO, FuelType.LNG], True, 48000.0, "B"),
-    VesselSpecification("VESSEL_02", "Titan Horizon", VesselType.CONTAINER_ULTRALARGE, 190000, 20500, 19.0, 12.0, 22.0, 15.8, 60.0, 398.0, 65000, 4400, 1750, [FuelType.VLSFO, FuelType.MGO, FuelType.BIO_METHANOL], True, 49500.0, "A"),
-    VesselSpecification("VESSEL_03", "Starlight Voyager", VesselType.CONTAINER_ULTRALARGE, 185000, 19800, 18.5, 12.0, 21.5, 15.5, 59.0, 395.0, 62000, 4200, 1700, [FuelType.VLSFO, FuelType.MGO], False, 42000.0, "D"),
+    VesselSpecification("VESSEL_01", "Oceanic Apex", VesselType.CONTAINER_ULTRALARGE, 195000, 21000, 19.5, 12.0, 22.5, 16.0, 61.4, 399.9, 68000, 4500, 1800, [FuelType.VLSFO, FuelType.MGO, FuelType.LNG], True, 48000.0, "B", 210000.0),
+    VesselSpecification("VESSEL_02", "Titan Horizon", VesselType.CONTAINER_ULTRALARGE, 190000, 20500, 19.0, 12.0, 22.0, 15.8, 60.0, 398.0, 65000, 4400, 1750, [FuelType.VLSFO, FuelType.MGO, FuelType.BIO_METHANOL], True, 49500.0, "A", 205000.0),
+    VesselSpecification("VESSEL_03", "Starlight Voyager", VesselType.CONTAINER_ULTRALARGE, 185000, 19800, 18.5, 12.0, 21.5, 15.5, 59.0, 395.0, 62000, 4200, 1700, [FuelType.VLSFO, FuelType.MGO], False, 42000.0, "D", 198000.0),
     
-    VesselSpecification("VESSEL_04", "Pacific Pioneer", VesselType.CONTAINER_POSTPANAMAX, 95000, 8800, 18.0, 11.0, 21.0, 14.0, 42.8, 300.0, 36000, 2800, 1100, [FuelType.VLSFO, FuelType.MGO, FuelType.LNG], True, 28000.0, "B"),
-    VesselSpecification("VESSEL_05", "Emerald Wave", VesselType.CONTAINER_POSTPANAMAX, 92000, 8500, 18.0, 11.0, 21.0, 13.8, 42.8, 298.0, 35000, 2700, 1050, [FuelType.VLSFO, FuelType.MGO, FuelType.BIO_METHANOL], True, 29500.0, "A"),
-    VesselSpecification("VESSEL_06", "Northern Breeze", VesselType.CONTAINER_POSTPANAMAX, 90000, 8200, 17.5, 11.0, 20.5, 13.5, 42.0, 294.0, 34000, 2600, 1000, [FuelType.VLSFO, FuelType.MGO, FuelType.GREEN_NH3], True, 31000.0, "A"),
-    VesselSpecification("VESSEL_07", "Azure Sentinel", VesselType.CONTAINER_POSTPANAMAX, 88000, 8000, 17.0, 11.0, 20.0, 13.2, 41.5, 290.0, 32000, 2500, 950, [FuelType.VLSFO, FuelType.MGO], False, 24000.0, "C"),
+    VesselSpecification("VESSEL_04", "Pacific Pioneer", VesselType.CONTAINER_POSTPANAMAX, 95000, 8800, 18.0, 11.0, 21.0, 14.0, 42.8, 300.0, 36000, 2800, 1100, [FuelType.VLSFO, FuelType.MGO, FuelType.LNG], True, 28000.0, "B", 94000.0),
+    VesselSpecification("VESSEL_05", "Emerald Wave", VesselType.CONTAINER_POSTPANAMAX, 92000, 8500, 18.0, 11.0, 21.0, 13.8, 42.8, 298.0, 35000, 2700, 1050, [FuelType.VLSFO, FuelType.MGO, FuelType.BIO_METHANOL], True, 29500.0, "A", 91000.0),
+    VesselSpecification("VESSEL_06", "Northern Breeze", VesselType.CONTAINER_POSTPANAMAX, 90000, 8200, 17.5, 11.0, 20.5, 13.5, 42.0, 294.0, 34000, 2600, 1000, [FuelType.VLSFO, FuelType.MGO, FuelType.GREEN_NH3], True, 31000.0, "A", 89000.0),
+    VesselSpecification("VESSEL_07", "Azure Sentinel", VesselType.CONTAINER_POSTPANAMAX, 88000, 8000, 17.0, 11.0, 20.0, 13.2, 41.5, 290.0, 32000, 2500, 950, [FuelType.VLSFO, FuelType.MGO], False, 24000.0, "C", 87000.0),
 
-    VesselSpecification("VESSEL_08", "Baltic Runner", VesselType.CONTAINER_FEEDER, 18500, 1500, 16.0, 10.0, 18.5, 9.2, 23.5, 158.0, 11500, 1200, 450, [FuelType.MGO, FuelType.BIO_METHANOL], True, 11000.0, "A"),
-    VesselSpecification("VESSEL_09", "Nordic Swift", VesselType.CONTAINER_FEEDER, 17000, 1350, 15.5, 10.0, 18.0, 8.8, 22.8, 152.0, 10500, 1100, 400, [FuelType.MGO, FuelType.GREEN_H2], True, 13500.0, "A"),
-    VesselSpecification("VESSEL_10", "Fjord Express", VesselType.CONTAINER_FEEDER, 16500, 1300, 15.0, 10.0, 17.5, 8.5, 22.0, 148.0, 9800, 1000, 380, [FuelType.VLSFO, FuelType.MGO], False, 9200.0, "C"),
+    VesselSpecification("VESSEL_08", "Baltic Runner", VesselType.CONTAINER_FEEDER, 18500, 1500, 16.0, 10.0, 18.5, 9.2, 23.5, 158.0, 11500, 1200, 450, [FuelType.MGO, FuelType.BIO_METHANOL], True, 11000.0, "A", 17800.0),
+    VesselSpecification("VESSEL_09", "Nordic Swift", VesselType.CONTAINER_FEEDER, 17000, 1350, 15.5, 10.0, 18.0, 8.8, 22.8, 152.0, 10500, 1100, 400, [FuelType.MGO, FuelType.GREEN_H2], True, 13500.0, "A", 16500.0),
+    VesselSpecification("VESSEL_10", "Fjord Express", VesselType.CONTAINER_FEEDER, 16500, 1300, 15.0, 10.0, 17.5, 8.5, 22.0, 148.0, 9800, 1000, 380, [FuelType.VLSFO, FuelType.MGO], False, 9200.0, "C", 15900.0),
 
-    VesselSpecification("VESSEL_11", "Cape Endurance", VesselType.BULK_CAPESIZE, 180000, 175000, 14.5, 9.5, 16.5, 18.2, 45.0, 292.0, 18500, 1500, 500, [FuelType.VLSFO, FuelType.MGO, FuelType.LNG], True, 27000.0, "B"),
-    VesselSpecification("VESSEL_12", "Iron Navigator", VesselType.BULK_CAPESIZE, 175000, 170000, 14.0, 9.5, 16.0, 18.0, 45.0, 289.0, 17800, 1450, 480, [FuelType.VLSFO, FuelType.MGO, FuelType.GREEN_NH3], True, 29000.0, "A"),
-    VesselSpecification("VESSEL_13", "Mineral Titan", VesselType.BULK_CAPESIZE, 172000, 168000, 13.8, 9.5, 15.8, 17.8, 44.5, 287.0, 17000, 1400, 450, [FuelType.VLSFO, FuelType.MGO], False, 22500.0, "C"),
+    VesselSpecification("VESSEL_11", "Cape Endurance", VesselType.BULK_CAPESIZE, 180000, 175000, 14.5, 9.5, 16.5, 18.2, 45.0, 292.0, 18500, 1500, 500, [FuelType.VLSFO, FuelType.MGO, FuelType.LNG], True, 27000.0, "B", 93000.0),
+    VesselSpecification("VESSEL_12", "Iron Navigator", VesselType.BULK_CAPESIZE, 175000, 170000, 14.0, 9.5, 16.0, 18.0, 45.0, 289.0, 17800, 1450, 480, [FuelType.VLSFO, FuelType.MGO, FuelType.GREEN_NH3], True, 29000.0, "A", 91000.0),
+    VesselSpecification("VESSEL_13", "Mineral Titan", VesselType.BULK_CAPESIZE, 172000, 168000, 13.8, 9.5, 15.8, 17.8, 44.5, 287.0, 17000, 1400, 450, [FuelType.VLSFO, FuelType.MGO], False, 22500.0, "C", 89500.0),
 
-    VesselSpecification("VESSEL_14", "Polaris Sovereign", VesselType.TANKER_VLCC, 305000, 295000, 15.0, 10.0, 16.8, 22.0, 60.0, 333.0, 28000, 2200, 850, [FuelType.VLSFO, FuelType.MGO, FuelType.LNG], True, 44000.0, "B"),
-    VesselSpecification("VESSEL_15", "Solaris Trader", VesselType.TANKER_VLCC, 298000, 288000, 14.5, 10.0, 16.2, 21.5, 60.0, 330.0, 26500, 2100, 800, [FuelType.VLSFO, FuelType.MGO, FuelType.BIO_METHANOL], True, 46000.0, "A"),
+    VesselSpecification("VESSEL_14", "Polaris Sovereign", VesselType.TANKER_VLCC, 305000, 295000, 15.0, 10.0, 16.8, 22.0, 60.0, 333.0, 28000, 2200, 850, [FuelType.VLSFO, FuelType.MGO, FuelType.LNG], True, 44000.0, "B", 160000.0),
+    VesselSpecification("VESSEL_15", "Solaris Trader", VesselType.TANKER_VLCC, 298000, 288000, 14.5, 10.0, 16.2, 21.5, 60.0, 330.0, 26500, 2100, 800, [FuelType.VLSFO, FuelType.MGO, FuelType.BIO_METHANOL], True, 46000.0, "A", 157000.0),
 ]

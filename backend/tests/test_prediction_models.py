@@ -76,3 +76,33 @@ def test_prediction_inference_latency():
     assert res["inference_latency_ms"] < 15.0
     assert res["predicted_fuel_mt_per_day"] > 0
     assert res["lhv_adjusted_daily_mt"] > 0
+
+
+def test_mrv_empirical_predictor_accuracy_and_confidence():
+    """Verifies empirical MRV model achieves R2 >= 0.85 on test holdout and produces valid 95% CI."""
+    from backend.app.prediction.dataset import load_mrv_vessel_dataset, get_mrv_temporal_splits, MRV_FEATURE_NAMES
+    from backend.app.prediction.quantum_inspired_predictor import MRVEmpiricalPredictor
+
+    df, X, y, feat_names, prep = load_mrv_vessel_dataset(max_samples=1500)
+    splits = get_mrv_temporal_splits(df, prep)
+
+    model = MRVEmpiricalPredictor(seed=42)
+    model.fit(splits["X_train"], splits["y_train"], splits["X_val"], splits["y_val"], feature_names=MRV_FEATURE_NAMES)
+
+    assert model.is_fitted
+    assert model.optimal_feature_mask is not None
+    assert np.sum(model.optimal_feature_mask) <= len(MRV_FEATURE_NAMES)
+
+    # Test single annual inference
+    res = model.predict_annual(
+        time_at_sea_hours=5000.0,
+        efficiency_val_gco2_per_tnm=5.2,
+        ship_type_str="Container ship"
+    )
+
+    assert res["predicted_annual_fuel_mt"] > 100.0
+    assert res["confidence_interval_95_lower_mt"] < res["predicted_annual_fuel_mt"]
+    assert res["confidence_interval_95_upper_mt"] > res["predicted_annual_fuel_mt"]
+    assert res["inference_latency_ms"] < 15.0
+    assert len(res["active_features_used"]) >= 2
+

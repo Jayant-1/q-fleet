@@ -1,0 +1,143 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "https://excalidraw.com",
+  "elements": [
+    {
+      "id": "src_zone",
+      "type": "rectangle",
+      "x": 60,
+      "y": 60,
+      "width": 320,
+      "height": 420,
+      "strokeColor": "#4a9eed",
+      "backgroundColor": "#a5d8ff",
+      "fillStyle": "solid",
+      "opacity": 20,
+      "roundness": { "type": 3 },
+      "strokeWidth": 2,
+      "roughness": 1
+    },
+    {
+      "id": "src_title",
+      "type": "text",
+      "x": 80,
+      "y": 80,
+      "text": "1. AUTHORITATIVE DATA SOURCES\n• EMSA THETIS-MRV 2022 & 2023\n  (25,691 real vessel reports)\n• UN/LOCODE (11,829 ports)\n• IMO MEPC.354(78) & MEPC.355(78)\n• FuelEU Maritime Reg (EU) 2023/1805\n• Offline fixtures (mrv_sample.csv)",
+      "fontSize": 14,
+      "fontFamily": 1,
+      "strokeColor": "#1e1e1e"
+    },
+    {
+      "id": "ingest_arrow",
+      "type": "arrow",
+      "x": 380,
+      "y": 270,
+      "width": 80,
+      "height": 0,
+      "points": [[0, 0], [80, 0]],
+      "strokeColor": "#ff6b00",
+      "strokeWidth": 2,
+      "endArrowhead": "arrow"
+    },
+    {
+      "id": "clean_zone",
+      "type": "rectangle",
+      "x": 460,
+      "y": 60,
+      "width": 340,
+      "height": 420,
+      "strokeColor": "#f59e0b",
+      "backgroundColor": "#ffd8a8",
+      "fillStyle": "solid",
+      "opacity": 20,
+      "roundness": { "type": 3 },
+      "strokeWidth": 2,
+      "roughness": 1
+    },
+    {
+      "id": "clean_title",
+      "type": "text",
+      "x": 480,
+      "y": 80,
+      "text": "2. INGESTION & LEAKAGE DEFENSE\n• Zero Target Leakage Enforcement:\n  Strictly drop total CO2 & fuel breakdown\n• Physicochemical Bounds:\n  Speed: 5-30 kts, Sea hours > 200h\n• Strict Temporal Holdout Split:\n  Train: 2022 (11,101 vessels)\n  Test Holdout: 2023 (12,632 vessels)\n• Provenance Manifest (SHA-256)",
+      "fontSize": 14,
+      "fontFamily": 1,
+      "strokeColor": "#1e1e1e"
+    },
+    {
+      "id": "qiea_arrow",
+      "type": "arrow",
+      "x": 800,
+      "y": 270,
+      "width": 80,
+      "height": 0,
+      "points": [[0, 0], [80, 0]],
+      "strokeColor": "#ff6b00",
+      "strokeWidth": 2,
+      "endArrowhead": "arrow"
+    },
+    {
+      "id": "qiea_zone",
+      "type": "rectangle",
+      "x": 880,
+      "y": 60,
+      "width": 340,
+      "height": 420,
+      "strokeColor": "#8b5cf6",
+      "backgroundColor": "#d0bfff",
+      "fillStyle": "solid",
+      "opacity": 20,
+      "roundness": { "type": 3 },
+      "strokeWidth": 2,
+      "roughness": 1
+    },
+    {
+      "id": "qiea_title",
+      "type": "text",
+      "x": 900,
+      "y": 80,
+      "text": "3. QIEA FEATURE SELECTION\n• Q-Bit Angle Representation:\n  |Ψ⟩ = cos(θ)|0⟩ + sin(θ)|1⟩\n• Quantum Rotation Gate Updates:\n  Δθ based on Pareto fitness\n• Optimal Subspace Identified:\n  Gross Tonnage, Sea Hours,\n  Distance, Speed^3 Load Proxy,\n  Operational Sea-Time Intensity",
+      "fontSize": 14,
+      "fontFamily": 1,
+      "strokeColor": "#1e1e1e"
+    },
+    {
+      "id": "model_arrow",
+      "type": "arrow",
+      "x": 1220,
+      "y": 270,
+      "width": 80,
+      "height": 0,
+      "points": [[0, 0], [80, 0]],
+      "strokeColor": "#ff6b00",
+      "strokeWidth": 2,
+      "endArrowhead": "arrow"
+    },
+    {
+      "id": "model_zone",
+      "type": "rectangle",
+      "x": 1300,
+      "y": 60,
+      "width": 340,
+      "height": 420,
+      "strokeColor": "#22c55e",
+      "backgroundColor": "#b2f2bb",
+      "fillStyle": "solid",
+      "opacity": 20,
+      "roundness": { "type": 3 },
+      "strokeWidth": 2,
+      "roughness": 1
+    },
+    {
+      "id": "model_title",
+      "type": "text",
+      "x": 1320,
+      "y": 80,
+      "text": "4. TRAINED EMPIRICAL PREDICTOR\n• Artifact: mrv_fuel_predictor.joblib\n• Verification on 2023 Holdout:\n  R² = 0.9249 | MAE = 504.18 MT\n  Inference Latency: 0.51 ms\n• FastAPI Endpoints:\n  /api/predict/annual-mrv\n  /api/predict/mrv-benchmark\n• Benchmarked against Classical Ridge & RF",
+      "fontSize": 14,
+      "fontFamily": 1,
+      "strokeColor": "#1e1e1e"
+    }
+  ]
+}

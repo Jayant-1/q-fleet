@@ -65,9 +65,15 @@ class ClassicalMOPSOOptimizer:
             n_comp = len(vessel.compatible_fuels)
             f_idx = int(np.clip(round(row[1]), 0, n_comp - 1))
             f_type = vessel.compatible_fuels[f_idx]
+            if getattr(self.problem, "preferred_fuel_type", None) and any(f.value == self.problem.preferred_fuel_type for f in vessel.compatible_fuels):
+                f_type = FuelType(self.problem.preferred_fuel_type)
 
             # row[2]: speed in [v_min, v_max]
-            speed = float(np.clip(row[2], vessel.min_speed_knots, vessel.max_speed_knots))
+            target_sp = getattr(self.problem, "target_speed_knots", None)
+            if target_sp is not None:
+                speed = max(vessel.min_speed_knots, min(vessel.max_speed_knots, float(target_sp)))
+            else:
+                speed = float(np.clip(row[2], vessel.min_speed_knots, vessel.max_speed_knots))
 
             # row[3]: shore power [0, 1]
             shore = bool(row[3] > 0.5) and vessel.has_shore_power_connection

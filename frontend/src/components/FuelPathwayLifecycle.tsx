@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FuelSpecification } from '../types';
-import { Flame, Zap, ShieldCheck, ExternalLink, Leaf, ArrowRight } from 'lucide-react';
+import { Flame, Zap, ShieldCheck, ExternalLink, Leaf, ArrowRight } from '@/components/icons';
 
 interface FuelPathwayLifecycleProps {
   fuels: FuelSpecification[];

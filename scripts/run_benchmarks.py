@@ -13,7 +13,7 @@ import sys
 # Ensure backend can be imported
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from backend.app.prediction.evaluation import run_full_prediction_benchmark
+from backend.app.prediction.evaluation import run_full_prediction_benchmark, run_mrv_empirical_benchmark
 from backend.app.optimization.benchmarks import run_fleet_optimization_benchmark
 
 
@@ -23,11 +23,11 @@ def main():
     print("Quantum-Inspired Fuel Consumption Prediction and Green Fleet Optimization")
     print("=" * 80)
 
-    # 1. Prediction Benchmark
-    print("\n[PHASE 1/2] RUNNING FUEL CONSUMPTION PREDICTION BENCHMARK...")
+    # 1. Hydrodynamic Prediction Benchmark
+    print("\n[PHASE 1/3] RUNNING HYDRODYNAMIC VOYAGE PREDICTION BENCHMARK...")
     pred_res = run_full_prediction_benchmark(n_samples=2000, seed=42)
 
-    print("\nPREDICTION RESULTS MATRIX:")
+    print("\nHYDRODYNAMIC PREDICTION RESULTS MATRIX:")
     print(f"{'Model Name':<46} | {'R2 Score':<8} | {'MAE (MT/d)':<10} | {'RMSE':<8} | {'Features':<8} | {'Latency':<8}")
     print("-" * 102)
     for r in pred_res["benchmark_results"]:
@@ -39,8 +39,23 @@ def main():
         lat = f"{r['inference_latency_per_sample_ms']:.3f} ms"
         print(f"{name:<46} | {r2:<8} | {mae:<10} | {rmse:<8} | {f_cnt:<8} | {lat:<8}")
 
-    # 2. Optimization Benchmark
-    print("\n[PHASE 2/2] RUNNING MULTI-OBJECTIVE OPTIMIZATION BENCHMARK (BUDGET PARITY)...")
+    # 2. Real-World MRV Empirical Benchmark
+    print("\n[PHASE 2/3] RUNNING EMSA THETIS-MRV EMPIRICAL BENCHMARK (TEMPORAL HOLDOUT)...")
+    mrv_res = run_mrv_empirical_benchmark(max_samples=2500, seed=42)
+
+    print(f"\nREAL MRV RESULTS MATRIX ({mrv_res['split_strategy']}):")
+    print(f"{'Model Name':<56} | {'R2 Score':<8} | {'MAE (MT)':<10} | {'Features':<8} | {'Latency':<8}")
+    print("-" * 102)
+    for r in mrv_res["results"]:
+        name = r["model_name"]
+        r2 = f"{r['r2_score']:.4f}"
+        mae = f"{r['mae_annual_mt']:.1f}"
+        f_cnt = f"{r['features_used_count']}/8"
+        lat = f"{r['inference_latency_per_sample_ms']:.3f} ms"
+        print(f"{name:<56} | {r2:<8} | {mae:<10} | {f_cnt:<8} | {lat:<8}")
+
+    # 3. Multi-Objective Fleet Optimization Benchmark
+    print("\n[PHASE 3/3] RUNNING MULTI-OBJECTIVE OPTIMIZATION BENCHMARK (BUDGET PARITY)...")
     opt_res = run_fleet_optimization_benchmark(pop_size=35, generations=30, carbon_tax=100.0, seed=42)
 
     print("\nOPTIMIZATION RESULTS MATRIX (1,050 Evaluations Per Algorithm):")
@@ -64,8 +79,9 @@ def main():
     out_path = os.path.join(os.path.dirname(__file__), "..", "docs", "benchmark_results.json")
     with open(out_path, "w") as f:
         json.dump({
-            "prediction_benchmark": pred_res,
-            "optimization_benchmark": opt_res
+            "voyage_prediction_benchmark": pred_res,
+            "mrv_empirical_benchmark": mrv_res,
+            "fleet_optimization_benchmark": opt_res
         }, f, indent=2)
 
     print(f"\nBenchmark results successfully persisted to: {out_path}")

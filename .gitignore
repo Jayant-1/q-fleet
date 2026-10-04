@@ -16,3 +16,7 @@ frontend/dist/
 .env
 .DS_Store
 Thumbs.db
+
+# Runtime Run Dumps
+data/runs/*.json
+!data/runs/.gitkeep

@@ -56,6 +56,37 @@ def test_predict_fuel_api():
     assert data["inference_latency_ms"] < 25.0
 
 
+def test_predict_mrv_annual_api():
+    """Verifies empirical annual MRV prediction REST endpoint."""
+    payload = {
+        "ship_type": "Container ship",
+        "time_at_sea_hours": 5200.0,
+        "efficiency_val_gco2_per_tnm": 5.4,
+        "efficiency_type": "EEDI",
+        "has_ice_class": False,
+        "time_at_sea_through_ice_hours": 0.0
+    }
+    res = client.post("/api/predict/annual-mrv", json=payload)
+    assert res.status_code == 200
+    data = res.json()
+    assert data["predicted_annual_fuel_mt"] > 0
+    assert data["confidence_interval_95_lower_mt"] < data["predicted_annual_fuel_mt"]
+    assert data["confidence_interval_95_upper_mt"] > data["predicted_annual_fuel_mt"]
+    assert len(data["active_features_used"]) >= 2
+    assert data["inference_latency_ms"] < 25.0
+
+
+def test_mrv_benchmark_api():
+    """Verifies real MRV empirical benchmark REST endpoint."""
+    res = client.get("/api/predict/mrv-benchmark?max_samples=1000")
+    assert res.status_code == 200
+    data = res.json()
+    assert "results" in data
+    assert len(data["results"]) == 4
+    model_names = [r["model_name"] for r in data["results"]]
+    assert any("Quantum-Inspired" in n for n in model_names)
+
+
 def test_optimize_and_report_flow():
     """Verifies optimization run execution and HTML/JSON report streaming."""
     opt_payload = {
@@ -84,3 +115,10 @@ def test_optimize_and_report_flow():
     ledger = res_json.json()
     assert "hash" in ledger
     assert ledger["run_id"] == run_id
+
+    # Fetch binary PDF report
+    res_pdf = client.get(f"/api/reports/pdf/{run_id}")
+    assert res_pdf.status_code == 200
+    assert res_pdf.headers["content-type"] == "application/pdf"
+    assert res_pdf.content.startswith(b"%PDF")
+    assert len(res_pdf.content) > 1000

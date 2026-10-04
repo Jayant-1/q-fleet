@@ -24,7 +24,7 @@ import {
   RefreshCw,
   Sparkles,
   ChevronRight
-} from 'lucide-react';
+} from '@/components/icons';
 import { TabKey } from './HeaderNav';
 
 interface LandingPageProps {
@@ -405,7 +405,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchConsole }) => 
           {/* Overlapping Pill Tag */}
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-sm bg-[#0b1426] border border-[#00f0ff]/40 text-[#00f0ff] text-xs font-mono tracking-wider mb-6">
             <span className="w-1.5 h-1.5 rounded-full bg-[#00ff9d]" />
-            <span>QUANTUM-INSPIRED EVOLUTIONARY PLATFORM • MEPC.376 CERTIFIED</span>
+            <span>QUANTUM-INSPIRED EVOLUTIONARY PLATFORM • IMO MEPC.376 MODELED</span>
           </div>
 
           {/* Extreme Grid-Breaking Headline */}
@@ -1287,14 +1287,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchConsole }) => 
                 Cryptographic ESG Ledger.
               </h2>
               <p className="text-slate-300 mt-4 text-base sm:text-lg font-sans leading-relaxed">
-                Every optimization run generates an immutable, tamper-evident SHA-256 verification hash certifying compliance with IMO Resolution MEPC.376(80) and FuelEU Maritime standards.
+                Every optimization run generates a deterministic SHA-256 verification audit hash documenting modeled alignment with IMO Resolution MEPC.376(80) and FuelEU Maritime standards.
               </p>
 
               <div className="mt-8 space-y-4 text-sm font-sans text-slate-300">
                 <div className="flex items-start gap-3">
                   <CheckCircle2 className="w-5 h-5 text-[#00ff9d] shrink-0 mt-0.5" />
                   <div>
-                    <strong className="text-white">IMO MEPC.376(80) Regulatory Alignment:</strong> Well-to-Tank and Tank-to-Wake emission factors indexed from certified regulatory databases.
+                    <strong className="text-white">IMO MEPC.376(80) Regulatory Alignment:</strong> Well-to-Tank and Tank-to-Wake emission factors indexed from authoritative regulatory databases (IMO MEPC.376(80), EU ETS Directive 2023/959).
                   </div>
                 </div>
 
@@ -1308,7 +1308,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchConsole }) => 
                 <div className="flex items-start gap-3">
                   <CheckCircle2 className="w-5 h-5 text-[#00ff9d] shrink-0 mt-0.5" />
                   <div>
-                    <strong className="text-white">Audit Export Options:</strong> Printable HTML certificates, verified JSON ledgers, and live REST API endpoints.
+                    <strong className="text-white">Audit Export Options:</strong> Printable HTML audit reports, verified JSON ledgers, and live REST API endpoints.
                   </div>
                 </div>
               </div>
@@ -1319,7 +1319,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchConsole }) => 
               <div className="flex items-center justify-between pb-6 border-b border-white/10 text-xs">
                 <div className="flex items-center gap-2 text-[#00f0ff]">
                   <Lock className="w-4 h-4" />
-                  <span>IMMUTABLE AUDIT CERTIFICATE</span>
+                  <span>DETERMINISTIC SIMULATION AUDIT LEDGER</span>
                 </div>
                 <span className="px-3 py-1 rounded-sm bg-[#00ff9d]/10 text-[#00ff9d] border border-[#00ff9d]/30 font-bold">
                   VERIFIED FEASIBLE
@@ -1386,7 +1386,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchConsole }) => 
           </h2>
 
           <p className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed mb-12 font-sans">
-            Ready to deploy? Launch the live decision support console to simulate real corridor deployments, inspect Pareto frontiers, and download certified ESG compliance ledgers.
+            Ready to deploy? Launch the live decision support console to simulate real corridor deployments, inspect Pareto frontiers, and download modeled ESG compliance ledgers.
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-6">
