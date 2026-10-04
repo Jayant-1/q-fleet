@@ -146,6 +146,7 @@ class OptimizeRunResponse(BaseModel):
     selected_route_id: Optional[str] = None
     fleet_size: int = 0
     audit_hash: str = ""
+    canonical_version: str = "2.0"
     random_seed: int = 42
     timestamp: str = ""
     carbon_tax_per_ton: float = 100.0

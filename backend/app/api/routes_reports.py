@@ -112,11 +112,14 @@ def get_html_report(run_id: str, solution_id: Optional[str] = None):
     run_entry = get_run_entry(run_id)
     if not run_entry:
         raise HTTPException(status_code=404, detail="Run ID not found. Execute an optimization first.")
+    if not run_entry.get("integrity_verified", False):
+        err = run_entry.get("integrity_error") or "Persisted run data has been modified or corrupted."
+        raise HTTPException(status_code=400, detail=f"Audit integrity validation failed: {err}")
 
     target_sol = _resolve_solution(run_entry, solution_id)
     response_obj = run_entry["response"]
     # Recompute hash directly from the run entry to ensure audit integrity
-    audit_hash = recompute_hash_from_persisted_run(run_entry)
+    audit_hash = run_entry.get("recomputed_hash") or recompute_hash_from_persisted_run(run_entry)
 
     scenario_name = getattr(response_obj, "scenario_id", "") or (response_obj.get("scenario_id", "scenario") if isinstance(response_obj, dict) else "scenario")
 
@@ -139,11 +142,14 @@ def get_pdf_report(run_id: str, solution_id: Optional[str] = None):
     run_entry = get_run_entry(run_id)
     if not run_entry:
         raise HTTPException(status_code=404, detail="Run ID not found. Execute an optimization first.")
+    if not run_entry.get("integrity_verified", False):
+        err = run_entry.get("integrity_error") or "Persisted run data has been modified or corrupted."
+        raise HTTPException(status_code=400, detail=f"Audit integrity validation failed: {err}")
 
     target_sol = _resolve_solution(run_entry, solution_id)
     response_obj = run_entry["response"]
     # Recompute hash directly from the run entry to ensure audit integrity
-    audit_hash = recompute_hash_from_persisted_run(run_entry)
+    audit_hash = run_entry.get("recomputed_hash") or recompute_hash_from_persisted_run(run_entry)
 
     scenario_name = getattr(response_obj, "scenario_id", "") or (response_obj.get("scenario_id", "scenario") if isinstance(response_obj, dict) else "scenario")
 
@@ -167,19 +173,15 @@ def get_json_audit_ledger(run_id: str):
     run_entry = get_run_entry(run_id)
     if not run_entry:
         raise HTTPException(status_code=404, detail="Run ID not found")
+    if not run_entry.get("integrity_verified", False):
+        err = run_entry.get("integrity_error") or "Persisted run data has been modified or corrupted."
+        raise HTTPException(status_code=400, detail=f"Audit integrity validation failed: {err}")
 
     response_obj = run_entry["response"]
-    recomputed_hash = recompute_hash_from_persisted_run(run_entry)
-    recorded_hash = getattr(response_obj, "audit_hash", None)
-    if not recorded_hash and isinstance(response_obj, dict):
-        recorded_hash = response_obj.get("audit_hash", "")
-
-    is_valid = bool(recorded_hash and recomputed_hash == recorded_hash)
-
     return {
         "run_id": run_id,
-        "hash": recomputed_hash,
-        "recorded_hash": recorded_hash,
-        "integrity_verified": is_valid,
+        "hash": run_entry["recomputed_hash"],
+        "recorded_hash": run_entry["recorded_hash"],
+        "integrity_verified": True,
         "data": response_obj
     }

@@ -19,6 +19,7 @@ from backend.app.optimization.qiea_engine import MultiObjectiveQIEA
 from backend.app.optimization.nsga2_baseline import ClassicalNSGA2Optimizer
 from backend.app.optimization.mopso_baseline import ClassicalMOPSOOptimizer
 from backend.app.reports.hashing import (
+    CANONICAL_HASH_VERSION,
     compute_run_audit_hash,
     validate_run_integrity,
     recompute_hash_from_persisted_run
@@ -140,28 +141,59 @@ def _solution_to_schema(sol: FleetDeploymentSolution) -> ParetoSolutionSchema:
 
 def get_run_entry(run_id: str) -> Optional[Dict[str, Any]]:
     """Retrieves run entry from in-memory cache or disk storage with cryptographic audit integrity check."""
-    if run_id in OPTIMIZATION_RUNS_STORE:
-        return OPTIMIZATION_RUNS_STORE[run_id]
+    entry = OPTIMIZATION_RUNS_STORE.get(run_id)
+    if entry is not None:
+        integrity_info = validate_run_integrity(entry)
+        entry["integrity_verified"] = integrity_info["is_valid"]
+        entry["recomputed_hash"] = integrity_info["recomputed_hash"]
+        entry["recorded_hash"] = integrity_info["recorded_hash"]
+        entry["integrity_error"] = integrity_info.get("error")
+        return entry
 
     disk_path = RUNS_DIR / f"{run_id}.json"
     if disk_path.exists():
         try:
             with open(disk_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
-            integrity_info = validate_run_integrity(data)
-            response_obj = OptimizeRunResponse(**data["response"])
-            entry = {
-                "response": response_obj,
+        except Exception as e:
+            return {
+                "version": "unknown",
+                "response": None,
+                "raw_solutions": {},
+                "problem_params": {},
+                "integrity_verified": False,
+                "recomputed_hash": "",
+                "recorded_hash": "",
+                "integrity_error": f"Failed to parse run file: {str(e)}"
+            }
+
+        integrity_info = validate_run_integrity(data)
+        try:
+            response_obj = OptimizeRunResponse(**data.get("response", {}))
+        except Exception as e:
+            return {
+                "version": data.get("version", "unknown"),
+                "response": None,
                 "raw_solutions": {},
                 "problem_params": data.get("problem_params", {}),
-                "integrity_verified": integrity_info["is_valid"],
-                "recomputed_hash": integrity_info["recomputed_hash"],
-                "recorded_hash": integrity_info["recorded_hash"],
+                "integrity_verified": False,
+                "recomputed_hash": integrity_info.get("recomputed_hash", ""),
+                "recorded_hash": integrity_info.get("recorded_hash", ""),
+                "integrity_error": f"Schema validation error on persisted run: {str(e)}"
             }
-            OPTIMIZATION_RUNS_STORE[run_id] = entry
-            return entry
-        except Exception:
-            return None
+
+        entry = {
+            "version": data.get("version", response_obj.canonical_version),
+            "response": response_obj,
+            "raw_solutions": {},
+            "problem_params": data.get("problem_params", {}),
+            "integrity_verified": integrity_info["is_valid"],
+            "recomputed_hash": integrity_info["recomputed_hash"],
+            "recorded_hash": integrity_info["recorded_hash"],
+            "integrity_error": integrity_info.get("error"),
+        }
+        OPTIMIZATION_RUNS_STORE[run_id] = entry
+        return entry
     return None
 
 
@@ -285,9 +317,11 @@ def run_fleet_optimization(req: OptimizeRunRequest):
         )
 
         entry = {
+            "version": CANONICAL_HASH_VERSION,
             "response": response_data,
             "raw_solutions": {s.solution_id: s for s in res["pareto_front"]},
             "problem_params": {
+                "version": CANONICAL_HASH_VERSION,
                 "carbon_tax": req.carbon_tax_per_ton,
                 "carbon_tax_per_ton": req.carbon_tax_per_ton,
                 "weather": req.weather_severity_multiplier,
@@ -306,13 +340,15 @@ def run_fleet_optimization(req: OptimizeRunRequest):
             },
             "integrity_verified": True,
             "recomputed_hash": audit_hash,
-            "recorded_hash": audit_hash
+            "recorded_hash": audit_hash,
+            "integrity_error": None
         }
         OPTIMIZATION_RUNS_STORE[run_id] = entry
 
         # Durable disk storage
         disk_payload = {
             "run_id": run_id,
+            "version": CANONICAL_HASH_VERSION,
             "response": response_data.model_dump(),
             "problem_params": entry["problem_params"]
         }
@@ -330,8 +366,11 @@ def run_fleet_optimization(req: OptimizeRunRequest):
 
 @router.get("/run/{run_id}", response_model=OptimizeRunResponse)
 def get_run_details(run_id: str):
-    """Retrieves cached or persisted results of a prior optimization run."""
+    """Retrieves cached or persisted results of a prior optimization run with strict audit integrity enforcement."""
     entry = get_run_entry(run_id)
     if not entry:
         raise HTTPException(status_code=404, detail="Run ID not found")
+    if not entry.get("integrity_verified", False):
+        err = entry.get("integrity_error") or "Persisted run data has been modified or corrupted."
+        raise HTTPException(status_code=400, detail=f"Audit integrity validation failed: {err}")
     return entry["response"]

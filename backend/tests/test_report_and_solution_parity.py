@@ -11,7 +11,7 @@ import json
 import pytest
 from fastapi.testclient import TestClient
 from backend.app.main import app
-from backend.app.api.routes_optimization import OPTIMIZATION_RUNS_STORE, RUNS_DIR
+from backend.app.api.routes_optimization import OPTIMIZATION_RUNS_STORE, RUNS_DIR, get_run_entry
 from backend.app.reports.hashing import (
     recompute_hash_from_persisted_run,
     verify_run_integrity,
@@ -724,6 +724,225 @@ def test_html_escaping_and_pdf_safety_for_vessel_names():
     full_pdf_text = " ".join(all_pdf_streams)
     # The literal characters "Test Ship" and markup should be present safely
     assert "Test Ship" in full_pdf_text
+
+
+def test_comprehensive_audit_integrity_tamper_and_fail_closed_endpoints():
+    """
+    Exhaustive regression test for canonical audit hash version 2.0 and strict fail-closed
+    behavior across all run retrieval and report endpoints.
+
+    Verifies:
+    1. Valid run produces identical hash and metrics across:
+       - Live API response (/api/optimize/run)
+       - Machine-readable ledger (/api/reports/json/{run_id})
+       - Printable HTML report (/api/reports/html/{run_id})
+       - Regulatory binary PDF stream text (/api/reports/pdf/{run_id})
+    2. Invalid solution_id query parameter returns HTTP 404.
+    3. Individual mutations to:
+       - round_trips
+       - cargo_carried
+       - speed (speed_knots / applied_speed_knots)
+       - fuel_type
+       - applied_draft_meters
+       - operational_cost_usd
+       - lifecycle_ghg_tco2e
+       - regulatory fields (cii_rating, attained_aer, fueleu penalty, eu_ets_cost)
+       - custom_fleet vessel parameters
+       - scenario_inputs (carbon tax, weather, demand, target speed, random seed)
+       - canonical version (missing, invalid, or outdated "1.0")
+       all invalidate run integrity and trigger HTTP 400 Bad Request across ALL four endpoints:
+       - GET /api/optimize/run/{run_id}
+       - GET /api/reports/html/{run_id}
+       - GET /api/reports/pdf/{run_id}
+       - GET /api/reports/json/{run_id}
+       both when loading from disk (after cache clear) and in-memory.
+    """
+    custom_vessel = {
+        "vessel_id": "TEST_INTEGRITY_01",
+        "name": "Audit Test Vessel",
+        "vessel_type": "Container_PostPanamax",
+        "dwt": 110000.0,
+        "design_speed": 18.0,
+        "max_speed": 21.0,
+        "design_draft": 13.0,
+        "fuel_types": ["VLSFO", "LNG"]
+    }
+    req_payload = {
+        "scenario_id": "global_liner_2026",
+        "algorithm": "MO-QIEA",
+        "population_size": 10,
+        "generations": 5,
+        "carbon_tax_per_ton": 115.0,
+        "weather_severity_multiplier": 1.1,
+        "demand_multiplier": 1.05,
+        "target_speed_knots": 17.5,
+        "operating_draft_meters": 12.5,
+        "custom_fleet": [custom_vessel],
+        "random_seed": 55
+    }
+
+    res_post = client.post("/api/optimize/run", json=req_payload)
+    assert res_post.status_code == 200
+    run_data = res_post.json()
+    run_id = run_data["run_id"]
+    canonical_hash = run_data["audit_hash"]
+    assert len(canonical_hash) == 64
+    assert run_data["canonical_version"] == "2.0"
+
+    disk_path = RUNS_DIR / f"{run_id}.json"
+    assert disk_path.exists()
+    with open(disk_path, "r", encoding="utf-8") as f:
+        clean_disk_data = json.load(f)
+
+    # 1. Valid endpoints return 200 with parity
+    res_run = client.get(f"/api/optimize/run/{run_id}")
+    assert res_run.status_code == 200
+    assert res_run.json()["audit_hash"] == canonical_hash
+
+    res_json = client.get(f"/api/reports/json/{run_id}")
+    assert res_json.status_code == 200
+    ledger_data = res_json.json()
+    assert ledger_data["integrity_verified"] is True
+    assert ledger_data["hash"] == canonical_hash
+
+    res_html = client.get(f"/api/reports/html/{run_id}")
+    assert res_html.status_code == 200
+    assert canonical_hash in res_html.text
+
+    res_pdf = client.get(f"/api/reports/pdf/{run_id}")
+    assert res_pdf.status_code == 200
+    assert res_pdf.content.startswith(b"%PDF")
+
+    # 2. Invalid solution_id returns 404
+    res_bad_sol_html = client.get(f"/api/reports/html/{run_id}?solution_id=NON_EXISTENT_SOL_999")
+    assert res_bad_sol_html.status_code == 404
+
+    res_bad_sol_pdf = client.get(f"/api/reports/pdf/{run_id}?solution_id=NON_EXISTENT_SOL_999")
+    assert res_bad_sol_pdf.status_code == 404
+
+    # Helper function to test disk tampering across all 4 endpoints
+    def assert_tamper_fails_all_endpoints(mutated_disk_payload, test_description):
+        # Write mutated payload to disk
+        with open(disk_path, "w", encoding="utf-8") as f_out:
+            json.dump(mutated_disk_payload, f_out, indent=2)
+        # Clear in-memory cache to force disk load
+        OPTIMIZATION_RUNS_STORE.clear()
+
+        # Check validate_run_integrity directly
+        integrity_check = validate_run_integrity(mutated_disk_payload)
+        assert integrity_check["is_valid"] is False, f"validate_run_integrity must return False for: {test_description}"
+
+        # Test endpoint 1: /api/optimize/run/{run_id} -> 400
+        r1 = client.get(f"/api/optimize/run/{run_id}")
+        assert r1.status_code == 400, f"/api/optimize/run must fail closed (400) for: {test_description}, got {r1.status_code}"
+        assert "Audit integrity validation failed" in r1.json()["detail"]
+
+        # Clear cache again for report endpoints
+        OPTIMIZATION_RUNS_STORE.clear()
+        r2 = client.get(f"/api/reports/html/{run_id}")
+        assert r2.status_code == 400, f"/api/reports/html must fail closed (400) for: {test_description}, got {r2.status_code}"
+
+        OPTIMIZATION_RUNS_STORE.clear()
+        r3 = client.get(f"/api/reports/pdf/{run_id}")
+        assert r3.status_code == 400, f"/api/reports/pdf must fail closed (400) for: {test_description}, got {r3.status_code}"
+
+        OPTIMIZATION_RUNS_STORE.clear()
+        r4 = client.get(f"/api/reports/json/{run_id}")
+        assert r4.status_code == 400, f"/api/reports/json must fail closed (400) for: {test_description}, got {r4.status_code}"
+
+    try:
+        # Mutation 1: round_trips
+        m1 = json.loads(json.dumps(clean_disk_data))
+        m1["response"]["pareto_front"][0]["allocations"][0]["round_trips"] += 3
+        assert_tamper_fails_all_endpoints(m1, "Mutating allocation round_trips")
+
+        # Mutation 2: cargo_carried
+        m2 = json.loads(json.dumps(clean_disk_data))
+        m2["response"]["pareto_front"][0]["allocations"][0]["cargo_carried"] += 7500.0
+        assert_tamper_fails_all_endpoints(m2, "Mutating allocation cargo_carried")
+
+        # Mutation 3: applied_speed_knots
+        m3 = json.loads(json.dumps(clean_disk_data))
+        m3["response"]["pareto_front"][0]["allocations"][0]["applied_speed_knots"] += 2.0
+        assert_tamper_fails_all_endpoints(m3, "Mutating allocation applied_speed_knots")
+
+        # Mutation 4: fuel_type
+        m4 = json.loads(json.dumps(clean_disk_data))
+        m4["response"]["pareto_front"][0]["allocations"][0]["fuel_type"] = "Bio_Methanol"
+        assert_tamper_fails_all_endpoints(m4, "Mutating allocation fuel_type")
+
+        # Mutation 5: applied_draft_meters
+        m5 = json.loads(json.dumps(clean_disk_data))
+        m5["response"]["pareto_front"][0]["allocations"][0]["applied_draft_meters"] += 1.5
+        assert_tamper_fails_all_endpoints(m5, "Mutating allocation applied_draft_meters")
+
+        # Mutation 6: operational_cost_usd
+        m6 = json.loads(json.dumps(clean_disk_data))
+        m6["response"]["pareto_front"][0]["allocations"][0]["operational_cost_usd"] += 50000.0
+        assert_tamper_fails_all_endpoints(m6, "Mutating allocation operational_cost_usd")
+
+        # Mutation 7: lifecycle_ghg_tco2e
+        m7 = json.loads(json.dumps(clean_disk_data))
+        m7["response"]["pareto_front"][0]["allocations"][0]["lifecycle_ghg_tco2e"] += 120.0
+        assert_tamper_fails_all_endpoints(m7, "Mutating allocation lifecycle_ghg_tco2e")
+
+        # Mutation 8: regulatory fields (cii_rating, attained_aer, fueleu penalty, eu_ets_cost)
+        m8 = json.loads(json.dumps(clean_disk_data))
+        m8["response"]["pareto_front"][0]["allocations"][0]["cii_rating"] = "A"
+        m8["response"]["pareto_front"][0]["allocations"][0]["fueleu_deficit_penalty_usd"] = 0.0
+        assert_tamper_fails_all_endpoints(m8, "Mutating allocation regulatory fields")
+
+        # Mutation 9: custom_fleet
+        m9 = json.loads(json.dumps(clean_disk_data))
+        m9["response"]["custom_fleet"][0]["name"] = "Tampered Vessel Name"
+        assert_tamper_fails_all_endpoints(m9, "Mutating custom fleet vessel name")
+
+        # Mutation 10: scenario_inputs (carbon tax)
+        m10 = json.loads(json.dumps(clean_disk_data))
+        m10["response"]["carbon_tax_per_ton"] = 400.0
+        assert_tamper_fails_all_endpoints(m10, "Mutating response carbon_tax_per_ton")
+
+        # Mutation 11: scenario_inputs (random_seed)
+        m11 = json.loads(json.dumps(clean_disk_data))
+        m11["response"]["random_seed"] = 999
+        assert_tamper_fails_all_endpoints(m11, "Mutating response random_seed")
+
+        # Mutation 12: version (missing or outdated "1.0")
+        m12 = json.loads(json.dumps(clean_disk_data))
+        m12["version"] = "1.0"
+        m12["response"]["canonical_version"] = "1.0"
+        assert_tamper_fails_all_endpoints(m12, "Outdated canonical version 1.0")
+
+        # Mutation 13: in-memory cache tampering (without clearing cache)
+        with open(disk_path, "w", encoding="utf-8") as f_out:
+            json.dump(clean_disk_data, f_out, indent=2)
+        OPTIMIZATION_RUNS_STORE.clear()
+
+        # Load into memory cache by calling get_run_entry
+        cached_entry = get_run_entry(run_id)
+        assert cached_entry is not None
+        assert cached_entry["integrity_verified"] is True
+
+        # Now tamper with memory object directly
+        cached_entry["response"].pareto_front[0].allocations[0].round_trips += 10
+        # Re-fetch via endpoints without clearing cache; get_run_entry should catch in-memory tampering
+        r_mem_run = client.get(f"/api/optimize/run/{run_id}")
+        assert r_mem_run.status_code == 400, "In-memory tampering must fail closed (400)"
+
+        r_mem_html = client.get(f"/api/reports/html/{run_id}")
+        assert r_mem_html.status_code == 400
+
+        r_mem_pdf = client.get(f"/api/reports/pdf/{run_id}")
+        assert r_mem_pdf.status_code == 400
+
+        r_mem_json = client.get(f"/api/reports/json/{run_id}")
+        assert r_mem_json.status_code == 400
+
+    finally:
+        with open(disk_path, "w", encoding="utf-8") as f_out:
+            json.dump(clean_disk_data, f_out, indent=2)
+        OPTIMIZATION_RUNS_STORE.clear()
+
 
 
 

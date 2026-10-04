@@ -118,17 +118,25 @@ def build_canonical_run_payload(
             norm_allocs.append({
                 "vessel_id": str(a_dict.get("vessel_id", "")),
                 "vessel_name": str(a_dict.get("vessel_name", "")),
+                "vessel_type": str(a_dict.get("vessel_type", "")),
                 "route_id": str(a_dict.get("route_id", "")),
+                "route_name": str(a_dict.get("route_name", "")),
                 "speed_knots": round(float(a_dict.get("speed_knots", 0.0)), 4),
                 "target_speed_knots": round(float(a_dict["target_speed_knots"]), 4) if a_dict.get("target_speed_knots") is not None else None,
                 "applied_speed_knots": round(float(a_dict.get("applied_speed_knots", a_dict.get("speed_knots", 0.0))), 4),
                 "speed_adjustment_reason": str(a_dict.get("speed_adjustment_reason", "")),
                 "fuel_type": ft_str,
                 "fuel_adjustment_reason": str(a_dict.get("fuel_adjustment_reason", "")),
+                "round_trips": int(round(float(a_dict.get("round_trips", 1)))),
+                "cargo_carried": round(float(a_dict.get("cargo_carried", 0.0)), 2),
                 "applied_draft_meters": round(float(a_dict.get("applied_draft_meters", 0.0)), 4),
+                "fuel_consumed_sea_mt": round(float(a_dict.get("fuel_consumed_sea_mt", 0.0)), 4),
+                "fuel_consumed_berth_mt": round(float(a_dict.get("fuel_consumed_berth_mt", 0.0)), 4),
                 "total_fuel_mt": round(float(a_dict.get("total_fuel_mt", 0.0)), 4),
                 "operational_cost_usd": round(float(a_dict.get("operational_cost_usd", 0.0)), 2),
                 "lifecycle_ghg_tco2e": round(float(a_dict.get("lifecycle_ghg_tco2e", 0.0)), 4),
+                "transit_time_days": round(float(a_dict.get("transit_time_days", 0.0)), 4),
+                "is_feasible": bool(a_dict.get("is_feasible", True)),
                 "cii_rating": str(a_dict.get("cii_rating", "C")),
                 "attained_aer": round(float(a_dict.get("attained_aer", 0.0)), 4),
                 "fueleu_deficit_penalty_usd": round(float(a_dict.get("fueleu_deficit_penalty_usd", 0.0)), 2),
@@ -232,8 +240,8 @@ def recompute_hash_from_persisted_run(persisted_entry: Dict[str, Any]) -> str:
     """
     Recomputes the canonical SHA-256 audit hash directly from disk or in-memory run entry,
     enabling independent audit re-verification.
-    Protects all consequential inputs, custom fleet, constraints, allocations (speeds, fuels, reasons, draft),
-    and regulatory outputs.
+    Protects all consequential inputs, custom fleet, constraints, allocations (speeds, fuels, reasons, draft,
+    round_trips, cargo_carried, transit_time, etc.), and regulatory outputs.
     """
     resp = persisted_entry.get("response", persisted_entry)
     if hasattr(resp, "model_dump"):
@@ -259,28 +267,43 @@ def recompute_hash_from_persisted_run(persisted_entry: Dict[str, Any]) -> str:
     pareto_front = resp_dict.get("pareto_front", [])
     pareto_solutions_count = resp_dict.get("pareto_solutions_count", len(pareto_front))
     compromise_id = resp_dict.get("compromise_solution_id", "")
-    random_seed = resp_dict.get("random_seed", params.get("random_seed", 42))
 
-    carbon_tax = params.get("carbon_tax", params.get("carbon_tax_per_ton", resp_dict.get("carbon_tax_per_ton", 100.0)))
-    weather = params.get("weather", params.get("weather_severity_multiplier", resp_dict.get("weather_severity_multiplier", 1.0)))
-    demand = params.get("demand", params.get("demand_multiplier", resp_dict.get("demand_multiplier", 1.0)))
-    fuel_mults = params.get("fuel_price_multipliers", resp_dict.get("fuel_price_multipliers", {}))
-    
-    target_speed = params.get("target_speed_knots")
+    # Scenario inputs: prioritize values present on the response object, falling back to problem_params
+    random_seed = resp_dict.get("random_seed")
+    if random_seed is None:
+        random_seed = params.get("random_seed", 42)
+
+    carbon_tax = resp_dict.get("carbon_tax_per_ton")
+    if carbon_tax is None:
+        carbon_tax = params.get("carbon_tax_per_ton", params.get("carbon_tax", 100.0))
+
+    weather = resp_dict.get("weather_severity_multiplier")
+    if weather is None:
+        weather = params.get("weather_severity_multiplier", params.get("weather", 1.0))
+
+    demand = resp_dict.get("demand_multiplier")
+    if demand is None:
+        demand = params.get("demand_multiplier", params.get("demand", 1.0))
+
+    fuel_mults = resp_dict.get("fuel_price_multipliers")
+    if fuel_mults is None:
+        fuel_mults = params.get("fuel_price_multipliers", {})
+
+    target_speed = resp_dict.get("target_speed_knots")
     if target_speed is None:
-        target_speed = resp_dict.get("target_speed_knots")
+        target_speed = params.get("target_speed_knots")
 
-    preferred_fuel = params.get("preferred_fuel_type")
+    preferred_fuel = resp_dict.get("preferred_fuel_type")
     if preferred_fuel is None:
-        preferred_fuel = resp_dict.get("preferred_fuel_type")
+        preferred_fuel = params.get("preferred_fuel_type")
 
-    operating_draft = params.get("operating_draft_meters")
+    operating_draft = resp_dict.get("operating_draft_meters")
     if operating_draft is None:
-        operating_draft = resp_dict.get("operating_draft_meters")
+        operating_draft = params.get("operating_draft_meters")
 
-    custom_fleet = params.get("custom_fleet")
+    custom_fleet = resp_dict.get("custom_fleet")
     if custom_fleet is None:
-        custom_fleet = resp_dict.get("custom_fleet")
+        custom_fleet = params.get("custom_fleet")
 
     return compute_run_audit_hash(
         run_id=run_id,
@@ -309,20 +332,131 @@ def validate_run_integrity(persisted_entry: Dict[str, Any]) -> Dict[str, Any]:
     Validates whether a persisted run or API payload has maintained audit integrity.
     Recomputes the canonical SHA-256 hash across all scenario inputs, constraints,
     allocations, and Pareto results, comparing against the recorded audit_hash.
+    Enforces canonical payload version 2.0.
     """
     resp = persisted_entry.get("response", persisted_entry)
+    params = persisted_entry.get("problem_params", {}) if isinstance(persisted_entry, dict) else {}
+    resp_dict = resp.model_dump() if hasattr(resp, "model_dump") else (resp.__dict__ if hasattr(resp, "__dict__") else (resp if isinstance(resp, dict) else {}))
+
+    # 1. Enforce canonical payload version "2.0"
+    version = None
+    if isinstance(persisted_entry, dict) and "version" in persisted_entry:
+        version = persisted_entry.get("version")
+    if not version and hasattr(resp, "canonical_version"):
+        version = getattr(resp, "canonical_version", None)
+    elif not version and isinstance(resp_dict, dict):
+        version = resp_dict.get("canonical_version") or resp_dict.get("version")
+    if not version and isinstance(params, dict):
+        version = params.get("version")
+
+    if not version or str(version) != CANONICAL_HASH_VERSION:
+        return {
+            "is_valid": False,
+            "error": f"Unsupported or outdated canonical hash version '{version}'. Expected '{CANONICAL_HASH_VERSION}'.",
+            "recorded_hash": "",
+            "recomputed_hash": "",
+            "version": str(version) if version else "unknown"
+        }
+
+    # 2. Check for recorded hash
     recorded_hash = ""
     if hasattr(resp, "audit_hash"):
         recorded_hash = getattr(resp, "audit_hash", "")
-    elif isinstance(resp, dict):
-        recorded_hash = resp.get("audit_hash", "")
-    if not recorded_hash and isinstance(persisted_entry, dict):
-        recorded_hash = persisted_entry.get("problem_params", {}).get("audit_hash", "")
+    elif isinstance(resp_dict, dict):
+        recorded_hash = resp_dict.get("audit_hash", "")
+    if not recorded_hash and isinstance(params, dict):
+        recorded_hash = params.get("audit_hash", "")
 
-    recomputed_hash = recompute_hash_from_persisted_run(persisted_entry)
-    is_valid = bool(recorded_hash and recomputed_hash == recorded_hash)
+    if not recorded_hash:
+        return {
+            "is_valid": False,
+            "error": "Missing recorded audit_hash in run payload.",
+            "recorded_hash": "",
+            "recomputed_hash": "",
+            "version": CANONICAL_HASH_VERSION
+        }
+
+    # 3. Detect scenario parameter tampering/desynchronization between problem_params and response
+    if params and resp_dict:
+        param_tax = params.get("carbon_tax_per_ton", params.get("carbon_tax"))
+        resp_tax = resp_dict.get("carbon_tax_per_ton")
+        if param_tax is not None and resp_tax is not None and round(float(param_tax), 4) != round(float(resp_tax), 4):
+            return {
+                "is_valid": False,
+                "error": f"Scenario input mismatch: problem_params carbon_tax={param_tax} != response carbon_tax={resp_tax}.",
+                "recorded_hash": recorded_hash,
+                "recomputed_hash": "",
+                "version": CANONICAL_HASH_VERSION
+            }
+
+        param_w = params.get("weather_severity_multiplier", params.get("weather"))
+        resp_w = resp_dict.get("weather_severity_multiplier")
+        if param_w is not None and resp_w is not None and round(float(param_w), 4) != round(float(resp_w), 4):
+            return {
+                "is_valid": False,
+                "error": f"Scenario input mismatch: problem_params weather={param_w} != response weather={resp_w}.",
+                "recorded_hash": recorded_hash,
+                "recomputed_hash": "",
+                "version": CANONICAL_HASH_VERSION
+            }
+
+        param_d = params.get("demand_multiplier", params.get("demand"))
+        resp_d = resp_dict.get("demand_multiplier")
+        if param_d is not None and resp_d is not None and round(float(param_d), 4) != round(float(resp_d), 4):
+            return {
+                "is_valid": False,
+                "error": f"Scenario input mismatch: problem_params demand={param_d} != response demand={resp_d}.",
+                "recorded_hash": recorded_hash,
+                "recomputed_hash": "",
+                "version": CANONICAL_HASH_VERSION
+            }
+
+        param_ts = params.get("target_speed_knots")
+        resp_ts = resp_dict.get("target_speed_knots")
+        if param_ts is not None and resp_ts is not None and round(float(param_ts), 4) != round(float(resp_ts), 4):
+            return {
+                "is_valid": False,
+                "error": f"Scenario input mismatch: problem_params target_speed={param_ts} != response target_speed={resp_ts}.",
+                "recorded_hash": recorded_hash,
+                "recomputed_hash": "",
+                "version": CANONICAL_HASH_VERSION
+            }
+
+        param_rs = params.get("random_seed")
+        resp_rs = resp_dict.get("random_seed")
+        if param_rs is not None and resp_rs is not None and int(param_rs) != int(resp_rs):
+            return {
+                "is_valid": False,
+                "error": f"Scenario input mismatch: problem_params random_seed={param_rs} != response random_seed={resp_rs}.",
+                "recorded_hash": recorded_hash,
+                "recomputed_hash": "",
+                "version": CANONICAL_HASH_VERSION
+            }
+
+    # 4. Recompute canonical SHA-256 hash
+    try:
+        recomputed_hash = recompute_hash_from_persisted_run(persisted_entry)
+    except Exception as e:
+        return {
+            "is_valid": False,
+            "error": f"Failed to recompute audit hash: {str(e)}",
+            "recorded_hash": recorded_hash,
+            "recomputed_hash": "",
+            "version": CANONICAL_HASH_VERSION
+        }
+
+    if recomputed_hash != recorded_hash:
+        return {
+            "is_valid": False,
+            "error": f"Audit hash mismatch: recorded={recorded_hash}, recomputed={recomputed_hash}",
+            "recorded_hash": recorded_hash,
+            "recomputed_hash": recomputed_hash,
+            "version": CANONICAL_HASH_VERSION
+        }
+
     return {
-        "is_valid": is_valid,
+        "is_valid": True,
+        "error": None,
         "recorded_hash": recorded_hash,
         "recomputed_hash": recomputed_hash,
         "version": CANONICAL_HASH_VERSION
