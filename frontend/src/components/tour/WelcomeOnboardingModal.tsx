@@ -23,7 +23,7 @@ export const WelcomeOnboardingModal: React.FC<Props> = ({
         <div className="px-6 pt-6 pb-2 flex items-center justify-between">
           <div className="flex items-center gap-2 text-xs font-semibold text-orange-600 uppercase tracking-wider">
             <Sparkles className="w-4 h-4" />
-            <span>Welcome to GreenFleet Workstation</span>
+            <span>Welcome to Q-FLEET Workstation</span>
           </div>
           <button
             onClick={onClose}
@@ -44,8 +44,8 @@ export const WelcomeOnboardingModal: React.FC<Props> = ({
                 Decarbonizing Fleets with Precision
               </h2>
               <p className="text-xs text-gray-600 leading-relaxed">
-                GreenFleet is designed for daily commercial dispatchers and environmental compliance officers.
-                We combine first-principles naval architecture ($P \propto V^3$) with quantum-inspired multi-objective optimization to balance voyage transit time against fuel consumption, prevent IMO CII rating penalties, and comply with EU ETS 2026 mandates.
+                Q-FLEET is designed for daily commercial dispatchers and environmental compliance officers.
+                We combine first-principles naval architecture (where propulsion power scales cubically with speed, P ~ V³) with quantum-inspired multi-objective optimization to balance voyage transit time against fuel consumption, prevent IMO CII rating penalties, and comply with EU ETS 2026 mandates.
               </p>
               <div className="p-3 bg-gray-50 rounded-lg text-xs text-gray-700 space-y-1.5 border border-gray-200">
                 <div className="flex items-center gap-2">

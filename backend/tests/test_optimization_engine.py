@@ -55,3 +55,43 @@ def test_reproducibility_with_seed():
     for s1, s2 in zip(res1["pareto_front"], res2["pareto_front"]):
         assert s1.total_fuel_mt == pytest.approx(s2.total_fuel_mt, abs=1e-2)
         assert s1.total_cost_usd == pytest.approx(s2.total_cost_usd, abs=1e-2)
+
+
+def test_conventional_baseline_generation_and_impact_metrics():
+    """Verifies deterministic conventional commercial baseline generation and comparative impact metrics."""
+    problem = FleetDeploymentProblem(carbon_tax_per_ton=100.0)
+    baseline_sol = problem.generate_baseline_solution()
+
+    assert baseline_sol.solution_id == "SOL_BASELINE_CONVENTIONAL"
+    assert baseline_sol.algorithm == "Conventional Commercial Baseline"
+    assert baseline_sol.total_fuel_mt > 0.0
+    assert baseline_sol.total_cost_usd > 0.0
+    assert baseline_sol.total_lifecycle_ghg_tco2e > 0.0
+    assert baseline_sol.demand_satisfaction_pct >= 99.9
+
+    # Conventional baseline must not use cold-ironing shore power
+    for alloc in baseline_sol.allocations:
+        assert alloc.shore_power_used is False
+
+
+def test_india_europe_green_corridor_optimization():
+    """Verifies that the flagship ROUTE_INDIA_EUR corridor optimizes and satisfies JNPA Mumbai - Rotterdam cargo demand."""
+    problem = FleetDeploymentProblem(
+        selected_route_id="ROUTE_INDIA_EUR",
+        carbon_tax_per_ton=100.0
+    )
+    assert len(problem.corridor_list) == 1
+    assert problem.corridor_list[0].route_id == "ROUTE_INDIA_EUR"
+    assert problem.corridor_list[0].origin_port.port_id == "INNSA"
+    assert problem.corridor_list[0].destination_port.port_id == "NLRTM"
+
+    solver = MultiObjectiveQIEA(problem, pop_size=15, generations=10, seed=42)
+    res = solver.solve()
+    pareto = res["pareto_front"]
+    assert len(pareto) >= 1
+    for sol in pareto:
+        assert sol.is_feasible
+        assert sol.demand_satisfaction_pct >= 99.9
+        assert sol.total_fuel_mt > 0
+        assert any(a.route_id == "ROUTE_INDIA_EUR" for a in sol.allocations)
+

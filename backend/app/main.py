@@ -41,7 +41,7 @@ def health_check():
     """System health check endpoint."""
     return {
         "status": "online",
-        "service": "SIH26138-QuantumGreenFleet",
+        "service": "SIH26138-QFLEET",
         "version": "1.0.0",
         "engines": {
             "prediction": "QIEA-GBM + Holtrop-Mennen",

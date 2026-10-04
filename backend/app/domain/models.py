@@ -127,6 +127,8 @@ GLOBAL_PORTS: Dict[str, Port] = {
     "USNYC": Port("USNYC", "Port of New York & New Jersey", "USA", 40.7128, -74.0060, has_cold_ironing=True, grid_carbon_intensity_gco2_per_kwh=220.0, electricity_cost_usd_per_kwh=0.21, is_eca=True),
     "SGSIN": Port("SGSIN", "Port of Singapore", "Singapore", 1.3521, 103.8198, has_cold_ironing=False, grid_carbon_intensity_gco2_per_kwh=390.0, electricity_cost_usd_per_kwh=0.17, is_eca=False),
     "INNSA": Port("INNSA", "Jawaharlal Nehru Port (JNPA Mumbai)", "India", 18.9496, 72.9515, has_cold_ironing=False, grid_carbon_intensity_gco2_per_kwh=620.0, electricity_cost_usd_per_kwh=0.13, is_eca=False),
+    "INMUN": Port("INMUN", "Port of Mundra (Deendayal)", "India", 22.84, 69.70, has_cold_ironing=False, grid_carbon_intensity_gco2_per_kwh=640.0, electricity_cost_usd_per_kwh=0.13, is_eca=False),
+    "INMAA": Port("INMAA", "Chennai Port", "India", 13.08, 80.30, has_cold_ironing=False, grid_carbon_intensity_gco2_per_kwh=610.0, electricity_cost_usd_per_kwh=0.13, is_eca=False),
 }
 
 # Standardized Shipping Corridors
@@ -205,6 +207,36 @@ GLOBAL_CORRIDORS: Dict[str, Corridor] = {
         weather_severity_index=1.10,
         corridor_coordinates=[
             [103.82, 1.35], [95.0, 5.0], [82.0, 6.0], [75.0, 10.0], [72.95, 18.95]
+        ]
+    ),
+    "ROUTE_INDIA_EUR": Corridor(
+        route_id="ROUTE_INDIA_EUR",
+        name="India-Europe Green Freight Corridor (JNPA - Rotterdam)",
+        origin_port=GLOBAL_PORTS["INNSA"],
+        destination_port=GLOBAL_PORTS["NLRTM"],
+        distance_nm=6350.0,
+        cargo_demand_per_period=18000.0,   # TEU
+        max_transit_time_days=21.0,
+        port_turnaround_days=2.0,
+        is_eca_corridor=False,
+        weather_severity_index=1.08,
+        corridor_coordinates=[
+            [72.95, 18.95], [60.0, 15.0], [45.0, 12.5], [38.0, 20.0], [32.5, 30.0], [20.0, 35.0], [-5.5, 36.0], [-9.5, 38.7], [4.48, 51.92]
+        ]
+    ),
+    "ROUTE_INDIA_SGP": Corridor(
+        route_id="ROUTE_INDIA_SGP",
+        name="India-Singapore Trade Arterial (JNPA - Singapore)",
+        origin_port=GLOBAL_PORTS["INNSA"],
+        destination_port=GLOBAL_PORTS["SGSIN"],
+        distance_nm=2450.0,
+        cargo_demand_per_period=10000.0,  # TEU
+        max_transit_time_days=9.0,
+        port_turnaround_days=1.5,
+        is_eca_corridor=False,
+        weather_severity_index=1.10,
+        corridor_coordinates=[
+            [72.95, 18.95], [75.0, 10.0], [82.0, 6.0], [95.0, 5.0], [103.82, 1.35]
         ]
     )
 }

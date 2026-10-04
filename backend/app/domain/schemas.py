@@ -157,6 +157,8 @@ class OptimizeRunResponse(BaseModel):
     preferred_fuel_type: Optional[str] = None
     operating_draft_meters: Optional[float] = None
     custom_fleet: Optional[List[Dict[str, Any]]] = None
+    baseline_solution: Optional[ParetoSolutionSchema] = None
+    impact_comparison: Optional[Dict[str, Any]] = None
 
 
 class BenchmarkComparisonRequest(BaseModel):

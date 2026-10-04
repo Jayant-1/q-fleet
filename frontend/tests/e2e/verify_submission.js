@@ -3,10 +3,10 @@
  * Evaluator-grade test harness that automatically:
  * 1. Checks if backend (:8000) and frontend (:5173) are running; spawns them if not.
  * 2. Polls health endpoints until ready.
- * 3. Runs Gate 1: Backend Pytest Suite (45 tests, 0 warnings).
+ * 3. Runs Gate 1: Backend Pytest Suite (47 tests, 0 warnings).
  * 4. Runs Gate 2: Frontend Production Build (TypeScript + Vite, 0 errors).
  * 5. Runs Gate 3: Multi-Viewport Zero-Overflow Audits (30 checks across 320px-1440px).
- * 6. Runs Gate 4: Master 16-Requirement Behavioral E2E Playwright Suite.
+ * 6. Runs Gate 4: Master 19-Requirement Behavioral E2E Playwright Suite.
  * 7. Safely terminates any spawned background processes on exit/error/signal.
  * 8. Returns exit code 0 ONLY if 100% of gates pass.
  */
@@ -121,7 +121,7 @@ async function main() {
     await ensureServersRunning();
 
     // Gate 1: Backend Pytest Suite
-    runGate("Gate 1: Backend Pytest Suite (45 tests, 0 warnings)", ".venv/bin/pytest backend/tests/ -v");
+    runGate("Gate 1: Backend Pytest Suite (47 tests, 0 warnings)", ".venv/bin/pytest backend/tests/ -v");
 
     // Gate 2: Frontend Production Build
     runGate("Gate 2: Frontend Production Build (TypeScript + Vite)", "pnpm --dir frontend build");
@@ -129,8 +129,8 @@ async function main() {
     // Gate 3: Viewport Responsiveness Suite (320px - 1440px)
     runGate("Gate 3: Multi-Viewport Zero-Overflow Audits (320px, 390px, 768px, 1024px, 1440px)", "node tests/e2e/test_mobile_viewports.js", frontendDir);
 
-    // Gate 4: Master 16-Requirement Behavioral E2E Journey
-    runGate("Gate 4: Master 16-Requirement Behavioral E2E Playwright Suite", "node tests/e2e/run_all_e2e.js", frontendDir);
+    // Gate 4: Master 19-Requirement Behavioral E2E Journey
+    runGate("Gate 4: Master 19-Requirement Behavioral E2E Playwright Suite", "node tests/e2e/run_all_e2e.js", frontendDir);
 
     console.log("\n================================================================================");
     if (allPassed) {

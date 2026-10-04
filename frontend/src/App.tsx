@@ -3,11 +3,12 @@ import { useGlobalDispatchState } from './store/useDispatchStore';
 import { useRouter } from './hooks/useRouter';
 import { EditorialShowcase } from './components/editorial/EditorialShowcase';
 import { FleetDashboard } from './components/dashboard/FleetDashboard';
+import { JudgeModePage } from './components/judge/JudgeModePage';
 import { ViewportTransitionScreen } from './components/navigation/ViewportTransitionScreen';
 
 export const App: React.FC = () => {
   const store = useGlobalDispatchState();
-  const { currentPath, navigate, isDashboard } = useRouter();
+  const { currentPath, navigate, isDashboard, isJudge } = useRouter();
 
   const [transitionState, setTransitionState] = useState<{
     isActive: boolean;
@@ -82,19 +83,20 @@ export const App: React.FC = () => {
   };
 
   // Trigger circle transition back to Landing starting from Landing button's center
-  const handleNavigateLanding = (e?: React.MouseEvent | { clientX: number; clientY: number } | HTMLElement) => {
+  const handleNavigateLanding = (e?: React.MouseEvent | { clientX: number; clientY: number } | Element) => {
     let origin: { x: number; y: number } = {
       x: 70,
       y: 32,
     };
 
-    let targetEl: HTMLElement | null = null;
-    if (e instanceof HTMLElement) {
+    let targetEl: Element | null = null;
+    if (e instanceof Element) {
       targetEl = e;
-    } else if (e && 'currentTarget' in e && e.currentTarget instanceof HTMLElement) {
-      targetEl = e.currentTarget;
-    } else if (e && 'target' in e && e.target instanceof HTMLElement) {
-      targetEl = (e.target.closest('button') || e.target) as HTMLElement;
+    } else if (e && 'currentTarget' in e && (e.currentTarget as unknown) instanceof Element) {
+      targetEl = e.currentTarget as Element;
+    } else if (e && 'target' in e && (e.target as unknown) instanceof Element) {
+      const target = e.target as Element;
+      targetEl = (target.closest('button') || target.closest('[role="button"]') || target) as Element;
     }
 
     if (targetEl) {
@@ -107,7 +109,7 @@ export const App: React.FC = () => {
       const clientX = e.clientX;
       const clientY = (e as any).clientY;
       const elFromPoint = typeof document !== 'undefined'
-        ? document.elementFromPoint(clientX, clientY)?.closest('button')
+        ? (document.elementFromPoint(clientX, clientY)?.closest('button') || document.elementFromPoint(clientX, clientY)?.closest('[role="button"]'))
         : null;
       if (elFromPoint) {
         const rect = elFromPoint.getBoundingClientRect();
@@ -146,10 +148,16 @@ export const App: React.FC = () => {
 
   return (
     <div className="min-h-screen font-sans antialiased">
-      {isDashboard ? (
+      {isJudge ? (
+        <JudgeModePage
+          onExit={() => navigate('/')}
+          onNavigateDashboard={() => navigate('/dashboard')}
+        />
+      ) : isDashboard ? (
         <FleetDashboard
           store={store}
           onNavigateLanding={handleNavigateLanding}
+          onNavigateJudge={() => navigate('/judge')}
         />
       ) : (
         <EditorialShowcase
@@ -158,6 +166,7 @@ export const App: React.FC = () => {
           waveHeight={waveHeight}
           setWaveHeight={setWaveHeight}
           onEnterCockpit={handleEnterCockpit}
+          onNavigateJudge={() => navigate('/judge')}
         />
       )}
 

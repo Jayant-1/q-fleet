@@ -494,3 +494,64 @@ class FleetDeploymentProblem:
                             break
 
         return chromosome
+
+    def generate_baseline_solution(self) -> FleetDeploymentSolution:
+        """
+        Generates a deterministic conventional commercial baseline solution:
+        - 100% VLSFO (or 0.10% S MGO where mandatory in ECA corridors)
+        - Operating vessels at design service speed (standard un-optimized transit)
+        - No cold-ironing / shore power at berth (auxiliary diesel generators active)
+        - Schedulable vessel assignment satisfying the active corridor cargo demands
+        """
+        chromosome: List[Dict[str, Any]] = []
+        for v in self.fleet:
+            chromosome.append({
+                "route_idx": -1,
+                "speed_knots": v.design_speed_knots,
+                "fuel_type": FuelType.VLSFO,
+                "shore_power": False,
+                "round_trips": 1
+            })
+
+        route_caps: Dict[int, float] = {r: 0.0 for r in range(len(self.corridor_list))}
+        unassigned = list(range(len(self.fleet)))
+
+        for r_idx, corridor in enumerate(self.corridor_list):
+            target = self.route_demands[corridor.route_id]
+            available_transit_days = max(1.0, corridor.max_transit_time_days - corridor.port_turnaround_days)
+            min_speed_req = corridor.distance_nm / (24.0 * available_transit_days)
+            capable = [idx for idx in unassigned if self.fleet[idx].max_speed_knots >= min_speed_req]
+
+            while route_caps[r_idx] < target and capable:
+                v_idx = capable.pop(0)
+                unassigned.remove(v_idx)
+                vessel = self.fleet[v_idx]
+                chromosome[v_idx]["route_idx"] = r_idx
+                chromosome[v_idx]["speed_knots"] = vessel.design_speed_knots
+
+                if corridor.is_eca_corridor:
+                    chromosome[v_idx]["fuel_type"] = (
+                        FuelType.MGO if FuelType.MGO in vessel.compatible_fuels else vessel.compatible_fuels[0]
+                    )
+                else:
+                    chromosome[v_idx]["fuel_type"] = (
+                        FuelType.VLSFO if FuelType.VLSFO in vessel.compatible_fuels else vessel.compatible_fuels[0]
+                    )
+
+                chromosome[v_idx]["shore_power"] = False
+                chromosome[v_idx]["round_trips"] = 1
+                route_caps[r_idx] += vessel.capacity_teu_or_dwt * 0.90
+
+            if route_caps[r_idx] < target and corridor.max_transit_time_days <= 14.0:
+                for idx in range(len(self.fleet)):
+                    if chromosome[idx]["route_idx"] == r_idx and chromosome[idx]["round_trips"] < 2:
+                        chromosome[idx]["round_trips"] = 2
+                        route_caps[r_idx] += self.fleet[idx].capacity_teu_or_dwt * 0.90
+                        if route_caps[r_idx] >= target:
+                            break
+
+        _, sol = self.evaluate_candidate(chromosome, apply_repair=True)
+        sol.solution_id = "SOL_BASELINE_CONVENTIONAL"
+        sol.algorithm = "Conventional Commercial Baseline"
+        return sol
+

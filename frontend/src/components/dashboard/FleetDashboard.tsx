@@ -7,6 +7,7 @@ import { DashboardComplianceTab } from './tabs/DashboardComplianceTab';
 import { DashboardDirectoryTab } from './tabs/DashboardDirectoryTab';
 import { WelcomeOnboardingModal } from '../tour/WelcomeOnboardingModal';
 import { InteractiveTaskWalkthrough } from '../tour/InteractiveTaskWalkthrough';
+import { DisruptionLabModal } from './DisruptionLabModal';
 import { QFleetLogo } from '../brand/QFleetLogo';
 import {
   Ship,
@@ -21,14 +22,16 @@ import {
   BookOpen,
   ArrowLeft,
   CheckCircle2,
+  AlertTriangle,
 } from '@/components/icons';
 
 interface Props {
   store: ReturnType<typeof useGlobalDispatchState>;
   onNavigateLanding: (e?: React.MouseEvent) => void;
+  onNavigateJudge?: () => void;
 }
 
-export const FleetDashboard: React.FC<Props> = ({ store, onNavigateLanding }) => {
+export const FleetDashboard: React.FC<Props> = ({ store, onNavigateLanding, onNavigateJudge }) => {
   const {
     corridors,
     activeCorridorId,
@@ -67,15 +70,22 @@ export const FleetDashboard: React.FC<Props> = ({ store, onNavigateLanding }) =>
   // Tour State
   const [isWelcomeOpen, setIsWelcomeOpen] = useState(false);
   const [isWalkthroughActive, setIsWalkthroughActive] = useState(false);
+  const [isDisruptionOpen, setIsDisruptionOpen] = useState(false);
 
   // Auto-prompt Welcome Modal on first visit
   useEffect(() => {
-    const welcomed = localStorage.getItem('greenfleet_welcomed_v1');
+    const welcomed = localStorage.getItem('qfleet_welcomed_v1');
     if (!welcomed) {
       setIsWelcomeOpen(true);
-      localStorage.setItem('greenfleet_welcomed_v1', 'true');
+      localStorage.setItem('qfleet_welcomed_v1', 'true');
     }
   }, []);
+
+  const handleApplyDisruption = (params: { weatherMultiplier: number; carbonTax: number; scenarioName: string }) => {
+    setWaveHeight(Number((params.weatherMultiplier * 2.0).toFixed(1)));
+    setCarbonPriceEur(Number((params.carbonTax * 0.925).toFixed(0)));
+    executeQuantumSolver();
+  };
 
   return (
     <div className="min-h-screen bg-[#F8F9FA] text-[#111827] font-sans antialiased flex flex-col selection:bg-orange-100 selection:text-orange-900 w-full max-w-full overflow-x-hidden">
@@ -90,21 +100,51 @@ export const FleetDashboard: React.FC<Props> = ({ store, onNavigateLanding }) =>
               className="text-stone-400 hover:text-stone-900 transition-colors flex items-center gap-1 text-xs font-mono group py-1 cursor-pointer select-none"
               title="Return to Presentation Landing Page"
             >
-              <span className="transition-transform group-hover:-translate-x-0.5 text-stone-400">←</span>
+              <span className="transition-transform group-hover:-translate-x-0.5 text-stone-600">←</span>
               <span className="hidden xs:inline">Landing</span>
             </button>
 
             <div className="h-4 w-px bg-stone-200 hidden xs:block" />
 
             <div className="flex items-center gap-1 sm:gap-2 select-none">
-              <QFleetLogo className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" color="#ff6b00" dotColor="#1c1917" />
-              <span className="font-semibold text-xs sm:text-sm tracking-tight text-stone-900 font-mono uppercase select-none">
+              <QFleetLogo
+                className="w-4 h-4 sm:w-5 sm:h-5 shrink-0 hover:scale-105 transition-transform cursor-pointer"
+                color="#ff6b00"
+                dotColor="#1c1917"
+                title="Return to Presentation Landing Page"
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onNavigateLanding();
+                  }
+                }}
+                onClick={(e) => {
+                  onNavigateLanding(e);
+                }}
+              />
+              <span
+                onClick={(e) => {
+                  onNavigateLanding(e);
+                }}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onNavigateLanding();
+                  }
+                }}
+                title="Return to Presentation Landing Page"
+                className="font-semibold text-xs sm:text-sm tracking-tight text-stone-900 hover:text-[#ff6b00] transition-colors font-mono uppercase select-none cursor-pointer"
+              >
                 Q-FLEET
               </span>
-              <span className="text-xs font-mono text-stone-400 hidden sm:inline select-none">
+              <span className="text-xs font-mono text-stone-400 hidden sm:inline select-none cursor-default">
                 / Console
               </span>
-              <span className="hidden xs:inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono text-emerald-700 bg-emerald-50 border border-emerald-200/60 ml-0.5">
+              <span className="hidden xs:inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono text-emerald-700 bg-emerald-50 border border-emerald-200/60 ml-0.5 select-none pointer-events-none">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                 Live
               </span>
@@ -133,10 +173,34 @@ export const FleetDashboard: React.FC<Props> = ({ store, onNavigateLanding }) =>
             {/* Tour Launcher */}
             <button
               onClick={() => setIsWalkthroughActive(true)}
-              className="px-2 py-1 text-xs font-medium text-stone-500 hover:text-stone-900 hover:bg-stone-50 rounded-md transition-colors hidden sm:inline-block"
+              className="px-2 py-1 text-xs font-medium text-stone-500 hover:text-stone-900 hover:bg-stone-50 rounded-md transition-colors hidden sm:inline-block cursor-pointer"
               title="Interactive Product Tour"
             >
               Tour
+            </button>
+
+            {/* Judge Mode Button */}
+            {onNavigateJudge && (
+              <button
+                onClick={onNavigateJudge}
+                data-testid="nav-judge-mode-btn"
+                className="px-2 sm:px-2.5 py-1 sm:py-1.5 bg-orange-600 hover:bg-orange-700 text-white rounded-md text-[11px] sm:text-xs font-mono font-bold uppercase tracking-wider transition-colors shadow-2xs flex items-center gap-1 cursor-pointer whitespace-nowrap"
+                title="Enter 3-Minute Guided Judge Evaluation Mode"
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                <span className="hidden xs:inline">Judge Mode</span>
+              </button>
+            )}
+
+            {/* Disruption Lab Launcher */}
+            <button
+              onClick={() => setIsDisruptionOpen(true)}
+              data-testid="nav-disruption-lab-btn"
+              className="px-2 sm:px-2.5 py-1 sm:py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-md text-[11px] sm:text-xs font-mono font-medium transition-colors border border-stone-200 cursor-pointer hidden md:flex items-center gap-1 whitespace-nowrap"
+              title="Open Disruption & Operational Resilience Lab"
+            >
+              <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
+              <span>Disruption Lab</span>
             </button>
 
             {/* Export PDF */}
@@ -286,6 +350,15 @@ export const FleetDashboard: React.FC<Props> = ({ store, onNavigateLanding }) =>
         onClose={() => setIsWalkthroughActive(false)}
         currentTab={activeTab}
         onSwitchTab={setActiveTab}
+      />
+
+      {/* 6. Disruption & Operational Resilience Lab Modal */}
+      <DisruptionLabModal
+        isOpen={isDisruptionOpen}
+        onClose={() => setIsDisruptionOpen(false)}
+        activeCorridor={activeCorridor}
+        currentOptimization={latestOptimization}
+        onApplyDisruption={handleApplyDisruption}
       />
     </div>
   );

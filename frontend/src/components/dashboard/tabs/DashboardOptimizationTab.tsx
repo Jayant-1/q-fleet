@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { OptimizeRunResponse, ParetoSolution, BenchmarkComparisonResponse, CorridorInfo } from '../../../types';
 import { Cpu, Play, CheckCircle2, TrendingUp, AlertTriangle, Layers, Award, Ship } from '@/components/icons';
+import { BaselineImpactCard } from '../BaselineImpactCard';
+import { ExplainabilityCard } from '../ExplainabilityCard';
+import { DecisionConfidencePanel } from '../DecisionConfidencePanel';
 
 interface Props {
   latestOptimization: OptimizeRunResponse | null;
@@ -279,6 +282,30 @@ export const DashboardOptimizationTab: React.FC<Props> = ({
           </div>
         </div>
       </div>
+
+      {/* 2.5 Baseline Impact Engine Card */}
+      {selectedSolution && (
+        <BaselineImpactCard
+          impact={latestOptimization?.impact_comparison}
+          baselineSolution={latestOptimization?.baseline_solution}
+          selectedSolution={selectedSolution}
+        />
+      )}
+
+      {/* 2.6 Decision Explainability Card */}
+      {selectedSolution && (
+        <ExplainabilityCard
+          selectedSolution={selectedSolution}
+          activeCorridor={activeCorridor}
+        />
+      )}
+
+      {/* 2.7 Decision Confidence Bounds Panel */}
+      {selectedSolution && (
+        <DecisionConfidencePanel
+          selectedSolution={selectedSolution}
+        />
+      )}
 
       {/* 3. Fleet Allocation Roster Table */}
       {selectedSolution?.allocations && selectedSolution.allocations.length > 0 && (

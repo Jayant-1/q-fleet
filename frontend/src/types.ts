@@ -142,6 +142,39 @@ export interface OptimizeRunResponse {
   selected_route_id?: string | null;
   fleet_size?: number;
   audit_hash?: string;
+  baseline_solution?: ParetoSolution;
+  impact_comparison?: ImpactComparison;
+}
+
+export interface ImpactComparison {
+  baseline_fuel_mt: number;
+  optimized_fuel_mt: number;
+  fuel_saved_mt: number;
+  fuel_saved_pct: number;
+
+  baseline_cost_usd: number;
+  optimized_cost_usd: number;
+  cost_saved_usd: number;
+  cost_saved_pct: number;
+
+  baseline_ghg_tco2e: number;
+  optimized_ghg_tco2e: number;
+  ghg_saved_tco2e: number;
+  ghg_saved_pct: number;
+
+  baseline_cii_grade: string;
+  optimized_cii_grade: string;
+
+  baseline_fueleu_penalty_usd: number;
+  optimized_fueleu_penalty_usd: number;
+  fueleu_penalty_saved_usd: number;
+
+  baseline_eu_ets_cost_usd: number;
+  optimized_eu_ets_cost_usd: number;
+  eu_ets_saved_usd: number;
+
+  comparison_basis: string;
+  provenance: string;
 }
 
 export interface AlgorithmBenchmarkMetric {

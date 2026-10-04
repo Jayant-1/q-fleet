@@ -4,7 +4,9 @@ export function useRouter() {
   const [currentPath, setCurrentPath] = useState<string>(() => {
     if (typeof window !== 'undefined') {
       const p = window.location.pathname;
-      return p === '/dashboard' ? '/dashboard' : '/';
+      if (p === '/judge') return '/judge';
+      if (p === '/dashboard') return '/dashboard';
+      return '/';
     }
     return '/';
   });
@@ -12,7 +14,9 @@ export function useRouter() {
   useEffect(() => {
     const handleLocationChange = () => {
       const p = window.location.pathname;
-      setCurrentPath(p === '/dashboard' ? '/dashboard' : '/');
+      if (p === '/judge') setCurrentPath('/judge');
+      else if (p === '/dashboard') setCurrentPath('/dashboard');
+      else setCurrentPath('/');
     };
 
     window.addEventListener('popstate', handleLocationChange);
@@ -23,7 +27,9 @@ export function useRouter() {
     if (typeof window !== 'undefined') {
       if (window.location.pathname !== to) {
         window.history.pushState(null, '', to);
-        setCurrentPath(to === '/dashboard' ? '/dashboard' : '/');
+        if (to === '/judge') setCurrentPath('/judge');
+        else if (to === '/dashboard') setCurrentPath('/dashboard');
+        else setCurrentPath('/');
       }
     }
   }, []);
@@ -31,6 +37,7 @@ export function useRouter() {
   return {
     currentPath,
     navigate,
+    isJudge: currentPath === '/judge',
     isDashboard: currentPath === '/dashboard',
     isLanding: currentPath === '/',
   };

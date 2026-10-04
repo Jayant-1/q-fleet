@@ -14,6 +14,7 @@ interface Props {
   waveHeight: number;
   setWaveHeight: (v: number) => void;
   onEnterCockpit: (e?: React.MouseEvent | { clientX: number; clientY: number }) => void;
+  onNavigateJudge?: () => void;
 }
 
 export const EditorialShowcase: React.FC<Props> = ({
@@ -22,6 +23,7 @@ export const EditorialShowcase: React.FC<Props> = ({
   waveHeight,
   setWaveHeight,
   onEnterCockpit,
+  onNavigateJudge,
 }) => {
   const scrollTo = (id: string) => {
     const el = document.getElementById(id);
@@ -98,6 +100,16 @@ export const EditorialShowcase: React.FC<Props> = ({
 
         {/* Primary Action CTA */}
         <div className="flex items-center gap-3">
+          {onNavigateJudge && (
+            <button
+              onClick={onNavigateJudge}
+              data-testid="header-judge-mode-btn"
+              className="font-mono text-xs px-3 py-2 bg-white/10 hover:bg-white/20 text-white font-semibold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer border border-white/20 select-none"
+              title="Launch 3-Minute Guided Evaluator Mode"
+            >
+              <span>JUDGE MODE</span>
+            </button>
+          )}
           <button
             data-nav-dashboard-btn
             data-testid="header-enter-cockpit-btn"

@@ -29,7 +29,7 @@
 #### [00:35 – 01:15] Act 2: Naval Architecture Physics & Monotonicity
 1. **Navigate to the "Naval Physics" tab**:
    - Demonstrate the hydrodynamic engine based on Holtrop-Mennen resistance equations and ISO 15016 wave drag:
-     $$P_B = rac{R_T \cdot V}{\eta_D} \propto V^3$$
+     `P_B = (R_T · V) / η_D (power scales non-linearly with speed, approximately P ~ V³)`
    - Move the **Vessel Speed Slider** (e.g. from 14 knots to 20 knots).
    - Point out the cubic surge in engine shaft power and daily fuel burn.
    - Adjust the **Operating Draft** slider: observe the increase in wetted hull surface area and displacement resistance.
@@ -42,7 +42,7 @@
    - Highlight the conflicting objectives:
      1. Minimize voyage fuel consumption (Metric Tons).
      2. Minimize operational expenditure (USD).
-     3. Minimize Well-to-Wake greenhouse gas emissions ($	ext{tCO}_2	ext{e}$).
+     3. Minimize Well-to-Wake greenhouse gas emissions (tCO2e).
    - Click **"RUN QUANTUM SOLVER"**:
      - Observe the solver completing in under 2 seconds.
      - Watch the dynamic non-dominated Pareto frontier render.
@@ -76,7 +76,7 @@
    - Mention the fail-closed security guarantee:
      - *"Any modification to scenario inputs, custom fleet, vessel speeds, or allocations invalidates the SHA-256 hash, causing the system to fail closed (HTTP 400)."*
 2. **Conclude with Evaluation Summary**:
-   - 40 automated backend tests passing with 0 warnings.
+   - 45+ automated backend tests passing with 0 warnings.
    - Clean Vite production build with zero TypeScript errors.
    - Playwright automated verification covering 23 end-to-end scenarios and 30 viewport checks across 320px–1440px with 0px horizontal overflow.
    - A mathematically honest, fully reproducible hackathon submission.

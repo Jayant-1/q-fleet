@@ -113,7 +113,7 @@ export const InteractiveTaskWalkthrough: React.FC<Props> = ({
               Walkthrough Complete!
             </h2>
             <p className="text-xs text-gray-600 leading-relaxed">
-              You now have full command of the GreenFleet workstation: adjusting physics, executing quantum-inspired multi-objective optimization, auditing IMO CII ratings, and exporting reproducible modeled voyage reports.
+              You now have full command of the Q-FLEET workstation: adjusting physics, executing quantum-inspired multi-objective optimization, auditing IMO CII ratings, and exporting reproducible modeled voyage reports.
             </p>
             <div className="pt-2">
               <button

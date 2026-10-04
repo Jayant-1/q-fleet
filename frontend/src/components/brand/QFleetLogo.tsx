@@ -1,11 +1,14 @@
 import React from 'react';
 
-export interface QFleetLogoProps {
+export interface QFleetLogoProps extends React.SVGProps<SVGSVGElement> {
   className?: string;
   size?: number | string;
   variant?: 'quantum-bow' | 'qudit-compass' | 'hydro-vector';
   color?: string;
   dotColor?: string;
+  title?: string;
+  role?: string;
+  tabIndex?: number;
 }
 
 /**
@@ -20,6 +23,7 @@ export const QFleetLogo: React.FC<QFleetLogoProps> = ({
   variant = 'quantum-bow',
   color = '#ff6b00',
   dotColor = '#ffffff',
+  ...rest
 }) => {
   const style = size ? { width: size, height: size } : undefined;
 
@@ -32,6 +36,7 @@ export const QFleetLogo: React.FC<QFleetLogoProps> = ({
         className={className}
         style={style}
         aria-label="Q-FLEET Compass Logo"
+        {...rest}
       >
         <circle cx="50" cy="50" r="36" stroke="currentColor" strokeOpacity="0.25" strokeWidth="2" strokeDasharray="4 4" />
         <circle cx="50" cy="50" r="28" stroke={color} strokeWidth="6" />
@@ -52,6 +57,7 @@ export const QFleetLogo: React.FC<QFleetLogoProps> = ({
         className={className}
         style={style}
         aria-label="Q-FLEET Hydro-Vector Logo"
+        {...rest}
       >
         <rect x="22" y="22" width="56" height="56" rx="28" stroke={color} strokeWidth="7" />
         <path d="M 32 50 C 40 44 48 56 56 50 C 64 44 72 56 80 50" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
@@ -69,6 +75,7 @@ export const QFleetLogo: React.FC<QFleetLogoProps> = ({
       className={className}
       style={style}
       aria-label="Q-FLEET Logo"
+      {...rest}
     >
       {/* Quantum Superposition Orbit Arc */}
       <path

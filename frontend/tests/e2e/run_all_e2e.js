@@ -1,6 +1,6 @@
 /**
  * Q-FLEET / SIH26138 - Master Automated E2E Verification Suite
- * Implements genuine behavioral assertions across all 16 mandatory verification requirements.
+ * Implements genuine behavioral assertions across all 19 mandatory verification requirements.
  */
 
 import { chromium } from 'playwright';
@@ -10,7 +10,7 @@ const API_URL = 'http://127.0.0.1:8000';
 
 async function runMasterE2ESuite() {
   console.log('================================================================================');
-  console.log('Q-FLEET / SIH26138: Master 16-Requirement Behavioral E2E Verification Suite');
+  console.log('Q-FLEET / SIH26138: Master 19-Requirement Behavioral E2E Verification Suite');
   console.log('================================================================================\n');
 
   const browser = await chromium.launch({ headless: true });
@@ -35,6 +35,7 @@ async function runMasterE2ESuite() {
   await context.addInitScript(() => {
     try {
       localStorage.setItem('greenfleet_welcomed_v1', 'true');
+      localStorage.setItem('qfleet_welcomed_v1', 'true');
     } catch (e) {}
   });
 
@@ -444,7 +445,12 @@ IMPOSSIBLE_SHIP,Container_UltraLarge,-5000,99.5,INVALID_FUEL`;
 
     for (const w of testWidths) {
       const rContext = await browser.newContext({ viewport: { width: w, height: 800 } });
-      await rContext.addInitScript(() => localStorage.setItem('greenfleet_welcomed_v1', 'true'));
+      await rContext.addInitScript(() => {
+        try {
+          localStorage.setItem('greenfleet_welcomed_v1', 'true');
+          localStorage.setItem('qfleet_welcomed_v1', 'true');
+        } catch (e) {}
+      });
       const rPage = await rContext.newPage();
 
       // Landing check
@@ -486,7 +492,12 @@ IMPOSSIBLE_SHIP,Container_UltraLarge,-5000,99.5,INVALID_FUEL`;
       viewport: { width: 1280, height: 800 },
       reducedMotion: 'reduce'
     });
-    await a11yContext.addInitScript(() => localStorage.setItem('greenfleet_welcomed_v1', 'true'));
+    await a11yContext.addInitScript(() => {
+      try {
+        localStorage.setItem('greenfleet_welcomed_v1', 'true');
+        localStorage.setItem('qfleet_welcomed_v1', 'true');
+      } catch (e) {}
+    });
     const a11yPage = await a11yContext.newPage();
 
     await a11yPage.goto(`${BASE_URL}/dashboard`, { waitUntil: 'domcontentloaded' });
@@ -545,6 +556,150 @@ IMPOSSIBLE_SHIP,Container_UltraLarge,-5000,99.5,INVALID_FUEL`;
     await noGpuContext.close();
   });
 
+  // 17. Baseline Impact & Decision Explainability Cards (Optimization Tab)
+  await step(17, 'Optimization Tab: verify Baseline Impact Card, Explainability Rationale, and Decision Confidence Panel', async () => {
+    await page.goto(`${BASE_URL}/dashboard`, { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(500);
+
+    // Switch to optimization tab
+    await page.locator('[data-testid="tab-optimization"]').click({ force: true });
+    await page.waitForTimeout(600);
+
+    // Check baseline impact card
+    const baselineCard = page.locator('[data-testid="baseline-impact-card"]');
+    if (await baselineCard.count() === 0) {
+      throw new Error('Baseline Impact Card [data-testid="baseline-impact-card"] not found on Optimization Tab');
+    }
+    const baselineText = await baselineCard.innerText();
+    if (!baselineText.includes('Conventional Baseline') && !baselineText.includes('Before Q-FLEET')) {
+      throw new Error(`Baseline Impact Card does not reference conventional baseline: ${baselineText.slice(0, 100)}`);
+    }
+
+    // Check explainability card
+    const explainCard = page.locator('[data-testid="explainability-card"]');
+    if (await explainCard.count() === 0) {
+      throw new Error('Explainability Card [data-testid="explainability-card"] not found on Optimization Tab');
+    }
+
+    // Check decision confidence panel
+    const confidencePanel = page.locator('[data-testid="decision-confidence-panel"]');
+    if (await confidencePanel.count() === 0) {
+      throw new Error('Decision Confidence Panel [data-testid="decision-confidence-panel"] not found on Optimization Tab');
+    }
+    const confidenceText = await confidencePanel.innerText();
+    if (!confidenceText.includes('95%') && !confidenceText.includes('Conformal')) {
+      throw new Error(`Decision Confidence Panel missing 95% conformal interval reference: ${confidenceText.slice(0, 100)}`);
+    }
+  });
+
+  // 18. Disruption Lab Modal & Real-Time Sea-State/Delay Simulation
+  await step(18, 'Disruption Lab: open incident injection modal, simulate monsoon sea-state surge, assert reactive metrics', async () => {
+    const disruptionBtn = page.locator('[data-testid="nav-disruption-lab-btn"]');
+    if (await disruptionBtn.count() === 0) {
+      throw new Error('Disruption Lab button [data-testid="nav-disruption-lab-btn"] not found in dashboard header');
+    }
+    await disruptionBtn.click({ force: true });
+    await page.waitForTimeout(500);
+
+    const modal = page.locator('[data-testid="disruption-lab-modal"]');
+    if (await modal.count() === 0) {
+      throw new Error('Disruption Lab modal [data-testid="disruption-lab-modal"] did not open');
+    }
+
+    // Click simulate disruption
+    const simulateBtn = page.locator('[data-testid="simulate-disruption-btn"]');
+    if (await simulateBtn.count() === 0) {
+      throw new Error('Simulate disruption button not found in modal');
+    }
+    await simulateBtn.click({ force: true });
+    // Wait for the simulation result to render
+    const simResult = page.locator('[data-testid="disruption-simulation-result"]');
+    await simResult.waitFor({ state: 'visible', timeout: 5000 });
+
+    const simContent = (await simResult.innerText()).toLowerCase();
+    if (!simContent.includes('reactive dispatch') && !simContent.includes('projected bunker burn')) {
+      throw new Error(`Simulation result missing expected metrics: ${simContent.slice(0, 100)}`);
+    }
+
+    // Click Apply Disruption & Re-Optimize
+    const applyBtn = page.locator('[data-testid="apply-disruption-btn"]');
+    if (await applyBtn.count() > 0) {
+      await applyBtn.click({ force: true });
+      await page.waitForTimeout(800);
+    }
+  });
+
+  // 19. Dedicated Judge Mode (/judge) Complete 6-Step Guided Flow
+  await step(19, 'Dedicated Judge Mode (/judge): verify 6-step guided evaluation flow with fixed seed 42', async () => {
+    // Navigate directly to /judge
+    await page.goto(`${BASE_URL}/judge`, { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(800);
+
+    const judgePage = page.locator('[data-testid="judge-mode-page"]');
+    if (await judgePage.count() === 0) {
+      throw new Error('Judge Mode page [data-testid="judge-mode-page"] failed to render at /judge');
+    }
+
+    // Step 1 should be active initially
+    const step1 = page.locator('[data-testid="judge-stage-step-1"]');
+    if (await step1.count() === 0) {
+      throw new Error('Judge Mode Step 1 stage not visible');
+    }
+
+    // Click Next Step through steps 2, 3, 4
+    for (let s = 1; s <= 3; s++) {
+      const nextBtn = page.locator('[data-testid="judge-next-step-btn"]');
+      if (await nextBtn.count() === 0) {
+        throw new Error(`Next Step button not found at Step ${s}`);
+      }
+      await nextBtn.click({ force: true });
+      await page.waitForTimeout(500);
+    }
+
+    // Now at Step 4: Optimization Engine
+    const step4 = page.locator('[data-testid="judge-stage-step-4"]');
+    if (await step4.count() === 0) {
+      throw new Error('Judge Mode Step 4 stage not visible');
+    }
+
+    // Advance to Step 5
+    await page.locator('[data-testid="judge-next-step-btn"]').click({ force: true });
+    await page.waitForTimeout(500);
+
+    // Now at Step 5: Compliance
+    const step5 = page.locator('[data-testid="judge-stage-step-5"]');
+    if (await step5.count() === 0) {
+      throw new Error('Judge Mode Step 5 stage not visible');
+    }
+
+    // Advance to Step 6: Audit & Export
+    await page.locator('[data-testid="judge-next-step-btn"]').click({ force: true });
+    await page.waitForTimeout(500);
+
+    const step6 = page.locator('[data-testid="judge-stage-step-6"]');
+    if (await step6.count() === 0) {
+      throw new Error('Judge Mode Step 6 stage not visible');
+    }
+
+    // Assert audit hash element exists
+    const hashEl = page.locator('[data-testid="judge-audit-hash"]');
+    if (await hashEl.count() === 0) {
+      throw new Error('Audit hash display not found in Step 6');
+    }
+
+    // Click Finish Evaluation & Return to Cockpit
+    const finishBtn = page.locator('[data-testid="judge-finish-btn"]');
+    if (await finishBtn.count() === 0) {
+      throw new Error('Finish Evaluation button not found in Step 6');
+    }
+    await finishBtn.click({ force: true });
+    await page.waitForTimeout(600);
+
+    if (!page.url().includes('/dashboard')) {
+      throw new Error(`Expected finish to return to /dashboard, got ${page.url()}`);
+    }
+  });
+
   await context.close();
   await browser.close();
 
@@ -555,7 +710,7 @@ IMPOSSIBLE_SHIP,Container_UltraLarge,-5000,99.5,INVALID_FUEL`;
   if (failedCount > 0) {
     process.exit(1);
   } else {
-    console.log('All 16 Mandatory Behavioral Requirements Verified Successfully! 🚀');
+    console.log('All 19 Mandatory Behavioral Requirements Verified Successfully! 🚀');
     process.exit(0);
   }
 }

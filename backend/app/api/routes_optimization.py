@@ -267,6 +267,48 @@ def run_fleet_optimization(req: OptimizeRunRequest):
         if not compromise_id and pareto_schemas:
             compromise_id = pareto_schemas[0].solution_id
 
+        # Compute deterministic conventional commercial baseline and impact delta
+        baseline_sol = problem.generate_baseline_solution()
+        baseline_schema = _solution_to_schema(baseline_sol)
+        knee_sol = next((s for s in pareto_schemas if s.solution_id == compromise_id), pareto_schemas[0] if pareto_schemas else baseline_schema)
+
+        fuel_diff = baseline_schema.total_fuel_mt - knee_sol.total_fuel_mt
+        cost_diff = baseline_schema.total_cost_usd - knee_sol.total_cost_usd
+        ghg_diff = baseline_schema.total_lifecycle_ghg_tco2e - knee_sol.total_lifecycle_ghg_tco2e
+        fueleu_diff = baseline_schema.total_fueleu_penalty_usd - knee_sol.total_fueleu_penalty_usd
+        ets_diff = baseline_schema.total_eu_ets_cost_usd - knee_sol.total_eu_ets_cost_usd
+
+        impact_comparison = {
+            "baseline_fuel_mt": baseline_schema.total_fuel_mt,
+            "optimized_fuel_mt": knee_sol.total_fuel_mt,
+            "fuel_saved_mt": round(fuel_diff, 1),
+            "fuel_saved_pct": round((fuel_diff / max(1.0, baseline_schema.total_fuel_mt)) * 100.0, 1),
+
+            "baseline_cost_usd": baseline_schema.total_cost_usd,
+            "optimized_cost_usd": knee_sol.total_cost_usd,
+            "cost_saved_usd": round(cost_diff, 2),
+            "cost_saved_pct": round((cost_diff / max(1.0, baseline_schema.total_cost_usd)) * 100.0, 1),
+
+            "baseline_ghg_tco2e": baseline_schema.total_lifecycle_ghg_tco2e,
+            "optimized_ghg_tco2e": knee_sol.total_lifecycle_ghg_tco2e,
+            "ghg_saved_tco2e": round(ghg_diff, 1),
+            "ghg_saved_pct": round((ghg_diff / max(1.0, baseline_schema.total_lifecycle_ghg_tco2e)) * 100.0, 1),
+
+            "baseline_cii_grade": baseline_schema.fleet_average_cii_rating,
+            "optimized_cii_grade": knee_sol.fleet_average_cii_rating,
+
+            "baseline_fueleu_penalty_usd": baseline_schema.total_fueleu_penalty_usd,
+            "optimized_fueleu_penalty_usd": knee_sol.total_fueleu_penalty_usd,
+            "fueleu_penalty_saved_usd": round(fueleu_diff, 2),
+
+            "baseline_eu_ets_cost_usd": baseline_schema.total_eu_ets_cost_usd,
+            "optimized_eu_ets_cost_usd": knee_sol.total_eu_ets_cost_usd,
+            "eu_ets_saved_usd": round(ets_diff, 2),
+
+            "comparison_basis": "Conventional Commercial Baseline (100% VLSFO, design speed, no shore power) vs. Pareto Knee Plan",
+            "provenance": "[MODELED SCENARIO COMPARISON: First-Principles Simulation Delta]"
+        }
+
         fleet_size = len(problem.fleet)
         audit_hash = compute_run_audit_hash(
             run_id=run_id,
@@ -313,7 +355,9 @@ def run_fleet_optimization(req: OptimizeRunRequest):
             target_speed_knots=req.target_speed_knots,
             preferred_fuel_type=req.preferred_fuel_type,
             operating_draft_meters=req.operating_draft_meters,
-            custom_fleet=req.custom_fleet
+            custom_fleet=req.custom_fleet,
+            baseline_solution=baseline_schema,
+            impact_comparison=impact_comparison
         )
 
         entry = {

@@ -163,7 +163,7 @@ def get_pdf_report(run_id: str, solution_id: Optional[str] = None):
     return Response(
         content=pdf_bytes,
         media_type="application/pdf",
-        headers={"Content-Disposition": f"inline; filename=GreenFleet_Audit_{run_id[:8]}.pdf"}
+        headers={"Content-Disposition": f"inline; filename=QFLEET_Audit_{run_id[:8]}.pdf"}
     )
 
 

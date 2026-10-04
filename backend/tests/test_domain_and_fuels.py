@@ -40,9 +40,14 @@ def test_fuel_lifecycle_consistency():
 
 
 def test_corridor_and_fleet_inventory():
-    """Verifies global corridors and standard fleet consistency."""
-    assert len(GLOBAL_CORRIDORS) == 5
+    """Verifies global corridors, Indian maritime arteries, and standard fleet consistency."""
+    assert len(GLOBAL_CORRIDORS) == 7
     assert len(STANDARD_FLEET) == 15
+    assert "ROUTE_INDIA_EUR" in GLOBAL_CORRIDORS
+    assert "ROUTE_INDIA_SGP" in GLOBAL_CORRIDORS
+    assert "INNSA" in GLOBAL_PORTS
+    assert "INMUN" in GLOBAL_PORTS
+    assert "INMAA" in GLOBAL_PORTS
 
     for c in GLOBAL_CORRIDORS.values():
         assert c.distance_nm > 500.0

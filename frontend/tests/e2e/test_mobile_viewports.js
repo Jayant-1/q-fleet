@@ -37,6 +37,7 @@ async function runViewportAudits() {
     await context.addInitScript(() => {
       try {
         localStorage.setItem('greenfleet_welcomed_v1', 'true');
+        localStorage.setItem('qfleet_welcomed_v1', 'true');
       } catch (e) {}
     });
 
