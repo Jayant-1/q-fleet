@@ -129,7 +129,7 @@ export const RouteCommandSelector: React.FC<RouteCommandSelectorProps> = ({
   };
 
   return (
-    <div ref={containerRef} className={`relative inline-block ${className}`}>
+    <div ref={containerRef} className={`relative max-w-full min-w-0 ${className}`}>
       {/* 
         CRITICAL COMPATIBILITY LAYER:
         Hidden HTML <select> strictly for automated Playwright suites (such as run_all_e2e.js)
@@ -157,7 +157,7 @@ export const RouteCommandSelector: React.FC<RouteCommandSelectorProps> = ({
         aria-expanded={isOpen}
         aria-haspopup="dialog"
         title="Switch Maritime Trade Corridor (⌘K)"
-        className={`group flex items-center justify-between gap-2 sm:gap-2.5 px-3 sm:px-4 py-1 sm:py-1.5 bg-stone-50 hover:bg-white active:bg-stone-100 border rounded-lg text-xs font-mono transition-all shadow-2xs hover:shadow-xs cursor-pointer select-none min-h-[34px] sm:min-h-[36px] w-auto sm:min-w-[360px] md:min-w-[420px] lg:min-w-[480px] xl:min-w-[520px] ${
+        className={`group flex items-center justify-between gap-1.5 sm:gap-2.5 px-2.5 sm:px-4 py-1 sm:py-1.5 bg-stone-50 hover:bg-white active:bg-stone-100 border rounded-lg text-xs font-mono transition-all shadow-2xs hover:shadow-xs cursor-pointer select-none min-h-[34px] sm:min-h-[36px] w-full max-w-[240px] xs:max-w-[300px] sm:max-w-[380px] md:max-w-[440px] lg:max-w-[500px] min-w-0 ${
           isOpen
             ? 'border-stone-400 bg-white ring-2 ring-stone-200'
             : 'border-stone-200/90 hover:border-stone-300'

@@ -29,11 +29,11 @@ export default {
         }
       },
       fontFamily: {
-        display: ['"Space Grotesk"', '"Syne"', 'sans-serif'],
-        headline: ['"Syne"', '"Space Grotesk"', 'sans-serif'],
-        sans: ['"Plus Jakarta Sans"', '"Instrument Sans"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-        mono: ['"JetBrains Mono"', 'Menlo', 'monospace'],
-        editorial: ['"Instrument Sans"', '"Plus Jakarta Sans"', 'sans-serif'],
+        display: ['"Space Grotesk"', '"Plus Jakarta Sans"', 'sans-serif'],
+        headline: ['"Space Grotesk"', '"Plus Jakarta Sans"', 'sans-serif'],
+        sans: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'ui-monospace', 'Menlo', 'Consolas', 'monospace'],
+        editorial: ['"Space Grotesk"', '"Plus Jakarta Sans"', 'sans-serif'],
       }
     },
   },

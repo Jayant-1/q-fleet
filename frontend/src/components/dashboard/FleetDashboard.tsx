@@ -87,7 +87,7 @@ export const FleetDashboard: React.FC<Props> = ({ store, onNavigateLanding, onNa
       <header className="bg-white/95 backdrop-blur-md border-b border-stone-200/60 sticky top-0 z-40 w-full max-w-full">
         <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-1.5 sm:gap-4 min-w-0">
           {/* Left: Clean Brand & Back Navigation */}
-          <div className="flex-1 flex items-center gap-1.5 sm:gap-3 min-w-0 justify-start">
+          <div className="flex-shrink-0 flex items-center gap-1.5 sm:gap-3 justify-start">
             <button
               onClick={(e) => onNavigateLanding(e)}
               data-testid="back-to-landing-btn"
@@ -146,7 +146,7 @@ export const FleetDashboard: React.FC<Props> = ({ store, onNavigateLanding, onNa
           </div>
 
           {/* Center: Precision Route Command Selector */}
-          <div className="shrink-0 flex items-center justify-center px-1 sm:px-2 z-20">
+          <div className="flex-1 min-w-0 max-w-lg mx-auto flex items-center justify-center px-1 sm:px-2 z-20">
             <RouteCommandSelector
               corridors={corridors}
               activeCorridorId={activeCorridorId}
@@ -155,7 +155,7 @@ export const FleetDashboard: React.FC<Props> = ({ store, onNavigateLanding, onNa
           </div>
 
           {/* Right: Key Actions */}
-          <div className="flex-1 flex items-center gap-1 sm:gap-2 shrink-0 justify-end">
+          <div className="flex-shrink-0 flex items-center gap-1 sm:gap-2 justify-end">
             {/* Export PDF */}
             <button
               id="tour-export-pdf"

@@ -10,7 +10,7 @@
   body {
     @apply bg-[#050811] text-slate-100 antialiased overflow-x-hidden;
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01", "ss02";
+    font-feature-settings: normal;
   }
 }
 
