@@ -1,9 +1,9 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "vite",
-  "buildCommand": "pnpm --dir frontend build",
+  "buildCommand": "corepack enable && pnpm --dir frontend build",
   "outputDirectory": "frontend/dist",
-  "installCommand": "pnpm --dir frontend install",
+  "installCommand": "corepack enable && pnpm --dir frontend install --frozen-lockfile",
   "functions": {
     "api/index.py": {
       "includeFiles": "backend/app/**,data/fixtures/**,data/mrv/**,data/ports/**,data/data_provenance_manifest.json",
