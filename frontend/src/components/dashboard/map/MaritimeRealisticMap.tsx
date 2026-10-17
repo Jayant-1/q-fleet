@@ -199,8 +199,8 @@ export const MaritimeRealisticMap: React.FC<MaritimeRealisticMapProps> = ({
         className: 'custom-vessel-icon',
         html: `
           <div class="relative flex items-center justify-center" style="width: 32px; height: 32px;">
-            <span class="absolute w-8 h-8 rounded-full bg-amber-500/20 animate-ping"></span>
-            <span class="absolute w-6 h-6 rounded-full bg-amber-500/30"></span>
+            <span class="absolute w-7 h-7 rounded-full bg-amber-500/20"></span>
+            <span class="absolute w-5 h-5 rounded-full bg-amber-500/30"></span>
             <div class="relative w-5 h-5 bg-stone-900 border border-amber-400 rounded-full flex items-center justify-center shadow-md">
               <svg class="w-3 h-3 text-amber-400" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 2L4 20l8-4 8 4L12 2z"/>
@@ -233,8 +233,8 @@ export const MaritimeRealisticMap: React.FC<MaritimeRealisticMapProps> = ({
         className: 'custom-origin-beacon',
         html: `
           <div class="relative flex items-center justify-center select-none" style="width: 28px; height: 28px;">
-            <span class="absolute w-8 h-8 rounded-full bg-emerald-500/30 animate-ping"></span>
-            <span class="absolute w-5 h-5 rounded-full bg-emerald-500/40"></span>
+            <span class="absolute w-7 h-7 rounded-full bg-emerald-500/20"></span>
+            <span class="absolute w-5 h-5 rounded-full bg-emerald-500/35"></span>
             <span class="relative w-3.5 h-3.5 rounded-full bg-emerald-600 border-2 border-white shadow-md"></span>
             <div class="absolute -top-7 px-2 py-0.5 bg-stone-900/95 text-white text-[10px] font-mono font-bold rounded-md shadow-lg border border-white/20 whitespace-nowrap flex items-center gap-1">
               <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
@@ -268,8 +268,8 @@ export const MaritimeRealisticMap: React.FC<MaritimeRealisticMapProps> = ({
         className: 'custom-dest-beacon',
         html: `
           <div class="relative flex items-center justify-center select-none" style="width: 28px; height: 28px;">
-            <span class="absolute w-8 h-8 rounded-full bg-amber-500/30 animate-ping"></span>
-            <span class="absolute w-5 h-5 rounded-full bg-amber-500/40"></span>
+            <span class="absolute w-7 h-7 rounded-full bg-amber-500/20"></span>
+            <span class="absolute w-5 h-5 rounded-full bg-amber-500/35"></span>
             <span class="relative w-3.5 h-3.5 rounded-full bg-[#ff6b00] border-2 border-white shadow-md"></span>
             <div class="absolute -top-7 px-2 py-0.5 bg-stone-900/95 text-white text-[10px] font-mono font-bold rounded-md shadow-lg border border-white/20 whitespace-nowrap flex items-center gap-1">
               <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
